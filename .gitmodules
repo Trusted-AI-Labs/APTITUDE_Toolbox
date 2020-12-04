@@ -4,3 +4,6 @@
 [submodule "2DBoxesTracker"]
 	path = 2DBoxesTracker
 	url = https://gitlab.com/aptitude1/python-toolbox/tracking/2dboxes/2dboxestracker.git
+[submodule "bboxes_detector_2d"]
+	path = detection/bboxes/bboxes_2d_detector
+	url = https://gitlab.com/aptitude1/python-toolbox/detection/bboxes/bboxesdetector2d.git
