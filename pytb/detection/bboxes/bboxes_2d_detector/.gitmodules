@@ -1,3 +1,0 @@
-[submodule "yolo"]
-	path = yolo
-	url = https://gitlab.com/aptitude1/python-toolbox/detection/bboxes/yolo.git

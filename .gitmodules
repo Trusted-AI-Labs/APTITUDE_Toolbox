@@ -1,3 +1,0 @@
-[submodule "bboxes_detector_2d"]
-	path = pytb/detection/bboxes/bboxes_2d_detector
-	url = https://gitlab.com/aptitude1/python-toolbox/detection/bboxes/bboxesdetector2d.git
