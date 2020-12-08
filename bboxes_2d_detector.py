@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from pytb.detection.detector import Detector
 
-class BBoxes2DDetector(ABC):
+class BBoxes2DDetector(Detector, ABC):
 
     def __init__(self, detector_parameters):
         """
@@ -15,7 +16,6 @@ class BBoxes2DDetector(ABC):
         self.input_width = detector_parameters["BBoxes2DDetector"]["input_width"]
         self.input_height = detector_parameters["BBoxes2DDetector"]["input_height"]
 
-    # TODO This function could be part of the parent class "Detector"
     @abstractmethod
     def detect(self, org_frame):
         """
