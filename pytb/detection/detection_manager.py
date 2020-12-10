@@ -1,4 +1,4 @@
-
+from pytb.utils.detection_filter import DetectionFilter
 
 from time import time
 
@@ -31,12 +31,25 @@ class DetectionManager:
 
         # call the concrete method of the detector
         start = time()
-        output = self.detector.detect(org_frame)
-        output.preprocessing_time = preproc_time
-        output.processing_time = time()-start
+        detections = self.detector.detect(org_frame)
+        detections.processing_time = time()-start
+        detections.preprocessing_time = preproc_time
 
+        # Post process
         start = time()
-        # TODO apply postprocess parameters
-        output.postprocessing_time = time()-start
+        detections = self._post_process(detections)
+        detections.postprocessing_time = time()-start
 
-        return output
+        return detections
+
+    def _post_process(self, detections):
+        if "nms" in self.postprocess_parameters:
+            nms_params = self.postprocess_parameters["nms"]
+            DetectionFilter.nms_filter(detections, nms_params["pref_implem"], nms_params["nms_thresh"], nms_params["conf_thresh"])
+        if "coi" in self.postprocess_parameters:
+            DetectionFilter.class_filter(detections, self.postprocess_parameters["coi"])
+        if "min_conf" in self.postprocess_parameters:
+            DetectionFilter.confidence_filter(detections, self.postprocess_parameters["min_conf"])
+        if "top_k" in self.postprocess_parameters:
+            DetectionFilter.top_k(detections, self.postprocess_parameters["top_k"])
+        return detections

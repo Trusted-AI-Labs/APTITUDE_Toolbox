@@ -3,12 +3,12 @@ from pytb.output.detection import Detection
 class BBoxes_2D(Detection):
 
     def __init__(self, inference_time, completed, 
-                class_IDs, det_confs, bboxes):
+                bboxes, class_IDs, det_confs):
         super().__init__(inference_time, completed)
 
+        self.bboxes = bboxes
         self.class_IDs = class_IDs
         self.det_confs = det_confs
-        self.bboxes = bboxes
         
         self.prev_track_IDs = None
 
