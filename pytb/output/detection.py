@@ -17,9 +17,9 @@ class Detection(ABC):
         s = super().__str__()
         s += "\n\tImage path: " + str(self.image_path)
         s += "\n\tProcessing time: " + str(self.processing_time)
+        s += "\n\t\tInference time: " + str(self.inference_time)
         s += "\n\tPre-processing time: " + str(self.preprocessing_time)
         s += "\n\tPost-processing time: " + str(self.postprocessing_time)
-        s += "\n\tInference time: " + str(self.inference_time)
         s += "\n\tCompleted: " + str(self.completed)
         return s
 
