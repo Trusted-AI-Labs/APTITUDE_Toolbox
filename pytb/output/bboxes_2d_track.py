@@ -2,10 +2,10 @@ from pytb.output.bboxes_2d import BBoxes_2D
 
 class BBoxes_2D_Track(BBoxe_2D):
 
-    def __init__(self, inference_time, completed, 
-                bboxes, class_IDs, det_conf, 
+    def __init__(self, inference_time, 
+                bboxes, class_IDs, det_conf, dim_width, dim_height,
                 global_IDs, track_conf):
-        super().__init__(inference_time, completed, bboxes, class_IDs, det_conf)
+        super().__init__(inference_time, bboxes, class_IDs, det_conf, dim_width, dim_height)
 
         self.global_IDs = global_IDs
         self.track_conf = track_conf

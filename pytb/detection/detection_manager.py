@@ -1,5 +1,4 @@
-from pytb.utils.detection_filter import DetectionFilter
-from pytb.utils.image_helper import ImageHelper
+import pytb.utils.image_helper as ih
 
 from timeit import default_timer
 import cv2
@@ -40,7 +39,8 @@ class DetectionManager:
 
         # Post process
         start = default_timer()
-        detections = self._post_process(detections)
+        if detections.number_detections != 0:
+            detections = self._post_process(detections)
         detections.postprocessing_time = default_timer()-start
 
         # Display results
@@ -63,24 +63,28 @@ class DetectionManager:
             roi_params = self.preprocess_parameters["roi"]
             # Apply a mask via a mask file
             if "path" in roi_params:
-                image = ImageHelper.apply_roi_file(image, roi_params["path"])
+                image = ih.apply_roi_file(image, roi_params["path"])
             # Apply a mask via a polyline
             elif "coords":
-                image = ImageHelper.apply_roi_coords(image, roi_params["coords"])
+                image = ih.apply_roi_coords(image, roi_params["coords"])
+
+        if "resize" in self.preprocess_parameters:
+            resize_params = self.preprocess_parameters["resize"]
+            image = ih.resize(image, resize_params["width"], resize_params["height"])
 
         if "border" in self.preprocess_parameters:
             border_params = self.preprocess_parameters["border"]
-            image = ImageHelper.add_borders(image, centered=border_params["centered"])
+            image = ih.add_borders(image, centered=border_params["centered"])
         return image
 
     def _post_process(self, detections):
         if "nms" in self.postprocess_parameters:
             nms_params = self.postprocess_parameters["nms"]
-            DetectionFilter.nms_filter(detections, nms_params["pref_implem"], nms_params["nms_thresh"])
+            detections.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
         if "coi" in self.postprocess_parameters:
-            DetectionFilter.class_filter(detections, self.postprocess_parameters["coi"])
+            detections.class_filter(self.postprocess_parameters["coi"])
         if "min_conf" in self.postprocess_parameters:
-            DetectionFilter.confidence_filter(detections, self.postprocess_parameters["min_conf"])
+            detections.confidence_filter(self.postprocess_parameters["min_conf"])
         if "top_k" in self.postprocess_parameters:
-            DetectionFilter.top_k(detections, self.postprocess_parameters["top_k"])
+            detections.top_k(self.postprocess_parameters["top_k"])
         return detections
