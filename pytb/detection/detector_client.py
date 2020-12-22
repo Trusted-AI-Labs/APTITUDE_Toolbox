@@ -10,7 +10,7 @@ import pytb.utils.image_helper as ih
 
 if __name__ == "__main__":
 
-    with open('configs/config1.json') as config_file:
+    with open('configs/detect1.json') as config_file:
         config1 = json.load(config_file)
 
     config1_proc = config1['Proc']
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     end = default_timer()
     print("YOLO 1 init duration = " + str(end-start))
 
-    with open('configs/config2.json') as config_file:
+    with open('configs/detect2.json') as config_file:
         config2 = json.load(config_file)
 
     config2_proc = config2['Proc']

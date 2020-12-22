@@ -18,7 +18,7 @@ class DetectorFactory:
 
     @staticmethod
     def _bboxes_2d_detector(detector_parameters: dict) -> BBoxes2DDetector:
-        model_type = detector_parameters["BBoxes2DDetector"]["model"]
+        model_type = detector_parameters["BBoxes2DDetector"]["model_type"]
 
         if model_type == "YOLO":
             return YOLO(detector_parameters)

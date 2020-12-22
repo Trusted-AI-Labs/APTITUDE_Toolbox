@@ -34,28 +34,15 @@ class DetectionManager:
 
         # call the concrete method of the detector
         start = default_timer()
-        detections = self.detector.detect(edit_frame)
-        detections.processing_time = default_timer()-start
+        detection = self.detector.detect(edit_frame)
+        detection.processing_time = default_timer()-start
 
-        detections.preprocessing_time = preproc_time
+        detection.preprocessing_time = preproc_time
 
         # Post process
         start = default_timer()
-        if detections.number_detections != 0:
-            detections = tfm.post_process(self.postprocess_parameters, detections)
-        detections.postprocessing_time = default_timer()-start
+        if detection.number_objects != 0:
+            detection = tfm.post_process(self.postprocess_parameters, detection)
+        detection.postprocessing_time = default_timer()-start
 
-        # Display results
-        # ratio = max(edit_frame.shape)
-        # for b in detections.bboxes:
-        #     (x, y, w, h) = b
-        #     x = int(x * (ratio/detections.dim_width))
-        #     w = int(w * (ratio/detections.dim_width))
-        #     y = int(y * (ratio/detections.dim_height))
-        #     h = int(h * (ratio/detections.dim_height))
-        #     color = (255,0,0)
-        #     cv2.rectangle(edit_frame, (x, y), (x + w, y + h), color, 2)
-        # cv2.imshow("res", edit_frame)
-        # cv2.waitKey(0)
-
-        return detections
+        return detection

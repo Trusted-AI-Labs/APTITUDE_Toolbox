@@ -11,7 +11,7 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray) -> np.ndarray:
         if "path" in roi_params:
             image = ih.apply_roi_file(image, roi_params["path"])
         # Apply a mask via a polyline
-        elif "coords":
+        elif "coords" in roi_params:
             image = ih.apply_roi_coords(image, roi_params["coords"])
 
     if "resize" in preprocess_parameters:
