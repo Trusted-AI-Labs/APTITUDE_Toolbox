@@ -2,12 +2,12 @@ import numpy as np
 from abc import ABC, abstractmethod
 
 from pytb.detection.detector import Detector
-from pytb.output.bboxes_2d import BBoxes_2D
+from pytb.output.bboxes_2d import BBoxes2D
 
 class BBoxes2DDetector(Detector, ABC):
 
     def __init__(self, detector_parameters: dict):
-        """Initiliazes the detectors with the given parameters.
+        """Initiliazes the detector with the given parameters.
 
         Args:
             detector_parameters (dict): A dictionary containing the related detector's parameters
@@ -20,13 +20,13 @@ class BBoxes2DDetector(Detector, ABC):
         self.input_height = detector_parameters["BBoxes2DDetector"]["input_height"]
 
     @abstractmethod
-    def detect(self, org_frame: np.ndarray) -> BBoxes_2D:
+    def detect(self, org_frame: np.ndarray) -> BBoxes2D:
         """Performs an inference on the given frame. 
 
         Args:
             org_frame (np.ndarray): The given frame to infer detections
 
         Returns:
-            BBoxes_2D:A set of 2DBBoxes detections of the detected objects
+            BBoxes2D: A set of 2DBBoxes detections of the detected objects
         """
         pass
