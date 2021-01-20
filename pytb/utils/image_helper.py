@@ -3,11 +3,19 @@ import numpy as np
 import timeit
 import urllib.request
 
+try:
+    from turbojpeg import TurboJPEG
+    tjpeg = TurboJPEG()
+except:
+    tjpeg = None
 
 def get_cv2_img_from_str(path: str, flags=cv2.IMREAD_COLOR):
     with open(path, 'rb') as buffer:
-        nparr = np.frombuffer(buffer.read(), dtype=np.uint8)
-        return cv2.imdecode(nparr, flags)
+        if tjpeg != None and (path.endswith(".jpg") or path.endswith(".jpeg")):
+            return tjpeg.decode(buffer.read())
+        else:
+            nparr = np.frombuffer(buffer.read(), dtype=np.uint8)
+            return cv2.imdecode(nparr, flags)
 
 def get_cv2_img_from_buffer(buffer, flags=cv2.IMREAD_COLOR):
     nparr = np.frombuffer(buffer.read(), dtype=np.uint8)
