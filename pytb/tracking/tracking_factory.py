@@ -1,6 +1,7 @@
 from pytb.tracking.tracker import Tracker
 from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTracker
 from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.sort.sort import SORT
+from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.deepsort.deepsort import DeepSORT
 
 class TrackingFactory:
 
@@ -22,6 +23,8 @@ class TrackingFactory:
 
         if model_type == "SORT":
             return SORT(tracker_parameters)
+        elif model_type == "DeepSORT":
+            return DeepSORT(tracker_parameters)
 
     @staticmethod
     def _pose_tracker(tracker_parameters: dict) -> None:

@@ -10,7 +10,7 @@ class BBoxes2D(Detection):
 
         self.detection_time = detection_time
 
-        self.bboxes = bboxes # format [xc, yc, w, h]
+        self.bboxes = bboxes # format [xt, yt, w, h]
         self.class_IDs = class_IDs
         self.det_confs = det_confs
 

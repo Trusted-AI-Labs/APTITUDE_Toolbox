@@ -2,6 +2,7 @@ from pytb.tracking.tracker import Tracker
 from pytb.output.detection import Detection
 import pytb.utils.transformation as tfm
 
+from typing import Optional
 from timeit import default_timer
 import numpy as np
 import cv2
@@ -27,9 +28,9 @@ class TrackingManager:
         #TODO
         pass
 
-    def track(self, detection: Detection, frame: np.ndarray = None) -> Detection:
+    def track(self, detection: Detection, frame: Optional[np.ndarray] = None) -> Detection:
         start = default_timer()
-        if frame != None:
+        if frame is not None:
             frame = tfm.pre_process(self.preprocess_parameters, frame)
         preproc_time = default_timer()-start
 
