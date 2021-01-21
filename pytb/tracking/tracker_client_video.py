@@ -20,14 +20,14 @@ thickness = 2
 
 if __name__ == "__main__":
 
-    with open('configs/detect1.json') as config_file:
+    with open('configs/detect-DM.json') as config_file:
         detect1 = json.load(config_file)
 
     detect1_proc = detect1['Proc']
     detect1_preproc = detect1['Preproc']
     detect1_postproc = detect1['Postproc']
 
-    with open('configs/track1.json') as config_file:
+    with open('configs/track-deepsort.json') as config_file:
         track1 = json.load(config_file)
 
     track1_proc = track1['Proc']
@@ -41,21 +41,22 @@ if __name__ == "__main__":
     start = default_timer()
     detection_manager = DetectionManager(DetectorFactory.create_detector(detect1_proc), detect1_preproc, detect1_postproc)
     end = default_timer()
-    print("YOLO init duration = " + str(end-start))
+    print("Detector init duration = " + str(end-start))
 
     start = default_timer()
     tracking_manager = TrackingManager(TrackingFactory.create_tracker(track1_proc), track1_preproc, track1_postproc)
     end = default_timer()
-    print("SORT init duration = " + str(end-start))
+    print("Tracker init duration = " + str(end-start))
 
     video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track1_vehicle_counting/Dataset_A/cam_10.mp4"
-    # video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track4_anomaly/train-data/84.mp4"
+    # video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track1_vehicle_counting/Dataset_A/cam_2_rain.mp4"
 
     cap = cv2.VideoCapture(video_path)
     is_reading, frame = cap.read()
     is_paused = False
 
-    start_time = default_timer() 
+    start_time = default_timer()
+    before_loop = start_time
     counter = 0
     fps_number_frames = 10
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":
         (H, W, _) = frame.shape
 
         det = detection_manager.detect(frame)
-        res = tracking_manager.track(det)
+        res = tracking_manager.track(det, frame)
         
         # Visualize
         res.to_x1_y1_x2_y2()
@@ -93,12 +94,13 @@ if __name__ == "__main__":
         cv2.imshow("Result", frame)
 
         counter += 1
-        if counter == fps_number_frames:
-            print("FPS:", counter/(default_timer()-start_time))
+        if counter % fps_number_frames == 0:
+            print("FPS:", fps_number_frames/(default_timer()-start_time))
             start_time = default_timer()
-            counter = 0
 
         is_reading, frame = cap.read()
-    
+
+    print("Average FPS:", counter/(default_timer()-before_loop))
+
     cap.release()
     cv2.destroyAllWindows()
