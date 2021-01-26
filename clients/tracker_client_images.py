@@ -55,9 +55,11 @@ if __name__ == "__main__":
     file_list = os.listdir(folder_path)
     file_list_sorted = Tcl().call('lsort', '-dict', file_list)
 
+    read_time = 0
     start_time = default_timer()
     before_loop = start_time
     counter = 0
+    frame_interval = 4
     fps_number_frames = 10
     is_paused = False
 
@@ -75,9 +77,14 @@ if __name__ == "__main__":
             time.sleep(0.5)
             continue
 
-        frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
 
-        curr_frame_time = default_timer()
+        read_time_start = default_timer()
+        frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
+        read_time += default_timer() - read_time_start
+
+        counter += 1
+        if counter % frame_interval != 0:
+            continue
 
         # frame = ih.resize(frame, 960, 540)
         (H, W, _) = frame.shape
@@ -99,12 +106,11 @@ if __name__ == "__main__":
         
         cv2.imshow("Result", frame)
 
-        counter += 1
         if counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames/(default_timer()-start_time))
             start_time = default_timer()
 
-
     print("Average FPS:", counter/(default_timer()-before_loop))
+    print("Average FPS w/o read time:", counter/(default_timer()-before_loop-read_time))
 
     cv2.destroyAllWindows()

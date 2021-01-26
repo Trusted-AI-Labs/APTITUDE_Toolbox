@@ -52,15 +52,20 @@ if __name__ == "__main__":
     # video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track1_vehicle_counting/Dataset_A/cam_2_rain.mp4"
 
     cap = cv2.VideoCapture(video_path)
+    read_time_start = default_timer()
     is_reading, frame = cap.read()
+    read_time = default_timer() - read_time_start
     is_paused = False
+    is_reading = True
 
     start_time = default_timer()
     before_loop = start_time
     counter = 0
+    frame_interval = 1
     fps_number_frames = 10
 
     while is_reading:
+
         k = cv2.waitKey(1) & 0xFF
         if k == ord('p'): # pause/play loop if 'p' key is pressed
             is_paused = not is_paused
@@ -71,36 +76,38 @@ if __name__ == "__main__":
             time.sleep(0.5)
             continue
 
-        curr_frame_time = default_timer()
+        if counter % frame_interval == 0:
+            # frame = ih.resize(frame, 960, 540)
+            (H, W, _) = frame.shape
 
-        # frame = ih.resize(frame, 960, 540)
-        (H, W, _) = frame.shape
+            det = detection_manager.detect(frame)
+            res = tracking_manager.track(det, frame)
+            
+            # Visualize
+            res.to_x1_y1_x2_y2()
+            res.change_dims(W, H)
 
-        det = detection_manager.detect(frame)
-        res = tracking_manager.track(det, frame)
-        
-        # Visualize
-        res.to_x1_y1_x2_y2()
-        res.change_dims(W, H)
-
-        for i in range(res.number_objects):
-            id = res.global_IDs[i]
-            # id = 1
-            color = [int(c) for c in COLORS[id]]
-            vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
-            cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color, thickness)
-            cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1]- 5), font, 1, color, thickness, line_type)
-        
-        cv2.imshow("Result", frame)
+            for i in range(res.number_objects):
+                id = res.global_IDs[i]
+                # id = 1
+                color = [int(c) for c in COLORS[id]]
+                vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
+                cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color, thickness)
+                cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1]- 5), font, 1, color, thickness, line_type)
+            
+            cv2.imshow("Result", frame)
 
         counter += 1
         if counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames/(default_timer()-start_time))
             start_time = default_timer()
-
+        
+        read_time_start = default_timer()
         is_reading, frame = cap.read()
+        read_time += default_timer() - read_time_start
 
     print("Average FPS:", counter/(default_timer()-before_loop))
+    print("Average FPS w/o read time:", counter/(default_timer()-before_loop-read_time))
 
     cap.release()
     cv2.destroyAllWindows()
