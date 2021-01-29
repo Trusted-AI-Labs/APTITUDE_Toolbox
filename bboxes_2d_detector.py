@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from pytb.detection.detector import Detector
 from pytb.output.bboxes_2d import BBoxes2D
 
+
 class BBoxes2DDetector(Detector, ABC):
 
     def __init__(self, detector_parameters: dict):
