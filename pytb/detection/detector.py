@@ -3,6 +3,7 @@ import numpy as np
 
 from pytb.output.detection import Detection
 
+
 class Detector(ABC):
 
     @abstractmethod

@@ -3,19 +3,19 @@ from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTra
 from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.sort.sort import SORT
 from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.deepsort.deepsort import DeepSORT
 
+
 class TrackingFactory:
 
     @staticmethod
     def create_tracker(tracker_parameters: dict) -> Tracker:
         # _validate_parameters(detector_parameters)
         det_type = tracker_parameters["Tracker"]["type"]
-        
+
         if det_type == "BBoxes2DTracker":
             return TrackingFactory._bboxes_2d_tracker(tracker_parameters)
-        
+
         elif det_type == "PoseTracker":
             return TrackingFactory._pose_tracker(tracker_parameters)
-
 
     @staticmethod
     def _bboxes_2d_tracker(tracker_parameters: dict) -> BBoxes2DTracker:
@@ -40,5 +40,5 @@ class TrackingFactory:
         Returns:
             bool: whether it is a valid configuration
         """
-        #TODO validate parameters from create_detector
+        # TODO validate parameters from create_detector
         pass

@@ -23,6 +23,7 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray) -> np.ndarray:
         image = ih.add_borders(image, centered=border_params["centered"])
     return image
 
+
 def post_process(postprocess_parameters: dict, detection: Detection) -> Detection:
     if "nms" in postprocess_parameters:
         nms_params = postprocess_parameters["nms"]

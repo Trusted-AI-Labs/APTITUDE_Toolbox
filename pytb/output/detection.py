@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Detection(ABC):
 
     def __init__(self, number_objects: int):
@@ -20,4 +21,3 @@ class Detection(ABC):
         s += "\n\tPost-processing time: " + str(self.postprocessing_time)
         s += "\n\tNumber of objects: " + str(self.number_objects)
         return s
-

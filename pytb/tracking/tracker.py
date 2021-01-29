@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from pytb.output.detection import Detection
 
+
 class Tracker(ABC):
 
     @abstractmethod

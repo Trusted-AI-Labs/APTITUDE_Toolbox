@@ -1,4 +1,4 @@
-# file: videocaptureasync.py
+# file: video_capture_async.py
 # from https://github.com/LeonLok/Deep-SORT-YOLOv4/blob/master/tensorflow2.0/deep-sort-yolov4/videocaptureasync.py
 
 import threading
@@ -6,13 +6,14 @@ import cv2
 from time import sleep
 import copy
 
-class VideoCaptureAsync():
+
+class VideoCaptureAsync:
     def __init__(self, file_path):
-                 #, width=2688, height=1520):
+        # , width=2688, height=1520):
         self.src = file_path
         self.cap = cv2.VideoCapture(self.src)
-        #self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        #self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
@@ -22,7 +23,7 @@ class VideoCaptureAsync():
 
     def start(self):
         if self.started:
-            print('[!] Asynchroneous video capturing has already been started.')
+            print('[!] Asynchronous video capturing has already been started.')
             return None
         self.started = True
         self.thread = threading.Thread(target=self.update, args=())
@@ -45,7 +46,7 @@ class VideoCaptureAsync():
                 return grabbed, frame
             return grabbed, None
 
-    def isOpened(self):
+    def is_opened(self):
         return self.cap.isOpened()
 
     def stop(self):

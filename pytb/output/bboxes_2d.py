@@ -4,11 +4,12 @@ from typing import Optional
 import numpy as np
 import cv2
 
+
 class BBoxes2D(Detection):
 
-    def __init__(self, detection_time: float, 
-                bboxes: np.ndarray, class_IDs: np.ndarray, det_confs: np.ndarray,
-                dim_width: int, dim_height: int, bboxes_format: Optional[str] = None):
+    def __init__(self, detection_time: float,
+                 bboxes: np.ndarray, class_IDs: np.ndarray, det_confs: np.ndarray,
+                 dim_width: int, dim_height: int, bboxes_format: Optional[str] = None):
         super().__init__(number_objects=len(bboxes))
 
         self.detection_time = detection_time
@@ -48,19 +49,19 @@ class BBoxes2D(Detection):
     def height_filter(self, threshold: float):
         if self.bboxes_format == "xt_yt_w_h":
             elements_of_interest = np.argwhere(
-                [e[3] < self.dim_height*(threshold/100) for e  in self.bboxes]).flatten()
+                [e[3] < self.dim_height * (threshold / 100) for e in self.bboxes]).flatten()
         else:
             elements_of_interest = np.argwhere(
-                [(e[3]-e[1]) < self.dim_height*(threshold/100) for e  in self.bboxes]).flatten()
+                [(e[3] - e[1]) < self.dim_height * (threshold / 100) for e in self.bboxes]).flatten()
         self._select_indices(elements_of_interest)
 
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
             elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(), \
-                                                    conf_thresh, nms_thresh, eta, top_k)[:,0]
+                                                    conf_thresh, nms_thresh, eta, top_k)[:, 0]
             self._select_indices(elements_of_interest)
 
-    # Reformating methods
+    # Reformatting methods
     def to_x1_y1_x2_y2(self):
         if self.bboxes_format == "xt_yt_w_h":
             for bbox in self.bboxes:
@@ -139,5 +140,3 @@ class BBoxes2D(Detection):
         s += "\n\tPrevious track IDs : " + str(self.prev_track_IDs)
         s += "\n\tDetection time: " + str(self.detection_time)
         return s
-
-
