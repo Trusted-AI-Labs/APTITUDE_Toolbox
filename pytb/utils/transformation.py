@@ -33,4 +33,6 @@ def post_process(postprocess_parameters: dict, detection: Detection) -> Detectio
         detection.confidence_filter(postprocess_parameters["min_conf"])
     if "top_k" in postprocess_parameters:
         detection.top_k(postprocess_parameters["top_k"])
+    if "max_height_percentage" in postprocess_parameters:
+        detection.height_filter(postprocess_parameters["max_height_percentage"])
     return detection

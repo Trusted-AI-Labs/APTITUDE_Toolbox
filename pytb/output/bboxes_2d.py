@@ -45,6 +45,15 @@ class BBoxes2D(Detection):
         elements_of_interest = np.argwhere([c in classes_of_interest for c in self.class_IDs]).flatten()
         self._select_indices(elements_of_interest)
 
+    def height_filter(self, threshold: float):
+        if self.bboxes_format == "xt_yt_w_h":
+            elements_of_interest = np.argwhere(
+                [e[3] < self.dim_height*(threshold/100) for e  in self.bboxes]).flatten()
+        else:
+            elements_of_interest = np.argwhere(
+                [(e[3]-e[1]) < self.dim_height*(threshold/100) for e  in self.bboxes]).flatten()
+        self._select_indices(elements_of_interest)
+
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
             elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(), \

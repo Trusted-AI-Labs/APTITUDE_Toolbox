@@ -20,23 +20,23 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-if __name__ == "__main__":
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_fps=False):
 
-    with open('configs/detect-DM.json') as config_file:
+    with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
 
     detect1_proc = detect1['Proc']
     detect1_preproc = detect1['Preproc']
     detect1_postproc = detect1['Postproc']
 
-    with open('configs/track-deepsort.json') as config_file:
+    with open(cfg_track) as config_file:
         track1 = json.load(config_file)
 
     track1_proc = track1['Proc']
     track1_preproc = track1['Preproc']
     track1_postproc = track1['Postproc']
 
-    with open('configs/classes.json') as config_file:
+    with open(cfg_classes) as config_file:
         CLASSES = json.load(config_file)['classes']
 
     # Instantiate first configuration
@@ -50,16 +50,14 @@ if __name__ == "__main__":
     end = default_timer()
     print("Tracker init duration = " + str(end-start))
 
-    folder_path = "E:\samelson\_Dataset\Digital Twin\cam1"
-
     file_list = os.listdir(folder_path)
     file_list_sorted = Tcl().call('lsort', '-dict', file_list)
 
+    warmup_time = 0
     read_time = 0
     start_time = default_timer()
     before_loop = start_time
     counter = 0
-    frame_interval = 4
     fps_number_frames = 10
     is_paused = False
 
@@ -86,12 +84,16 @@ if __name__ == "__main__":
         if counter % frame_interval != 0:
             continue
 
-        # frame = ih.resize(frame, 960, 540)
         (H, W, _) = frame.shape
 
+        warmup_time_sart = default_timer()
         det = detection_manager.detect(frame)
+        if "resize" in track1_preproc:
+            det.change_dims(track1_preproc["resize"]["width"], track1_preproc["resize"]["height"])
         res = tracking_manager.track(det, frame)
-        
+        if counter <= 5:
+            warmup_time += default_timer()-warmup_time_sart
+
         # Visualize
         res.to_x1_y1_x2_y2()
         res.change_dims(W, H)
@@ -106,11 +108,11 @@ if __name__ == "__main__":
         
         cv2.imshow("Result", frame)
 
-        if counter % fps_number_frames == 0:
+        if show_fps and counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames/(default_timer()-start_time))
             start_time = default_timer()
 
-    print("Average FPS:", counter/(default_timer()-before_loop))
-    print("Average FPS w/o read time:", counter/(default_timer()-before_loop-read_time))
+    print("Average FPS:", counter/(default_timer()-before_loop-warmup_time))
+    print("Average FPS w/o read time:", counter/(default_timer()-before_loop-read_time-warmup_time))
 
     cv2.destroyAllWindows()

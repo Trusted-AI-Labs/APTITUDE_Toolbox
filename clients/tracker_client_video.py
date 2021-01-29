@@ -10,6 +10,7 @@ from pytb.output.bboxes_2d import BBoxes2D
 import pytb.utils.image_helper as ih
 from pytb.detection.detection_manager import DetectionManager
 from pytb.detection.detector_factory import DetectorFactory
+from pytb.utils.video_capture_async import VideoCaptureAsync
 
 np.random.seed(42)
 COLORS = np.random.randint(0, 255, size=(10000, 3), dtype="uint8")
@@ -18,23 +19,23 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-if __name__ == "__main__":
+def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fps=False, async_flag=False):
 
-    with open('configs/detect-DM.json') as config_file:
+    with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
 
     detect1_proc = detect1['Proc']
     detect1_preproc = detect1['Preproc']
     detect1_postproc = detect1['Postproc']
 
-    with open('configs/track-deepsort.json') as config_file:
+    with open(cfg_track) as config_file:
         track1 = json.load(config_file)
 
     track1_proc = track1['Proc']
     track1_preproc = track1['Preproc']
     track1_postproc = track1['Postproc']
 
-    with open('configs/classes.json') as config_file:
+    with open(cfg_classes) as config_file:
         CLASSES = json.load(config_file)['classes']
 
     # Instantiate first configuration
@@ -48,10 +49,12 @@ if __name__ == "__main__":
     end = default_timer()
     print("Tracker init duration = " + str(end-start))
 
-    video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track1_vehicle_counting/Dataset_A/cam_10.mp4"
-    # video_path = "E:/samelson/_Dataset/AICity_2020/AIC20_track1_vehicle_counting/Dataset_A/cam_2_rain.mp4"
+    if async_flag :
+        cap = VideoCaptureAsync(video_path)
+        cap.start()
+    else:
+        cap = cv2.VideoCapture(video_path)
 
-    cap = cv2.VideoCapture(video_path)
     read_time_start = default_timer()
     is_reading, frame = cap.read()
     read_time = default_timer() - read_time_start
@@ -61,7 +64,6 @@ if __name__ == "__main__":
     start_time = default_timer()
     before_loop = start_time
     counter = 0
-    frame_interval = 1
     fps_number_frames = 10
 
     while is_reading:
@@ -81,6 +83,8 @@ if __name__ == "__main__":
             (H, W, _) = frame.shape
 
             det = detection_manager.detect(frame)
+            if "resize" in track1_preproc:
+                det.change_dims(track1_preproc["resize"]["width"], track1_preproc["resize"]["height"])
             res = tracking_manager.track(det, frame)
             
             # Visualize
@@ -98,7 +102,7 @@ if __name__ == "__main__":
             cv2.imshow("Result", frame)
 
         counter += 1
-        if counter % fps_number_frames == 0:
+        if show_fps and counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames/(default_timer()-start_time))
             start_time = default_timer()
         
@@ -108,6 +112,11 @@ if __name__ == "__main__":
 
     print("Average FPS:", counter/(default_timer()-before_loop))
     print("Average FPS w/o read time:", counter/(default_timer()-before_loop-read_time))
+
+    if async_flag:
+        cap.stop()
+    else:
+        cap.release()
 
     cap.release()
     cv2.destroyAllWindows()
