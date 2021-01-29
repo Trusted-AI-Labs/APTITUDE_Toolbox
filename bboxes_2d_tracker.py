@@ -1,11 +1,12 @@
-from pytb.tracking.tracker import Tracker
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from pytb.output.bboxes_2d import BBoxes2D
 from pytb.output.bboxes_2d_track import BBoxes2DTrack
+from pytb.tracking.tracker import Tracker
+
 
 class BBoxes2DTracker(Tracker):
-    
+
     def __init__(self, tracker_parameters: dict):
         """Initiliazes the BBoxes2D tracker with the given parameters.
 
