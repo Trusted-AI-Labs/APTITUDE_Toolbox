@@ -76,13 +76,14 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
             time.sleep(0.5)
             continue
 
+        counter += 1
+        if counter % frame_interval != 0:
+            continue
+
         read_time_start = default_timer()
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
 
-        counter += 1
-        if counter % frame_interval != 0:
-            continue
 
         (H, W, _) = frame.shape
 

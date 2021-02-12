@@ -14,9 +14,12 @@ class VideoCaptureAsync:
         self.cap = cv2.VideoCapture(self.src)
         # self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         # self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.frame_count = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
         self.grabbed, self.frame = self.cap.read()
         self.started = False
         self.read_lock = threading.Lock()
+
+        self.start()
 
     def set(self, var1, var2):
         self.cap.set(var1, var2)

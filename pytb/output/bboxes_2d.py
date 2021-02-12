@@ -8,9 +8,10 @@ import cv2
 class BBoxes2D(Detection):
 
     def __init__(self, detection_time: float,
-                 bboxes: np.ndarray, class_IDs: np.ndarray, det_confs: np.ndarray,
+                 bboxes: np.array, class_IDs: np.array, det_confs: np.array,
                  dim_width: int, dim_height: int, bboxes_format: Optional[str] = None):
-        super().__init__(number_objects=len(bboxes))
+        number_objects = 0 if bboxes is None else len(bboxes)
+        super().__init__(number_objects=number_objects)
 
         self.detection_time = detection_time
 
@@ -21,8 +22,6 @@ class BBoxes2D(Detection):
             self.bboxes_format = bboxes_format
         self.class_IDs = class_IDs
         self.det_confs = det_confs
-
-        self.prev_track_IDs = None
 
         self.dim_width = dim_width
         self.dim_height = dim_height
@@ -57,7 +56,7 @@ class BBoxes2D(Detection):
 
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
-            elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(), \
+            elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(),
                                                     conf_thresh, nms_thresh, eta, top_k)[:, 0]
             self._select_indices(elements_of_interest)
 
@@ -128,7 +127,7 @@ class BBoxes2D(Detection):
             idxs = np.delete(idxs, np.concatenate(([last], np.where(overlap > nms_thresh)[0])))
 
         self.to_xt_yt_w_h()
-        return self._select_indices(pick)
+        return self._select_indices(np.array(pick))
 
     def __str__(self):
         s = super().__str__()
@@ -137,6 +136,5 @@ class BBoxes2D(Detection):
         s += "\n\tDetection confidences: " + str(self.det_confs)
         s += "\n\tBounding Boxes: " + str(self.bboxes)
         s += "\n\tFormat: " + str(self.bboxes_format)
-        s += "\n\tPrevious track IDs : " + str(self.prev_track_IDs)
         s += "\n\tDetection time: " + str(self.detection_time)
         return s

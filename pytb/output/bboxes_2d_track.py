@@ -7,8 +7,8 @@ import numpy as np
 class BBoxes2DTrack(BBoxes2D):
 
     def __init__(self, detection_time: float,
-                 bboxes: np.ndarray, class_IDs: np.ndarray, det_confs: np.ndarray, dim_width: int, dim_height: int,
-                 tracking_time: float, global_IDs: np.ndarray, bboxes_format: Optional[str] = None):
+                 bboxes: np.array, class_IDs: np.array, det_confs: np.array, dim_width: int, dim_height: int,
+                 tracking_time: float, global_IDs: np.array, bboxes_format: Optional[str] = None):
         super().__init__(detection_time, bboxes, class_IDs, det_confs, dim_width, dim_height, bboxes_format)
 
         self.tracking_time = tracking_time

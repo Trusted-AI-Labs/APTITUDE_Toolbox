@@ -50,7 +50,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
 
     if async_flag:
         cap = VideoCaptureAsync(video_path)
-        cap.start()
     else:
         cap = cv2.VideoCapture(video_path)
 
@@ -111,6 +110,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
         is_reading, frame = cap.read()
         read_time += default_timer() - read_time_start
 
+    print("Counter: ", counter)
     print("Average FPS:", counter / (default_timer() - before_loop))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time))
 
@@ -119,5 +119,4 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
     else:
         cap.release()
 
-    cap.release()
     cv2.destroyAllWindows()
