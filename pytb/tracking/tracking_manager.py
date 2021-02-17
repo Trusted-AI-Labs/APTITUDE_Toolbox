@@ -33,6 +33,8 @@ class TrackingManager:
         start = default_timer()
         if frame is not None:
             frame = tfm.pre_process(self.preprocess_parameters, frame)
+            resize_params = self.preprocess_parameters["resize"]
+            detection.change_dims(resize_params["width"], resize_params["height"])
         preproc_time = default_timer() - start
 
         # call the concrete method of the tracker

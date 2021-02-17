@@ -7,7 +7,7 @@ import numpy as np
 
 from pytb.detection.detection_manager import DetectionManager
 from pytb.detection.detector_factory import DetectorFactory
-from pytb.tracking.tracking_factory import TrackingFactory
+from pytb.tracking.tracker_factory import TrackerFactory
 from pytb.tracking.tracking_manager import TrackingManager
 from pytb.utils.video_capture_async import VideoCaptureAsync
 
@@ -44,7 +44,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
     print("Detector init duration = " + str(end - start))
 
     start = default_timer()
-    tracking_manager = TrackingManager(TrackingFactory.create_tracker(track1_proc), track1_preproc, track1_postproc)
+    tracking_manager = TrackingManager(TrackerFactory.create_tracker(track1_proc), track1_preproc, track1_postproc)
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
 
@@ -81,8 +81,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
             (H, W, _) = frame.shape
 
             det = detection_manager.detect(frame)
-            if "resize" in track1_preproc:
-                det.change_dims(track1_preproc["resize"]["width"], track1_preproc["resize"]["height"])
             res = tracking_manager.track(det, frame)
 
             # Visualize

@@ -10,7 +10,7 @@ import numpy as np
 import pytb.utils.image_helper as ih
 from pytb.detection.detection_manager import DetectionManager
 from pytb.detection.detector_factory import DetectorFactory
-from pytb.tracking.tracking_factory import TrackingFactory
+from pytb.tracking.tracker_factory import TrackerFactory
 from pytb.tracking.tracking_manager import TrackingManager
 
 np.random.seed(42)
@@ -46,7 +46,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     print("Detector init duration = " + str(end - start))
 
     start = default_timer()
-    tracking_manager = TrackingManager(TrackingFactory.create_tracker(track1_proc),
+    tracking_manager = TrackingManager(TrackerFactory.create_tracker(track1_proc),
                                        track1_preproc, track1_postproc)
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
@@ -89,8 +89,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
 
         warmup_time_sart = default_timer()
         det = detection_manager.detect(frame)
-        if "resize" in track1_preproc:
-            det.change_dims(track1_preproc["resize"]["width"], track1_preproc["resize"]["height"])
         res = tracking_manager.track(det, frame)
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_sart
