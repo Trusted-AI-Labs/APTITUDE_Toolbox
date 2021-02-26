@@ -1,18 +1,22 @@
-from pytb.output.bboxes_2d import BBoxes_2D
+from pytb.output.bboxes_2d import BBoxes2D
 
-class BBoxes_2D_Track(BBoxe_2D):
+from typing import Optional
+import numpy as np
 
-    def __init__(self, inference_time, completed, 
-                class_IDs, det_conf, bboxes, 
-                global_IDs, track_conf):
-        super().__init__(inference_time, completed, class_IDs,
-                         det_conf, bboxes)
 
+class BBoxes2DTrack(BBoxes2D):
+
+    def __init__(self, detection_time: float,
+                 bboxes: np.array, class_IDs: np.array, det_confs: np.array, dim_width: int, dim_height: int,
+                 tracking_time: float, global_IDs: np.array, bboxes_format: Optional[str] = None):
+        super().__init__(detection_time, bboxes, class_IDs, det_confs, dim_width, dim_height, bboxes_format)
+
+        self.tracking_time = tracking_time
         self.global_IDs = global_IDs
-        self.track_conf = track_conf
 
     def __str__(self):
         s = super().__str__()
+        s += "\n---------------------------------"
         s += "\n\tGlobal IDs: " + str(self.global_IDs)
-        s += "\n\ttrack confidence: " + str(self.track_conf)
-
+        s += "\n\tTracking time: " + str(self.tracking_time)
+        return s
