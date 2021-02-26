@@ -77,11 +77,12 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
             continue
 
         if counter % frame_interval == 0:
-            # frame = ih.resize(frame, 960, 540)
             (H, W, _) = frame.shape
-
             det = detection_manager.detect(frame)
-            res = tracking_manager.track(det, frame)
+            if tracking_manager.tracker.need_frame:
+                res = tracking_manager.track(det, frame)
+            else: 
+                res = tracking_manager.track(det)
 
             # Visualize
             res.to_x1_y1_x2_y2()

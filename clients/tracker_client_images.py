@@ -89,7 +89,10 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
 
         warmup_time_sart = default_timer()
         det = detection_manager.detect(frame)
-        res = tracking_manager.track(det, frame)
+        if tracking_manager.tracker.need_frame:
+            res = tracking_manager.track(det, frame)
+        else: 
+            res = tracking_manager.track(det)
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_sart
 

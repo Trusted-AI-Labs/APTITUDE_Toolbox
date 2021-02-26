@@ -6,3 +6,4 @@ tensorflow~=2.4.0
 pillow~=8.0.1
 setuptools~=50.3.2
 PyTurboJPEG==1.4.1
+lap==0.4.0
