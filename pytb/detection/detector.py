@@ -1,13 +1,20 @@
 from abc import ABC, abstractmethod
+import numpy as np
+
+from pytb.output.detection import Detection
+
 
 class Detector(ABC):
 
     @abstractmethod
-    def detect(self, org_frame):
+    def detect(self, org_frame: np.ndarray) -> Detection:
         """
         Performs an inference on the given frame. 
-        Returns a set of detections.
-        :param org_frame: The given frame to infer detections
-        :return: An object of the class Detection with the inference result
+
+        Args:
+            org_frame (np.ndarray): The given frame to infer detections
+
+        Returns:
+            Detection: A set of detections of the detected objects
         """
         pass
