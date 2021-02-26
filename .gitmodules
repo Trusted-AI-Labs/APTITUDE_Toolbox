@@ -1,0 +1,3 @@
+[submodule "mbtracker"]
+	path = mbtracker
+	url = https://gitlab.com/aptitude1/python-toolbox/tracking/bboxes/mbtracker.git
