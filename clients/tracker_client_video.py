@@ -93,6 +93,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             # Visualize
             res.to_x1_y1_x2_y2()
             res.change_dims(W, H)
+            print(res)
 
             for i in range(res.number_objects):
                 id = res.global_IDs[i]
