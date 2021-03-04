@@ -12,6 +12,7 @@ RUN apt-get update \
 && python -m pip install --upgrade pip \
 \
 && apt-get install python3.7-tk -y \
+&& apt-get install libgtk2.0-0 -y \
 && apt-get install ffmpeg libsm6 libxext6 -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
@@ -20,9 +21,9 @@ RUN apt-get update \
 WORKDIR /code
 
 # copy the dependencies file to the working directory
-COPY requirements.txt .
+COPY requirements/requirements.txt .
 COPY setup.py .
-COPY opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl .
+COPY requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl .
 
 # install dependencies
 RUN pip install --upgrade pip \ 
