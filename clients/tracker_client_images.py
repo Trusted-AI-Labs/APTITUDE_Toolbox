@@ -3,6 +3,7 @@ import os
 import time
 from timeit import default_timer
 from tkinter import Tcl
+import csv
 
 import cv2
 import numpy as np
@@ -95,6 +96,31 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
             res = tracking_manager.track(det)
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_sart
+
+        # Add ground-truth if present
+        base_name = image_name[:-4]
+        csv_file_name = os.path.join(folder_path, base_name + ".csv")
+        if os.path.exists(csv_file_name):
+            print(csv_file_name)
+            with open(csv_file_name, 'r') as read_obj:
+                csv_reader = csv.reader(read_obj, delimiter=";")
+                for i, row in enumerate(csv_reader):
+                    if i == 0 or row[6] == "-1":
+                        continue
+                    top_x, top_y = W, H
+                    bot_x, bot_y = 0, 0
+                    for j in range(44, 60, 2):
+                        x, y = int(row[j]), int(row[j+1])
+                        if x != -1 and x <= top_x and y != -1 and y <= top_y:
+                            top_x, top_y = x, y
+                        if x != -1 and x >= bot_x and y != -1 and y >= bot_y:
+                            bot_x, bot_y = x, y
+                    # print((top_x, top_y, bot_x, bot_y))
+                    cv2.rectangle(frame, (top_x, top_y), (bot_x, bot_y), (255, 255, 255), thickness)
+                    # for j in range(44, 60, 2):
+                    #     x, y = int(row[j]), int(row[j+1])
+                    #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
+
 
         # Visualize
         res.to_x1_y1_x2_y2()
