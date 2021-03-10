@@ -69,13 +69,14 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
 
         k = cv2.waitKey(1) & 0xFF
         if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = not is_paused
+            is_paused = True
         if k == ord('q'):  # end video loop if 'q' key is pressed
             break
 
-        if is_paused:
-            time.sleep(0.5)
-            continue
+        while is_paused:
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = False
 
         counter += 1
         if counter % frame_interval != 0:
@@ -84,7 +85,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
         read_time_start = default_timer()
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
-
 
         (H, W, _) = frame.shape
 
@@ -98,29 +98,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
             warmup_time += default_timer() - warmup_time_sart
 
         # Add ground-truth if present
-        base_name = image_name[:-4]
-        csv_file_name = os.path.join(folder_path, base_name + ".csv")
-        if os.path.exists(csv_file_name):
-            print(csv_file_name)
-            with open(csv_file_name, 'r') as read_obj:
-                csv_reader = csv.reader(read_obj, delimiter=";")
-                for i, row in enumerate(csv_reader):
-                    if i == 0 or row[6] == "-1":
-                        continue
-                    top_x, top_y = W, H
-                    bot_x, bot_y = 0, 0
-                    for j in range(44, 60, 2):
-                        x, y = int(row[j]), int(row[j+1])
-                        if x != -1 and x <= top_x and y != -1 and y <= top_y:
-                            top_x, top_y = x, y
-                        if x != -1 and x >= bot_x and y != -1 and y >= bot_y:
-                            bot_x, bot_y = x, y
-                    # print((top_x, top_y, bot_x, bot_y))
-                    cv2.rectangle(frame, (top_x, top_y), (bot_x, bot_y), (255, 255, 255), thickness)
-                    # for j in range(44, 60, 2):
-                    #     x, y = int(row[j]), int(row[j+1])
-                    #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
-
+        frame = add_ground_truths(frame, image_name, folder_path, W, H)
 
         # Visualize
         res.to_x1_y1_x2_y2()
@@ -146,3 +124,42 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))
 
     cv2.destroyAllWindows()
+
+
+def add_ground_truths(frame, image_name, folder_path, W, H):
+    base_name = image_name[:-4]
+    csv_file_name = os.path.join(folder_path, base_name + ".csv")
+    if os.path.exists(csv_file_name):
+        with open(csv_file_name, 'r') as read_obj:
+            csv_reader = csv.reader(read_obj, delimiter=";")
+            for i, row in enumerate(csv_reader):
+                if i == 0 or row[6] == "-1":
+                    continue
+                topl_x, topl_y = W, H
+                topr_x, topr_y = 0, H
+                botr_x, botr_y = 0, 0
+                botl_x, botl_y = W, 0
+                for j in range(44, 60, 2):
+                    x, y = int(row[j]), int(row[j + 1])
+                    if x == -1 or y == -1:
+                        continue
+                    if x <= topl_x and y <= topl_y:
+                        topl_x, topl_y = x, y
+                    if x >= topr_x and y <= topr_y:
+                        topr_x, topr_y = x, y
+                    if x >= botr_x and y >= botr_y:
+                        botr_x, botr_y = x, y
+                    if x <= botl_x and y >= botl_y:
+                        botl_x, botl_y = x, y
+
+                tl_br = (topl_x - botr_x) ** 2 + (topl_y - botr_y) ** 2
+                tr_bl = (topr_x - botl_x) ** 2 + (topr_y - botl_y) ** 2
+                if tl_br > tr_bl:
+                    cv2.rectangle(frame, (topl_x, topl_y), (botr_x, botr_y), (255, 255, 255), thickness)
+                else:
+                    cv2.rectangle(frame, (topr_x, topr_y), (botl_x, botl_y), (255, 255, 255), thickness)
+                # for j in range(44, 60, 2):
+                #     x, y = int(row[j]), int(row[j+1])
+                #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
+
+    return frame
