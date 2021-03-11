@@ -64,6 +64,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     is_paused = False
 
     for image_name in file_list_sorted:
+        print(image_name)
         if not image_name.endswith(".jpg"):
             continue
 
@@ -135,31 +136,22 @@ def add_ground_truths(frame, image_name, folder_path, W, H):
             for i, row in enumerate(csv_reader):
                 if i == 0 or row[6] == "-1":
                     continue
-                topl_x, topl_y = W, H
-                topr_x, topr_y = 0, H
-                botr_x, botr_y = 0, 0
-                botl_x, botl_y = W, 0
+                max_x, max_y, min_x, min_y = 0, 0, W, H
                 for j in range(44, 60, 2):
                     x, y = int(row[j]), int(row[j + 1])
                     if x == -1 or y == -1:
                         continue
-                    if x <= topl_x and y <= topl_y:
-                        topl_x, topl_y = x, y
-                    if x >= topr_x and y <= topr_y:
-                        topr_x, topr_y = x, y
-                    if x >= botr_x and y >= botr_y:
-                        botr_x, botr_y = x, y
-                    if x <= botl_x and y >= botl_y:
-                        botl_x, botl_y = x, y
-
-                tl_br = (topl_x - botr_x) ** 2 + (topl_y - botr_y) ** 2
-                tr_bl = (topr_x - botl_x) ** 2 + (topr_y - botl_y) ** 2
-                if tl_br > tr_bl:
-                    cv2.rectangle(frame, (topl_x, topl_y), (botr_x, botr_y), (255, 255, 255), thickness)
-                else:
-                    cv2.rectangle(frame, (topr_x, topr_y), (botl_x, botl_y), (255, 255, 255), thickness)
-                # for j in range(44, 60, 2):
-                #     x, y = int(row[j]), int(row[j+1])
-                #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
+                    if x < min_x:
+                        min_x = x
+                    if y < min_y:
+                        min_y = y
+                    if x > max_x:
+                        max_x = x
+                    if y > max_y:
+                        max_y = y
+                cv2.rectangle(frame, (max_x, max_y), (min_x, min_y), (255, 255, 255), thickness)
+                for j in range(44, 60, 2):
+                    x, y = int(row[j]), int(row[j+1])
+                    cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
 
     return frame
