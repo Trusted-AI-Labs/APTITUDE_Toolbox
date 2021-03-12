@@ -40,4 +40,4 @@ COPY videos/ videos/
 COPY models/ models/
 
 # command to run on container start
-CMD python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort-docker.json -c configs/classes.json -p videos/traffic_example.mp4
+CMD python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort.json -c configs/classes.json -p videos/traffic_example.mp4
