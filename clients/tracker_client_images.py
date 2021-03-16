@@ -21,7 +21,9 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_fps=False):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
+         show_fps=False):
+
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
 
@@ -52,8 +54,16 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
 
-    file_list = os.listdir(folder_path)
+    included_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
+    file_list = [f for f in os.listdir(folder_path)
+                 if any(f.endswith(ext) for ext in included_extensions)]
     file_list_sorted = Tcl().call('lsort', '-dict', file_list)
+
+    record = record_path is not None
+    frame_test = ih.get_cv2_img_from_str(os.path.join(folder_path, file_list[0]))
+    H, W, _ = frame_test.shape
+    if record:
+        output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
     warmup_time = 0
     read_time = 0
@@ -64,7 +74,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     is_paused = False
 
     for image_name in file_list_sorted:
-        print(image_name)
         if not image_name.endswith(".jpg"):
             continue
 
@@ -89,14 +98,14 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
 
         (H, W, _) = frame.shape
 
-        warmup_time_sart = default_timer()
+        warmup_time_start = default_timer()
         det = detection_manager.detect(frame)
         if tracking_manager.tracker.need_frame:
             res = tracking_manager.track(det, frame)
         else: 
             res = tracking_manager.track(det)
         if counter <= 5:
-            warmup_time += default_timer() - warmup_time_sart
+            warmup_time += default_timer() - warmup_time_start
 
         # Add ground-truth if present
         frame = add_ground_truths(frame, image_name, folder_path, W, H)
@@ -114,8 +123,10 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
                           thickness)
             cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1] - 5), font, 1, color, thickness,
                         line_type)
-
-        cv2.imshow("Result", frame)
+        if not headless:
+            cv2.imshow("Result", frame)
+        if record:
+            output_video.write(frame)
 
         if show_fps and counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames / (default_timer() - start_time))
@@ -124,6 +135,8 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     print("Average FPS:", counter / (default_timer() - before_loop - warmup_time))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))
 
+    if record:
+        output_video.release()
     cv2.destroyAllWindows()
 
 

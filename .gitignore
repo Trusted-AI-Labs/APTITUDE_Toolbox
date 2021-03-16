@@ -144,3 +144,7 @@ cython_debug/
 configs/
 
 .idea/
+
+videos/
+
+models/
