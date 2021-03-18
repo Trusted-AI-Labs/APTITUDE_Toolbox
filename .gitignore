@@ -153,5 +153,5 @@ videos/*
 
 models/*
 !models/yolov4-tiny-mio-11.*
-!models/consine_metric_DETRAC.pb
+!models/cosine_metric_DETRAC.pb
 

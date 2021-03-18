@@ -14,6 +14,8 @@ variables:
 #The following job is optional. It just verifies that docker is correctly installed and configured.
 check:
   stage: check
+  only:
+    - master
   image: docker:19
   script:
     - docker info
@@ -22,10 +24,13 @@ check:
 # The following job build and push the Docker image of.
 build:
   stage: build
+  only:
+    - master
   image: docker:19
   before_script:
     - docker login -u $GITLAB_USER -p $GITLAB_PASSWORD registry.gitlab.com
+    - source version.env
   script:
-    - docker build -t registry.gitlab.com/aptitude1/python-toolbox/pytb:0.1 -t registry.gitlab.com/aptitude1/python-toolbox/pytb:latest .
-    - docker push registry.gitlab.com/aptitude1/python-toolbox/pytb:0.1
+    - docker build -t registry.gitlab.com/aptitude1/python-toolbox/pytb:$DOCKER_TAG -t registry.gitlab.com/aptitude1/python-toolbox/pytb:latest .
+    - docker push registry.gitlab.com/aptitude1/python-toolbox/pytb:$DOCKER_TAG
     - docker push registry.gitlab.com/aptitude1/python-toolbox/pytb:latest
