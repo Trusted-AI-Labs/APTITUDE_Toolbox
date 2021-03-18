@@ -17,6 +17,8 @@ if __name__ == "__main__":
                     help="path to video file / folder path")
     ap.add_argument("-fi", "--frame_interval", type=int, default=1,
                     help="interval between two detections + tracking. Default is 1")
+    ap.add_argument("-gt", "--ground_truth", action='store_true',
+                    help="for images only. whether ground truth is displayed. need CSV files in the appropriate format")
     ap.add_argument("-sf", "--show_fps", type=bool, default=False,
                     help="show current fps every 10 frames")
     ap.add_argument("-hl", "--headless", action='store_true',
@@ -32,7 +34,7 @@ if __name__ == "__main__":
     if os.path.isdir(args["path"]):
         tci.main(args["detector"], args["tracker"], args["classes"],
                  args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["headless"], args["show_fps"])
+                 args["headless"], args["show_fps"], args["ground_truth"])
 
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],

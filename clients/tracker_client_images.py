@@ -22,7 +22,7 @@ thickness = 2
 
 
 def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
-         show_fps=False):
+         show_fps, ground_truth):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -107,8 +107,8 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_start
 
-        # Add ground-truth if present
-        frame = add_ground_truths(frame, image_name, folder_path, W, H)
+        if ground_truth:
+            frame = add_ground_truths(frame, image_name, folder_path, W, H)
 
         # Visualize
         res.to_x1_y1_x2_y2()

@@ -19,7 +19,7 @@ thickness = 2
 
 
 def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps, headless,
-         show_fps=False, async_flag=False):
+         show_fps, async_flag):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
