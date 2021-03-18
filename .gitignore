@@ -140,11 +140,18 @@ cython_debug/
 # VSCode cache
 .vscode/
 
-# Json config files
-configs/
-
 .idea/
 
-videos/
+# Json config files
+configs/*
+!configs/detect-DM-docker.json
+!configs/track-sort.json
+!configs/track-deepsort-docker.json
 
-models/
+videos/*
+!videos/traffic_example.mp4
+
+models/*
+!models/yolov4-tiny-mio-11.*
+!models/consine_metric_DETRAC.pb
+
