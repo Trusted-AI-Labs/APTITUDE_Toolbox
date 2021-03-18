@@ -1,0 +1,19 @@
+{
+    "Proc":{    
+        "Tracker":{
+            "type": "BBoxes2DTracker"
+        },
+        "BBoxes2DTracker":{
+            "model_type": "SORT",
+            "pref_implem": "SORT-abewley"
+        },
+        "SORT":{
+            "max_age": 10, 
+            "min_hits": 3,
+            "iou_thresh": 0.3,
+            "memory_fade": 1.0
+        }
+    },
+    "Preproc":{},
+    "Postproc":{}
+}

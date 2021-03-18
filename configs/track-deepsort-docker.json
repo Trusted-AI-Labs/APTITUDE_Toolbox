@@ -1,0 +1,35 @@
+{
+    "Proc":{    
+        "Tracker":{
+            "type": "BBoxes2DTracker"
+        },
+        "BBoxes2DTracker":{
+            "model_type": "DeepSORT",
+            "pref_implem": "DeepSORT-LeonLok"
+        },
+        "DeepSORT":{
+            "model_path": "./models/cosine_metric_DETRAC.pb",
+            "max_age": 30,
+            "min_hits": 3,
+            "iou_thresh": 0.7,
+            "max_cosine_dist": 0.3,
+            "nn_budget": null,
+
+            "avg_det_conf": true,
+            "avg_det_conf_thresh": 0.25,
+            "most_common_class": true
+            
+        }
+    },
+    "Preproc":{
+        "border":{
+            "centered": false
+        },
+        "resize":{
+            "width" : 416,
+            "height": 416
+        },
+        "roi":{}
+    },
+    "Postproc":{}
+}

@@ -3,6 +3,7 @@ import os
 import time
 from timeit import default_timer
 from tkinter import Tcl
+import csv
 
 import cv2
 import numpy as np
@@ -20,7 +21,9 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_fps=False):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
+         show_fps, ground_truth):
+
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
 
@@ -51,8 +54,16 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
 
-    file_list = os.listdir(folder_path)
+    included_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
+    file_list = [f for f in os.listdir(folder_path)
+                 if any(f.endswith(ext) for ext in included_extensions)]
     file_list_sorted = Tcl().call('lsort', '-dict', file_list)
+
+    record = record_path is not None
+    frame_test = ih.get_cv2_img_from_str(os.path.join(folder_path, file_list[0]))
+    H, W, _ = frame_test.shape
+    if record:
+        output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
     warmup_time = 0
     read_time = 0
@@ -68,13 +79,14 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
 
         k = cv2.waitKey(1) & 0xFF
         if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = not is_paused
+            is_paused = True
         if k == ord('q'):  # end video loop if 'q' key is pressed
             break
 
-        if is_paused:
-            time.sleep(0.5)
-            continue
+        while is_paused:
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = False
 
         counter += 1
         if counter % frame_interval != 0:
@@ -84,21 +96,24 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
 
-
         (H, W, _) = frame.shape
 
-        warmup_time_sart = default_timer()
+        warmup_time_start = default_timer()
         det = detection_manager.detect(frame)
         if tracking_manager.tracker.need_frame:
             res = tracking_manager.track(det, frame)
         else: 
             res = tracking_manager.track(det)
         if counter <= 5:
-            warmup_time += default_timer() - warmup_time_sart
+            warmup_time += default_timer() - warmup_time_start
+
+        if ground_truth:
+            frame = add_ground_truths(frame, image_name, folder_path, W, H)
 
         # Visualize
         res.to_x1_y1_x2_y2()
         res.change_dims(W, H)
+        # print(res)
 
         for i in range(res.number_objects):
             id = res.global_IDs[i]
@@ -109,8 +124,10 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
                           thickness)
             cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1] - 5), font, 1, color, thickness,
                         line_type)
-
-        cv2.imshow("Result", frame)
+        if not headless:
+            cv2.imshow("Result", frame)
+        if record:
+            output_video.write(frame)
 
         if show_fps and counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames / (default_timer() - start_time))
@@ -119,4 +136,36 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, show_f
     print("Average FPS:", counter / (default_timer() - before_loop - warmup_time))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))
 
+    if record:
+        output_video.release()
     cv2.destroyAllWindows()
+
+
+def add_ground_truths(frame, image_name, folder_path, W, H):
+    base_name = image_name[:-4]
+    csv_file_name = os.path.join(folder_path, base_name + ".csv")
+    if os.path.exists(csv_file_name):
+        with open(csv_file_name, 'r') as read_obj:
+            csv_reader = csv.reader(read_obj, delimiter=";")
+            for i, row in enumerate(csv_reader):
+                if i == 0 or row[6] == "-1":
+                    continue
+                max_x, max_y, min_x, min_y = 0, 0, W, H
+                for j in range(44, 60, 2):
+                    x, y = int(row[j]), int(row[j + 1])
+                    if x == -1 or y == -1:
+                        continue
+                    if x < min_x:
+                        min_x = x
+                    if y < min_y:
+                        min_y = y
+                    if x > max_x:
+                        max_x = x
+                    if y > max_y:
+                        max_y = y
+                cv2.rectangle(frame, (max_x, max_y), (min_x, min_y), (255, 255, 255), thickness)
+                for j in range(44, 60, 2):
+                    x, y = int(row[j]), int(row[j+1])
+                    cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
+
+    return frame

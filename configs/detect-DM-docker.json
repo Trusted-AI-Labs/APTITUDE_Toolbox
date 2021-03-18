@@ -1,0 +1,40 @@
+{
+    "Proc":{    
+        "Detector":{
+            "type": "BBoxes2DDetector"
+        },
+        "BBoxes2DDetector":{
+            "model_type": "YOLO",
+            "pref_implem": "cv2-DetectionModel",
+            "model_path": "./models/yolov4-tiny-mio-11.weights",
+            "config_path": "./models/yolov4-tiny-mio-11.cfg",
+            "input_width" : 416,
+            "input_height" : 416
+        },
+        "YOLO":{
+            "conf_thresh": 0.25, 
+            "nms_thresh": 0
+        },
+        "OpenCV":{
+            "GPU": false,
+            "half_precision": false
+        }
+    },
+    "Preproc":{
+        "border":{
+            "centered": false
+        },
+        "resize":{
+            "width" : 416,
+            "height": 416
+        },
+        "roi":{}
+    },
+    "Postproc":{
+        "nms": {
+            "pref_implem" : "Malisiewicz",
+            "nms_thresh" : 0.45
+        },
+        "max_height_percentage": 50
+    }
+}

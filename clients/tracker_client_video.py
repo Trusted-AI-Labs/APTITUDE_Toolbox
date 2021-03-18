@@ -18,7 +18,9 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fps=False, async_flag=False):
+def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps, headless,
+         show_fps, async_flag):
+
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
 
@@ -57,7 +59,11 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
     is_reading, frame = cap.read()
     read_time = default_timer() - read_time_start
     is_paused = False
-    is_reading = True
+
+    record = record_path is not None
+    H, W, _ = frame.shape
+    if record:
+        output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
     start_time = default_timer()
     before_loop = start_time
@@ -87,10 +93,10 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
             # Visualize
             res.to_x1_y1_x2_y2()
             res.change_dims(W, H)
+            # print(res)
 
             for i in range(res.number_objects):
                 id = res.global_IDs[i]
-                # id = 1
                 color = [int(c) for c in COLORS[id]]
                 vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
                 cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color,
@@ -98,7 +104,10 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
                 cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1] - 5), font, 1, color, thickness,
                             line_type)
 
-            cv2.imshow("Result", frame)
+            if not headless:
+                cv2.imshow("Result", frame)
+            if record:
+                output_video.write(frame)
 
         counter += 1
         if show_fps and counter % fps_number_frames == 0:
@@ -117,5 +126,8 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, show_fp
         cap.stop()
     else:
         cap.release()
+
+    if record:
+        output_video.release()
 
     cv2.destroyAllWindows()
