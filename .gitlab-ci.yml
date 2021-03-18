@@ -1,0 +1,31 @@
+# How to configure gitlab-ci shared runner with Docker 
+#https://stackoverflow.com/questions/51616083/gitlab-ci-build-docker-image-with-shared-runner-cannot-connect-to-docker-daem
+
+stages:
+  - check
+  - build
+
+services:
+  - docker:dind
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+
+#The following job is optional. It just verifies that docker is correctly installed and configured.
+check:
+  stage: check
+  image: docker:19
+  script:
+    - docker info
+    - docker version
+
+# The following job build and push the Docker image of.
+build:
+  stage: build
+  image: docker:19
+  before_script:
+    - docker login -u $GITLAB_USER -p $GITLAB_PASSWORD registry.gitlab.com
+  script:
+    - docker build -t registry.gitlab.com/aptitude1/python-toolbox/pytb:0.1 -t registry.gitlab.com/aptitude1/python-toolbox/pytb:latest .
+    - docker push registry.gitlab.com/aptitude1/python-toolbox/pytb:0.1
+    - docker push registry.gitlab.com/aptitude1/python-toolbox/pytb:latest
