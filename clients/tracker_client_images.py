@@ -164,8 +164,8 @@ def add_ground_truths(frame, image_name, folder_path, W, H):
                     if y > max_y:
                         max_y = y
                 cv2.rectangle(frame, (max_x, max_y), (min_x, min_y), (255, 255, 255), thickness)
-                for j in range(44, 60, 2):
-                    x, y = int(row[j]), int(row[j+1])
-                    cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
+                # for j in range(44, 60, 2):
+                #     x, y = int(row[j]), int(row[j+1])
+                #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
 
     return frame
