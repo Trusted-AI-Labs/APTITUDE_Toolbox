@@ -8,7 +8,7 @@ from pytb.tracking.tracker import Tracker
 class BBoxes2DTracker(Tracker):
 
     def __init__(self, tracker_parameters: dict):
-        """Initiliazes the BBoxes2D tracker with the given parameters.
+        """Initializes the BBoxes2D tracker with the given parameters.
 
         Args:
             tracker_parameters (dict): A dictionary containing the related tracker's parameters
