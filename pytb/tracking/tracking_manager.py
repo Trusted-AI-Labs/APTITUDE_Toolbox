@@ -53,3 +53,6 @@ class TrackingManager:
             track = tfm.post_process(self.postprocess_parameters, track)
         track.postprocessing_time = default_timer() - start
         return track
+
+    def reset_state(self):
+        self.tracker.reset_state()

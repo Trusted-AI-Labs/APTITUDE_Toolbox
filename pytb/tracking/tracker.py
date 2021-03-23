@@ -21,3 +21,6 @@ class Tracker(ABC):
         Returns:
             Detection: A set of detections with the tracking information added.
         """
+
+    def reset_state(self) -> bool:
+        """Reset the current state of the tracker."""
