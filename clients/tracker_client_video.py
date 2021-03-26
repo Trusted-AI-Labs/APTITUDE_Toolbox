@@ -18,8 +18,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps, headless,
-         show_fps, async_flag):
+def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
+         mot_path, mot_cam_id, headless, show_fps, async_flag):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -70,6 +70,8 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     counter = 0
     fps_number_frames = 10
 
+    output_lines = []
+
     while is_reading:
 
         k = cv2.waitKey(1) & 0xFF
@@ -90,9 +92,16 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             else: 
                 res = tracking_manager.track(det)
 
+            res.change_dims(W, H)
+
+            # Add to output file
+            if mot_path is not None:
+                for i in range(res.number_objects):
+                    output_lines.append("{0} {1} {2} {3} {4} {5} {6}\n".format(mot_cam_id, res.global_IDs[i], counter+1,
+                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3]))
+
             # Visualize
             res.to_x1_y1_x2_y2()
-            res.change_dims(W, H)
             # print(res)
 
             for i in range(res.number_objects):
@@ -117,6 +126,10 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
         read_time_start = default_timer()
         is_reading, frame = cap.read()
         read_time += default_timer() - read_time_start
+
+    if mot_path is not None:
+        with open(mot_path, "w") as out:
+            out.writelines(output_lines)
 
     print("Counter: ", counter)
     print("Average FPS:", counter / (default_timer() - before_loop))
