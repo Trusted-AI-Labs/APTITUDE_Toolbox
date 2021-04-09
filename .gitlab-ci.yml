@@ -9,6 +9,7 @@ services:
   - docker:dind
 
 variables:
+  GIT_SUBMODULE_STRATEGY: recursive
   DOCKER_HOST: tcp://docker:2375
 
 #The following job is optional. It just verifies that docker is correctly installed and configured.
