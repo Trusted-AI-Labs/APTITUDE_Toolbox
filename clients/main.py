@@ -27,6 +27,8 @@ if __name__ == "__main__":
                     help="path of the output video file")
     ap.add_argument("-rf", "--record_fps", type=int, default=10,
                     help="fps of the output video file")
+    ap.add_argument("-mp", "--mot_path", type=str, default=None,
+                    help="path to the result of tracking in mot format.")
     ap.add_argument("-a", "--async", action='store_true',
                     help="for video file only. whether video reading is async")
     args = vars(ap.parse_args())
@@ -39,4 +41,4 @@ if __name__ == "__main__":
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],
                  args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["headless"], args["show_fps"], args["async"])
+                 args["mot_path"], args["headless"], args["show_fps"], args["async"])
