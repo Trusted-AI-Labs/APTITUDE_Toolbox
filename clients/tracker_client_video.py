@@ -19,7 +19,7 @@ thickness = 2
 
 
 def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
-         mot_path, mot_cam_id, headless, show_fps, async_flag):
+         mot_path, headless, show_fps, async_flag):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -97,8 +97,9 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             # Add to output file
             if mot_path is not None:
                 for i in range(res.number_objects):
-                    output_lines.append("{0} {1} {2} {3} {4} {5} {6}\n".format(mot_cam_id, res.global_IDs[i], counter+1,
-                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3]))
+                    output_lines.append("{0},{1},{2},{3},{4},{5},{6},-1,-1,-1\n".format(counter+1, res.global_IDs[i],
+                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3],
+                                        res.det_confs[i]))
 
             # Visualize
             res.to_x1_y1_x2_y2()
