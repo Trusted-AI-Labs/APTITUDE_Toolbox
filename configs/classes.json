@@ -1,0 +1,15 @@
+{
+    "classes": [
+        "articulated_truck",
+        "bicycle",
+        "bus",
+        "car",
+        "motorcycle",
+        "motorized_vehicle",
+        "non-motorized_vehicle",
+        "pedestrian",
+        "pickup_truck",
+        "single_unit_truck",
+        "work_van"
+    ]
+}

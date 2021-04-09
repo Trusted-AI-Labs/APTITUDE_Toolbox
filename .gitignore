@@ -147,6 +147,7 @@ configs/*
 !configs/detect-DM-docker.json
 !configs/track-sort.json
 !configs/track-deepsort-docker.json
+!configs/classes.json
 
 videos/*
 !videos/traffic_example.mp4
