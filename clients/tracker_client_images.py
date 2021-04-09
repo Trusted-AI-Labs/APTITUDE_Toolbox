@@ -1,6 +1,5 @@
 import json
 import os
-import time
 from timeit import default_timer
 from tkinter import Tcl
 import csv
@@ -21,8 +20,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
-         show_fps, ground_truth):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interval, record_path, record_fps, headless,
+         show_fps, gt_folder_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -41,19 +40,25 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     with open(cfg_classes) as config_file:
         CLASSES = json.load(config_file)['classes']
 
-    # Instantiate first configuration
+    # Instantiate detector
     start = default_timer()
     detection_manager = DetectionManager(DetectorFactory.create_detector(detect1_proc),
                                          detect1_preproc, detect1_postproc)
     end = default_timer()
     print("Detector init duration = " + str(end - start))
 
+    # Instantiate tracker
     start = default_timer()
     tracking_manager = TrackingManager(TrackerFactory.create_tracker(track1_proc),
                                        track1_preproc, track1_postproc)
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
 
+    # Get ROI if any
+    if roi_path is not None:
+        roi_mask = ih.get_cv2_img_from_str(roi_path)
+
+    # Get sequence, the list of images
     included_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
     file_list = [f for f in os.listdir(folder_path)
                  if any(f.endswith(ext) for ext in included_extensions)]
@@ -96,6 +101,10 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
 
+        # Apply ROI if any
+        if roi_path is not None:
+            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
+
         (H, W, _) = frame.shape
 
         warmup_time_start = default_timer()
@@ -107,13 +116,14 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_start
 
-        if ground_truth:
-            frame = add_ground_truths(frame, image_name, folder_path, W, H)
 
         # Visualize
         res.to_x1_y1_x2_y2()
         res.change_dims(W, H)
         # print(res)
+
+        if gt_folder_path is not None:
+            frame = add_ground_truths(frame, image_name, gt_folder_path, W, H)
 
         for i in range(res.number_objects):
             id = res.global_IDs[i]
@@ -141,9 +151,9 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     cv2.destroyAllWindows()
 
 
-def add_ground_truths(frame, image_name, folder_path, W, H):
+def add_ground_truths(frame, image_name, gt_folder_path, W, H):
     base_name = image_name[:-4]
-    csv_file_name = os.path.join(folder_path, base_name + ".csv")
+    csv_file_name = os.path.join(gt_folder_path, base_name + ".csv")
     if os.path.exists(csv_file_name):
         with open(csv_file_name, 'r') as read_obj:
             csv_reader = csv.reader(read_obj, delimiter=";")
