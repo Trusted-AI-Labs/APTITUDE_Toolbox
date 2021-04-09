@@ -1,6 +1,6 @@
 [submodule "pytb/detection/bboxes/bboxes_2d_detector"]
 	path = pytb/detection/bboxes/bboxes_2d_detector
-	url = https://gitlab.com/aptitude1/python-toolbox/detection/bboxes/bboxes_2d_detector.git
+	url = ../detection/bboxes/bboxes_2d_detector.git
 [submodule "pytb/tracking/bboxes/bboxes_2d_tracker"]
 	path = pytb/tracking/bboxes/bboxes_2d_tracker
-	url = https://gitlab.com/aptitude1/python-toolbox/tracking/bboxes/bboxes_2d_tracker.git
+	url = ../tracking/bboxes/bboxes_2d_tracker.git
