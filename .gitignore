@@ -151,6 +151,7 @@ configs/*
 
 videos/*
 !videos/traffic_example.mp4
+!videos/traffic_example_full.mp4
 
 models/*
 !models/yolov4-tiny-mio-11.*

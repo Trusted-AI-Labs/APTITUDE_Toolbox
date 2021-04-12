@@ -5,6 +5,7 @@ from timeit import default_timer
 import cv2
 import numpy as np
 
+import pytb.utils.image_helper as ih
 from pytb.detection.detection_manager import DetectionManager
 from pytb.detection.detector_factory import DetectorFactory
 from pytb.tracking.tracker_factory import TrackerFactory
@@ -18,8 +19,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
-         mot_path, headless, show_fps, async_flag):
+def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interval, record_path, record_fps,
+         mot_path, headless, show_fps, async_flag, gt_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -38,13 +39,14 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     with open(cfg_classes) as config_file:
         CLASSES = json.load(config_file)['classes']
 
-    # Instantiate first configuration
+    # Instantiate detector
     start = default_timer()
     detection_manager = DetectionManager(DetectorFactory.create_detector(detect1_proc), detect1_preproc,
                                          detect1_postproc)
     end = default_timer()
     print("Detector init duration = " + str(end - start))
 
+    # Instantiate tracker
     start = default_timer()
     tracking_manager = TrackingManager(TrackerFactory.create_tracker(track1_proc), track1_preproc, track1_postproc)
     end = default_timer()
@@ -58,6 +60,19 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     read_time_start = default_timer()
     is_reading, frame = cap.read()
     read_time = default_timer() - read_time_start
+
+    # Apply ROI if any
+    if roi_path is not None:
+        roi_mask = ih.get_cv2_img_from_str(roi_path)
+        frame = ih.get_roi_frame_from_mask(frame, roi_mask)
+
+    # Read GT file in MOT format
+    if gt_path is not None:
+        with open(gt_path, 'r') as gt:
+            gt_lines = gt.readlines()
+            gt_line_number = 1
+            gt_frame_num = 1
+
     is_paused = False
 
     record = record_path is not None
@@ -105,6 +120,17 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             res.to_x1_y1_x2_y2()
             # print(res)
 
+            # Apply GT bboxes
+            if gt_path is not None:
+                while gt_frame_num == counter+1:
+                    line = gt_lines[gt_line_number]
+                    gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
+                    gt_frame_num, id, left, top, width, height = int(gt_frame_num), int(id), int(left), int(top), \
+                                                              int(width), int(height)
+                    cv2.rectangle(frame, (left, top), (left + width, top + height), (255, 255, 255), 2)
+                    # cv2.putText(frame, str(id), (left, top - 5), font, 1, (255, 255, 255), 2, line_type)
+                    gt_line_number += 1
+
             for i in range(res.number_objects):
                 id = res.global_IDs[i]
                 color = [int(c) for c in COLORS[id]]
@@ -126,6 +152,11 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
 
         read_time_start = default_timer()
         is_reading, frame = cap.read()
+
+        # Apply ROI if any
+        if is_reading and roi_path is not None:
+            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
+
         read_time += default_timer() - read_time_start
 
     if mot_path is not None:
