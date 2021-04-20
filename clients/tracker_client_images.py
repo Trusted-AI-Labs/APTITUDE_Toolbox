@@ -2,6 +2,7 @@ import json
 import os
 from timeit import default_timer
 from tkinter import Tcl
+from tqdm import tqdm
 import csv
 
 import cv2
@@ -78,7 +79,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
     fps_number_frames = 10
     is_paused = False
 
-    for image_name in file_list_sorted:
+    for image_name in tqdm(file_list_sorted):
         if not image_name.endswith(".jpg"):
             continue
 

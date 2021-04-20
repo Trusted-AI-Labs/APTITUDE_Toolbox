@@ -8,3 +8,4 @@ tensorflow~=2.4.0
 h5py~=2.9
 pillow~=8.0.1
 PyTurboJPEG==1.4.1
+tqdm==4.60.0

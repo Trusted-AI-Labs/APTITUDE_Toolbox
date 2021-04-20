@@ -1,6 +1,7 @@
 import json
 import time
 from timeit import default_timer
+from tqdm import tqdm
 
 import cv2
 import numpy as np
@@ -87,6 +88,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
 
     output_lines = []
 
+    pbar = tqdm(total=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
     while is_reading:
 
         k = cv2.waitKey(1) & 0xFF
@@ -112,9 +114,9 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
             # Add to output file
             if mot_path is not None:
                 for i in range(res.number_objects):
-                    output_lines.append("{0},{1},{2},{3},{4},{5},{6},-1,-1,-1\n".format(counter+1, res.global_IDs[i],
-                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3],
-                                        res.det_confs[i]))
+                    output_lines.append("{0},{1},{2},{3},{4},{5},-1,-1,-1,-1\n".format(counter+1, res.global_IDs[i],
+                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3]))
+                                        # res.det_confs[i]))
 
             # Visualize
             res.to_x1_y1_x2_y2()
@@ -122,7 +124,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
 
             # Apply GT bboxes
             if gt_path is not None:
-                while gt_frame_num == counter+1:
+                while gt_frame_num == counter+1 and gt_line_number < len(gt_lines):
                     line = gt_lines[gt_line_number]
                     gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
                     gt_frame_num, id, left, top, width, height = int(gt_frame_num), int(id), int(left), int(top), \
@@ -145,6 +147,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
             if record:
                 output_video.write(frame)
 
+        pbar.update(1)
         counter += 1
         if show_fps and counter % fps_number_frames == 0:
             print("FPS:", fps_number_frames / (default_timer() - start_time))
@@ -159,6 +162,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
 
         read_time += default_timer() - read_time_start
 
+    pbar.close()
     if mot_path is not None:
         with open(mot_path, "w") as out:
             out.writelines(output_lines)
