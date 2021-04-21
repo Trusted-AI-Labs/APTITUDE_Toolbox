@@ -150,7 +150,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
 
         read_time_start = default_timer()
         is_reading, frame = cap.read()
-
         read_time += default_timer() - read_time_start
 
     pbar.close()
