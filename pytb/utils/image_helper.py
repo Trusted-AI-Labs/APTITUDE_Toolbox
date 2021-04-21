@@ -72,18 +72,3 @@ def add_borders(image: np.ndarray, centered=False):
         bottom = max(0, int(W - H))
         border_frame = cv2.copyMakeBorder(image, 0, bottom, 0, right, cv2.BORDER_CONSTANT, black)
     return border_frame
-
-
-def get_roi_frame_from_coords(current_frame, polygon):
-    mask = np.zeros(current_frame.shape, dtype=np.uint8)
-    polygon = np.array([polygon], dtype=np.int32)
-    num_frame_channels = current_frame.shape[2]
-    mask_ignore_color = (255,) * num_frame_channels
-    cv2.fillPoly(mask, polygon, mask_ignore_color)
-    masked_frame = cv2.bitwise_and(current_frame, mask)
-    return masked_frame
-
-
-def get_roi_frame_from_mask(current_frame, mask):
-    masked_frame = cv2.bitwise_and(current_frame, mask)
-    return masked_frame

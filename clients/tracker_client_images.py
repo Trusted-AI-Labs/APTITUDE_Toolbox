@@ -21,7 +21,7 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interval, record_path, record_fps, headless,
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
          show_fps, gt_folder_path):
 
     with open(cfg_detect) as config_file:
@@ -54,10 +54,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
                                        track1_preproc, track1_postproc)
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
-
-    # Get ROI if any
-    if roi_path is not None:
-        roi_mask = ih.get_cv2_img_from_str(roi_path)
 
     # Get sequence, the list of images
     included_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
@@ -101,10 +97,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
         read_time_start = default_timer()
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
-
-        # Apply ROI if any
-        if roi_path is not None:
-            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
 
         (H, W, _) = frame.shape
 

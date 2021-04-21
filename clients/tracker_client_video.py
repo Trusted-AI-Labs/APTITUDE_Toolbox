@@ -20,7 +20,7 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interval, record_path, record_fps,
+def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
          mot_path, headless, show_fps, async_flag, gt_path):
 
     with open(cfg_detect) as config_file:
@@ -61,11 +61,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
     read_time_start = default_timer()
     is_reading, frame = cap.read()
     read_time = default_timer() - read_time_start
-
-    # Apply ROI if any
-    if roi_path is not None:
-        roi_mask = ih.get_cv2_img_from_str(roi_path)
-        frame = ih.get_roi_frame_from_mask(frame, roi_mask)
 
     # Read GT file in MOT format
     if gt_path is not None:
@@ -155,10 +150,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
 
         read_time_start = default_timer()
         is_reading, frame = cap.read()
-
-        # Apply ROI if any
-        if is_reading and roi_path is not None:
-            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
 
         read_time += default_timer() - read_time_start
 

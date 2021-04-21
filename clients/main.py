@@ -29,18 +29,16 @@ if __name__ == "__main__":
                     help="fps of the output video file")
     ap.add_argument("-mp", "--mot_path", type=str, default=None,
                     help="path to the result of tracking in mot format.")
-    ap.add_argument("-roi", "--roi_path", type=str, default=None,
-                    help="path to the region of interest file (mask)")
     ap.add_argument("-a", "--async", action='store_true',
                     help="for video file only. whether video reading is async")
     args = vars(ap.parse_args())
 
     if os.path.isdir(args["path"]):
         tci.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["roi_path"], args["frame_interval"], args["record_path"], args["record_fps"],
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
                  args["headless"], args["show_fps"], args["ground_truth_path"])
 
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["roi_path"], args["frame_interval"], args["record_path"], args["record_fps"],
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
                  args["mot_path"], args["headless"], args["show_fps"], args["async"], args["ground_truth_path"])
