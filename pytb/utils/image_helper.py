@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import timeit
 import urllib.request
+import ast
 
 try:
     from turbojpeg import TurboJPEG
@@ -34,19 +35,22 @@ def resize(image: np.ndarray, width: int, height: int):
     return cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
 
-def apply_roi_file(image: np.ndarray, roi_path: str):
-    roi = get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
-    assert image.shape[:2] == roi.shape[:2], \
-        "The mask image has not the same width or height as the frame to be masked."
-    return cv2.bitwise_and(image, roi)
+def get_roi_file(roi_path: str):
+    return get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
 
 
-def apply_roi_coords(image: np.ndarray, roi_coords: list):
+def get_roi_coords(image: np.ndarray, roi_coords: str):
+    roi_coords = ast.literal_eval(roi_coords)
     roi = np.zeros(image.shape, dtype=np.uint8)
     polygon = np.array([roi_coords], dtype=np.int32)
     num_frame_channels = image.shape[2]
     mask_ignore_color = (255,) * num_frame_channels
-    roi = cv2.fillPoly(roi, polygon, mask_ignore_color)
+    return cv2.fillPoly(roi, polygon, mask_ignore_color)
+
+
+def apply_roi(image, roi):
+    assert image.shape[:2] == roi.shape[:2], \
+        "The mask image has not the same width or height as the frame to be masked."
     return cv2.bitwise_and(image, roi)
 
 

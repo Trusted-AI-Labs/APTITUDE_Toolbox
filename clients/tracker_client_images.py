@@ -76,7 +76,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     is_paused = False
 
     for image_name in tqdm(file_list_sorted):
-        if not image_name.endswith(".jpg"):
+        if image_name.endswith(".txt"):
             continue
 
         k = cv2.waitKey(1) & 0xFF
