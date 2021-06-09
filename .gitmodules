@@ -1,3 +1,6 @@
 [submodule "yolo"]
 	path = yolo
 	url = ../yolo.git
+[submodule "detectron2"]
+	path = detectron2
+	url = ../detectron2.git
