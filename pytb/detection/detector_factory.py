@@ -1,3 +1,4 @@
+from pytb.detection.bboxes.bboxes_2d_detector.detectron2.detectron2 import Detectron2
 from pytb.detection.bboxes.bboxes_2d_detector.yolo.yolo import YOLO
 from pytb.detection.detector import Detector
 from pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector import BBoxes2DDetector
@@ -22,6 +23,8 @@ class DetectorFactory:
 
         if model_type == "YOLO":
             return YOLO(detector_parameters)
+        if model_type == "Detectron2":
+            return Detectron2(detector_parameters)
 
     @staticmethod
     def _pose_detector(detector_parameters: dict) -> None:
