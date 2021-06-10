@@ -27,3 +27,8 @@ class BBoxes2DTracker(Tracker):
             BBoxes2DTrack: A set of 2DBBoxes detections with the tracking information added.
         """
         pass
+
+    @abstractmethod
+    def reset_state(self) -> bool:
+        """Reset the current state of the tracker."""
+        pass
