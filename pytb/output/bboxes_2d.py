@@ -106,6 +106,12 @@ class BBoxes2D(Detection):
         self.dim_width = new_width
         self.dim_height = new_height
 
+    def remove_idx(self, s):
+        self.bboxes = np.delete(self.bboxes, s, axis=0)
+        self.class_IDs = np.delete(self.class_IDs, s)
+        self.det_confs = np.delete(self.det_confs, s)
+        self.number_objects -= len(s)
+
     # Private methods
     def _select_indices(self, indices: np.ndarray):
         self.bboxes = np.take(self.bboxes, indices, axis=0)

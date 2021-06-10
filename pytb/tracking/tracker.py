@@ -6,7 +6,7 @@ class Tracker(ABC):
 
     @abstractmethod
     def __init__(self):
-        """Initiliazes the tracker with the given parameters.
+        """Initializes the tracker with the given parameters.
         """
         super().__init__()
         self.need_frame = False
@@ -21,6 +21,9 @@ class Tracker(ABC):
         Returns:
             Detection: A set of detections with the tracking information added.
         """
+        pass
 
+    @abstractmethod
     def reset_state(self) -> bool:
         """Reset the current state of the tracker."""
+        pass
