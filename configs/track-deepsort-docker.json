@@ -5,7 +5,7 @@
         },
         "BBoxes2DTracker":{
             "model_type": "DeepSORT",
-            "pref_implem": "DeepSORT-LeonLok"
+            "pref_implem": "Leonlok"
         },
         "DeepSORT":{
             "model_path": "./models/cosine_metric_DETRAC.pb",
