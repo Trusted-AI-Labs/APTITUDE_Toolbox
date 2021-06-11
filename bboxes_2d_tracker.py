@@ -29,6 +29,6 @@ class BBoxes2DTracker(Tracker):
         pass
 
     @abstractmethod
-    def reset_state(self) -> bool:
+    def reset_state(self):
         """Reset the current state of the tracker."""
         pass
