@@ -4,3 +4,6 @@
 [submodule "detectron2"]
 	path = detectron2
 	url = ../detectron2.git
+[submodule "brackground_subtractor"]
+	path = background_subtractor
+	url = ../background_subtractor.git
