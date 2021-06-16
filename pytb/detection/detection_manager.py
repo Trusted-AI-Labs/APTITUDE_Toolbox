@@ -47,4 +47,9 @@ class DetectionManager:
             detection = tfm.post_process(self.postprocess_parameters, detection)
         detection.postprocessing_time = default_timer() - start
 
+        # print("--------------")
+        # print(detection.preprocessing_time)
+        # print(detection.processing_time)
+        # print(detection.postprocessing_time)
+        # print(1/(detection.processing_time+detection.processing_time+detection.postprocessing_time))
         return detection

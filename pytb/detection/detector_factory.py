@@ -25,6 +25,10 @@ class DetectorFactory:
         if model_type == "Detectron2":
             from pytb.detection.bboxes.bboxes_2d_detector.detectron2.detectron2 import Detectron2
             return Detectron2(detector_parameters)
+        if model_type == "BackgroundSubtractor":
+            from pytb.detection.bboxes.bboxes_2d_detector.background_subtractor.background_subtractor \
+                import BackgroundSubtractor
+            return BackgroundSubtractor(detector_parameters)
 
     @staticmethod
     def _pose_detector(detector_parameters: dict) -> None:

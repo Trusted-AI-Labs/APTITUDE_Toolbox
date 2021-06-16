@@ -21,7 +21,7 @@ thickness = 2
 
 
 def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
-         mot_path, headless, show_fps, async_flag, gt_path):
+         mot_path, headless, async_flag, gt_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -77,20 +77,24 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
         output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
     start_time = default_timer()
+    last_update = default_timer()
     before_loop = start_time
     counter = 0
-    fps_number_frames = 10
 
     output_lines = []
 
     pbar = tqdm(total=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
     while is_reading:
 
-        k = cv2.waitKey(1) & 0xFF
-        if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = not is_paused
-        if k == ord('q'):  # end video loop if 'q' key is pressed
-            break
+        time_update = default_timer()
+        if not headless and time_update - last_update > (1/10):
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = not is_paused
+            if k == ord('q'):  # end video loop if 'q' key is pressed
+                break
+            last_update = time_update
+
 
         if is_paused:
             time.sleep(0.5)
@@ -144,9 +148,6 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
 
         pbar.update(1)
         counter += 1
-        if show_fps and counter % fps_number_frames == 0:
-            print("FPS:", fps_number_frames / (default_timer() - start_time))
-            start_time = default_timer()
 
         read_time_start = default_timer()
         is_reading, frame = cap.read()

@@ -21,8 +21,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, headless,
-         show_fps, gt_folder_path):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps,
+         headless, gt_folder_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -72,18 +72,20 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     start_time = default_timer()
     before_loop = start_time
     counter = 0
-    fps_number_frames = 10
     is_paused = False
 
     for image_name in tqdm(file_list_sorted):
         if image_name.endswith(".txt"):
             continue
 
-        k = cv2.waitKey(1) & 0xFF
-        if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = True
-        if k == ord('q'):  # end video loop if 'q' key is pressed
-            break
+        time_update = default_timer()
+        if not headless and time_update - last_update > (1/10):
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = not is_paused
+            if k == ord('q'):  # end video loop if 'q' key is pressed
+                break
+            last_update = time_update
 
         while is_paused:
             k = cv2.waitKey(1) & 0xFF
@@ -131,10 +133,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
             cv2.imshow("Result", frame)
         if record:
             output_video.write(frame)
-
-        if show_fps and counter % fps_number_frames == 0:
-            print("FPS:", fps_number_frames / (default_timer() - start_time))
-            start_time = default_timer()
 
     print("Average FPS:", counter / (default_timer() - before_loop - warmup_time))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))
