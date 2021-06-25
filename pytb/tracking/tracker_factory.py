@@ -28,6 +28,9 @@ class TrackerFactory:
         elif model_type == "Centroid":
             from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.centroid.centroid import Centroid
             return Centroid(tracker_parameters)
+        elif model_type == "IOU":
+            from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.iou.iou import IOU
+            return IOU(tracker_parameters)
 
     @staticmethod
     def _pose_tracker(tracker_parameters: dict) -> None:
