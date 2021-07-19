@@ -66,7 +66,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     if gt_path is not None:
         with open(gt_path, 'r') as gt:
             gt_lines = gt.readlines()
-            gt_line_number = 1
+            gt_line_number = 0
             gt_frame_num = 1
 
     is_paused = False
@@ -113,6 +113,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             # Add to output file
             if mot_path is not None:
                 for i in range(res.number_objects):
+                    # counter + 2 for residues
                     output_lines.append("{0},{1},{2},{3},{4},{5},-1,-1,-1,-1\n".format(counter+1, res.global_IDs[i],
                                         res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3]))
                                         # res.det_confs[i]))
@@ -125,9 +126,12 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             if gt_path is not None:
                 while gt_frame_num == counter+1 and gt_line_number < len(gt_lines):
                     line = gt_lines[gt_line_number]
-                    gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
-                    gt_frame_num, id, left, top, width, height = int(gt_frame_num), int(id), int(left), int(top), \
+                    new_gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
+                    new_gt_frame_num, id, left, top, width, height = int(new_gt_frame_num), int(id), int(left), int(top), \
                                                               int(width), int(height)
+                    if new_gt_frame_num > gt_frame_num:
+                        gt_frame_num = new_gt_frame_num
+                        break
                     cv2.rectangle(frame, (left, top), (left + width, top + height), (255, 255, 255), 2)
                     # cv2.putText(frame, str(id), (left, top - 5), font, 1, (255, 255, 255), 2, line_type)
                     gt_line_number += 1

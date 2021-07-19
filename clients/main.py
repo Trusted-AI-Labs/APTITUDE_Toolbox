@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if os.path.isdir(args["path"]):
         tci.main(args["detector"], args["tracker"], args["classes"],
                  args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["headless"], args["ground_truth_path"])
+                 args["mot_path"], args["headless"], args["ground_truth_path"])
 
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],

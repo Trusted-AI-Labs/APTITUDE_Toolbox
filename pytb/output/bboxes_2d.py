@@ -79,6 +79,16 @@ class BBoxes2D(Detection):
                     [(e[2] - e[0]) > self.dim_width * threshold for e in self.bboxes]).flatten()
         self._select_indices(elements_of_interest)
 
+    def min_area_filter(self, threshold):
+        if self.bboxes_format == "xt_yt_w_h":
+            elements_of_interest = np.argwhere(
+                [e[2] * e[3] > threshold for e in self.bboxes]).flatten()
+        else:
+            elements_of_interest = np.argwhere(
+                [(e[2] - e[0]) * (e[3] - e[1]) > threshold for e in self.bboxes]).flatten()
+        self._select_indices(elements_of_interest)
+
+
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
             elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(),

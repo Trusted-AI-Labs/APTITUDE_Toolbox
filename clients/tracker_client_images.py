@@ -22,7 +22,7 @@ thickness = 2
 
 
 def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps,
-         headless, gt_folder_path):
+         mot_path, headless, gt_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -67,12 +67,21 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     if record:
         output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
+    if gt_path is not None and not os.path.isdir(gt_path):
+        with open(gt_path, 'r') as gt:
+            gt_lines = gt.readlines()
+            gt_line_number = 0
+            gt_frame_num = 1  # 1 for RGB, 2 for residues
+
     warmup_time = 0
     read_time = 0
     start_time = default_timer()
+    last_update = default_timer()
     before_loop = start_time
     counter = 0
     is_paused = False
+
+    output_lines = []
 
     for image_name in tqdm(file_list_sorted):
         if image_name.endswith(".txt"):
@@ -92,7 +101,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
             if k == ord('p'):  # pause/play loop if 'p' key is pressed
                 is_paused = False
 
-        counter += 1
         if counter % frame_interval != 0:
             continue
 
@@ -113,12 +121,37 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
 
 
         # Visualize
-        res.to_x1_y1_x2_y2()
         res.change_dims(W, H)
         # print(res)
 
-        if gt_folder_path is not None:
-            frame = add_ground_truths(frame, image_name, gt_folder_path, W, H)
+        # Add to output file
+        if mot_path is not None:
+            for i in range(res.number_objects):
+                # counter + 1 for RGB, +2 for residues
+                output_lines.append("{0},{1},{2},{3},{4},{5},-1,-1,-1,-1\n".format(counter+1, res.global_IDs[i],
+                                                                                   res.bboxes[i][0], res.bboxes[i][1],
+                                                                                   res.bboxes[i][2], res.bboxes[i][3]))
+
+        res.to_x1_y1_x2_y2()
+        # res.det_confs[i]))
+
+        if gt_path is not None:
+            if os.path.isdir(gt_path):
+                frame = add_ground_truths(frame, image_name, gt_path, W, H)
+            else:
+                # counter+1 for RGB, +2 for residues
+                while gt_frame_num == counter+1 and gt_line_number < len(gt_lines):
+                    line = gt_lines[gt_line_number]
+                    new_gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
+                    new_gt_frame_num, id, left, top, width, height = int(new_gt_frame_num), int(id), int(left), int(top), \
+                                                                     int(width), int(height)
+                    if new_gt_frame_num > gt_frame_num:
+                        gt_frame_num = new_gt_frame_num
+                        # Don't increment gt_line_number
+                        break
+                    cv2.rectangle(frame, (left, top), (left + width, top + height), (255, 255, 255), 2)
+                    # cv2.putText(frame, str(id), (left, top - 5), font, 1, (255, 255, 255), 2, line_type)
+                    gt_line_number += 1
 
         for i in range(res.number_objects):
             id = res.global_IDs[i]
@@ -133,6 +166,13 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
             cv2.imshow("Result", frame)
         if record:
             output_video.write(frame)
+
+        counter += 1
+
+
+    if mot_path is not None:
+        with open(mot_path, "w") as out:
+            out.writelines(output_lines)
 
     print("Average FPS:", counter / (default_timer() - before_loop - warmup_time))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))

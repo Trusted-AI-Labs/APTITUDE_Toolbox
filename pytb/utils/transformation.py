@@ -5,7 +5,7 @@ import numpy as np
 from pytb.output.detection import Detection
 import pytb.utils.image_helper as ih
 import ast
-
+import cv2
 
 def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.ndarray = None) \
         -> Tuple[np.ndarray, Union[np.ndarray, None]]:
@@ -20,7 +20,7 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.nda
             # Apply a mask via a polyline
             elif "coords" in roi_params:
                 roi = ih.get_roi_coords(image, roi_params["coords"])
-        ih.apply_roi(image, roi)
+        image = ih.apply_roi(image, roi)
     else:
         roi = None
 
@@ -52,6 +52,8 @@ def post_process(postprocess_parameters: dict, detection: Detection) -> Detectio
         detection.width_filter(postprocess_parameters["max_width"], max_filter=True)
     if "min_width" in postprocess_parameters:
         detection.width_filter(postprocess_parameters["min_width"], max_filter=False)
+    if "min_area" in postprocess_parameters:
+        detection.min_area_filter(postprocess_parameters["min_area"])
     if "resize_results" in postprocess_parameters:
         resize_res = postprocess_parameters["resize_results"]
         detection.change_dims(resize_res["width"], resize_res["height"])
