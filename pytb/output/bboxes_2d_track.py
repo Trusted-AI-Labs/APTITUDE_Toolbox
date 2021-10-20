@@ -20,3 +20,5 @@ class BBoxes2DTrack(BBoxes2D):
         s += "\n\tGlobal IDs: " + str(self.global_IDs)
         s += "\n\tTracking time: " + str(self.tracking_time)
         return s
+
+    # TODO Override filter methods

@@ -84,8 +84,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     output_lines = []
 
     for image_name in tqdm(file_list_sorted):
-        if image_name.endswith(".txt"):
-            continue
 
         time_update = default_timer()
         if not headless and time_update - last_update > (1/10):
@@ -133,7 +131,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
                                                                                    res.bboxes[i][2], res.bboxes[i][3]))
 
         res.to_x1_y1_x2_y2()
-        # res.det_confs[i]))
 
         if gt_path is not None:
             if os.path.isdir(gt_path):
@@ -155,7 +152,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
 
         for i in range(res.number_objects):
             id = res.global_IDs[i]
-            # id = 1
             color = [int(c) for c in COLORS[id]]
             vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
             cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color,

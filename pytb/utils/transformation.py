@@ -5,7 +5,6 @@ import numpy as np
 from pytb.output.detection import Detection
 import pytb.utils.image_helper as ih
 import ast
-import cv2
 
 def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.ndarray = None) \
         -> Tuple[np.ndarray, Union[np.ndarray, None]]:
