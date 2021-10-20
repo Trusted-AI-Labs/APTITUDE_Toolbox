@@ -45,14 +45,49 @@ class BBoxes2D(Detection):
         elements_of_interest = np.argwhere([c in classes_of_interest for c in self.class_IDs]).flatten()
         self._select_indices(elements_of_interest)
 
-    def height_filter(self, threshold: float):
+    def height_filter(self, threshold: float, max_filter: bool):
+        if self.bboxes_format == "xt_yt_w_h":
+            if max_filter:
+                elements_of_interest = np.argwhere(
+                    [e[3] < self.dim_height * threshold for e in self.bboxes]).flatten()
+            else:
+                elements_of_interest = np.argwhere(
+                    [e[3] > self.dim_height * threshold for e in self.bboxes]).flatten()
+        else:
+            if max_filter:
+                elements_of_interest = np.argwhere(
+                    [(e[3] - e[1]) < self.dim_height * threshold for e in self.bboxes]).flatten()
+            else:
+                elements_of_interest = np.argwhere(
+                    [(e[3] - e[1]) > self.dim_height * threshold for e in self.bboxes]).flatten()
+        self._select_indices(elements_of_interest)
+
+    def width_filter(self, threshold: float, max_filter: bool):
+        if self.bboxes_format == "xt_yt_w_h":
+            if max_filter:
+                elements_of_interest = np.argwhere(
+                    [e[2] < self.dim_width * threshold for e in self.bboxes]).flatten()
+            else:
+                elements_of_interest = np.argwhere(
+                    [e[2] > self.dim_width * threshold for e in self.bboxes]).flatten()
+        else:
+            if max_filter:
+                elements_of_interest = np.argwhere(
+                    [(e[2] - e[0]) < self.dim_width * threshold for e in self.bboxes]).flatten()
+            else:
+                elements_of_interest = np.argwhere(
+                    [(e[2] - e[0]) > self.dim_width * threshold for e in self.bboxes]).flatten()
+        self._select_indices(elements_of_interest)
+
+    def min_area_filter(self, threshold):
         if self.bboxes_format == "xt_yt_w_h":
             elements_of_interest = np.argwhere(
-                [e[3] < self.dim_height * (threshold / 100) for e in self.bboxes]).flatten()
+                [e[2] * e[3] > threshold for e in self.bboxes]).flatten()
         else:
             elements_of_interest = np.argwhere(
-                [(e[3] - e[1]) < self.dim_height * (threshold / 100) for e in self.bboxes]).flatten()
+                [(e[2] - e[0]) * (e[3] - e[1]) > threshold for e in self.bboxes]).flatten()
         self._select_indices(elements_of_interest)
+
 
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
@@ -80,6 +115,12 @@ class BBoxes2D(Detection):
             self.bboxes[i] = bbox * np.array([ratio_width, ratio_height, ratio_width, ratio_height])
         self.dim_width = new_width
         self.dim_height = new_height
+
+    def remove_idx(self, s):
+        self.bboxes = np.delete(self.bboxes, s, axis=0)
+        self.class_IDs = np.delete(self.class_IDs, s)
+        self.det_confs = np.delete(self.det_confs, s)
+        self.number_objects -= len(s)
 
     # Private methods
     def _select_indices(self, indices: np.ndarray):

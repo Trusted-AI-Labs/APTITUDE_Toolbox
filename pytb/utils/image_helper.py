@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import timeit
 import urllib.request
+import ast
 
 try:
     from turbojpeg import TurboJPEG
@@ -34,19 +35,22 @@ def resize(image: np.ndarray, width: int, height: int):
     return cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
 
-def apply_roi_file(image: np.ndarray, roi_path: str):
-    roi = get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
-    assert image.shape[:2] == roi.shape[:2], \
-        "The mask image has not the same width or height as the frame to be masked."
-    return cv2.bitwise_and(image, roi)
+def get_roi_file(roi_path: str):
+    return get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
 
 
-def apply_roi_coords(image: np.ndarray, roi_coords: list):
+def get_roi_coords(image: np.ndarray, roi_coords: str):
+    roi_coords = ast.literal_eval(roi_coords)
     roi = np.zeros(image.shape, dtype=np.uint8)
     polygon = np.array([roi_coords], dtype=np.int32)
     num_frame_channels = image.shape[2]
     mask_ignore_color = (255,) * num_frame_channels
-    roi = cv2.fillPoly(roi, polygon, mask_ignore_color)
+    return cv2.fillPoly(roi, polygon, mask_ignore_color)
+
+
+def apply_roi(image, roi):
+    assert image.shape[:2] == roi.shape[:2], \
+        "The mask image has not the same width or height as the frame to be masked."
     return cv2.bitwise_and(image, roi)
 
 
@@ -72,18 +76,3 @@ def add_borders(image: np.ndarray, centered=False):
         bottom = max(0, int(W - H))
         border_frame = cv2.copyMakeBorder(image, 0, bottom, 0, right, cv2.BORDER_CONSTANT, black)
     return border_frame
-
-
-def get_roi_frame_from_coords(current_frame, polygon):
-    mask = np.zeros(current_frame.shape, dtype=np.uint8)
-    polygon = np.array([polygon], dtype=np.int32)
-    num_frame_channels = current_frame.shape[2]
-    mask_ignore_color = (255,) * num_frame_channels
-    cv2.fillPoly(mask, polygon, mask_ignore_color)
-    masked_frame = cv2.bitwise_and(current_frame, mask)
-    return masked_frame
-
-
-def get_roi_frame_from_mask(current_frame, mask):
-    masked_frame = cv2.bitwise_and(current_frame, mask)
-    return masked_frame

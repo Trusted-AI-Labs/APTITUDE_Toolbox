@@ -2,6 +2,7 @@ import json
 import os
 from timeit import default_timer
 from tkinter import Tcl
+from tqdm import tqdm
 import csv
 
 import cv2
@@ -20,8 +21,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interval, record_path, record_fps, headless,
-         show_fps, gt_folder_path):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps,
+         mot_path, headless, gt_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -54,10 +55,6 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
     end = default_timer()
     print("Tracker init duration = " + str(end - start))
 
-    # Get ROI if any
-    if roi_path is not None:
-        roi_mask = ih.get_cv2_img_from_str(roi_path)
-
     # Get sequence, the list of images
     included_extensions = ['jpg', 'jpeg', 'bmp', 'png', 'gif']
     file_list = [f for f in os.listdir(folder_path)
@@ -70,40 +67,44 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
     if record:
         output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
+    if gt_path is not None and not os.path.isdir(gt_path):
+        with open(gt_path, 'r') as gt:
+            gt_lines = gt.readlines()
+            gt_line_number = 0
+            gt_frame_num = 1  # 1 for RGB, 2 for residues
+
     warmup_time = 0
     read_time = 0
     start_time = default_timer()
+    last_update = default_timer()
     before_loop = start_time
     counter = 0
-    fps_number_frames = 10
     is_paused = False
 
-    for image_name in file_list_sorted:
-        if not image_name.endswith(".jpg"):
-            continue
+    output_lines = []
 
-        k = cv2.waitKey(1) & 0xFF
-        if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = True
-        if k == ord('q'):  # end video loop if 'q' key is pressed
-            break
+    for image_name in tqdm(file_list_sorted):
+
+        time_update = default_timer()
+        if not headless and time_update - last_update > (1/10):
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = not is_paused
+            if k == ord('q'):  # end video loop if 'q' key is pressed
+                break
+            last_update = time_update
 
         while is_paused:
             k = cv2.waitKey(1) & 0xFF
             if k == ord('p'):  # pause/play loop if 'p' key is pressed
                 is_paused = False
 
-        counter += 1
         if counter % frame_interval != 0:
             continue
 
         read_time_start = default_timer()
         frame = ih.get_cv2_img_from_str(os.path.join(folder_path, image_name))
         read_time += default_timer() - read_time_start
-
-        # Apply ROI if any
-        if roi_path is not None:
-            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
 
         (H, W, _) = frame.shape
 
@@ -118,16 +119,39 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
 
 
         # Visualize
-        res.to_x1_y1_x2_y2()
         res.change_dims(W, H)
         # print(res)
 
-        if gt_folder_path is not None:
-            frame = add_ground_truths(frame, image_name, gt_folder_path, W, H)
+        # Add to output file
+        if mot_path is not None:
+            for i in range(res.number_objects):
+                # counter + 1 for RGB, +2 for residues
+                output_lines.append("{0},{1},{2},{3},{4},{5},-1,-1,-1,-1\n".format(counter+1, res.global_IDs[i],
+                                                                                   res.bboxes[i][0], res.bboxes[i][1],
+                                                                                   res.bboxes[i][2], res.bboxes[i][3]))
+
+        res.to_x1_y1_x2_y2()
+
+        if gt_path is not None:
+            if os.path.isdir(gt_path):
+                frame = add_ground_truths(frame, image_name, gt_path, W, H)
+            else:
+                # counter+1 for RGB, +2 for residues
+                while gt_frame_num == counter+1 and gt_line_number < len(gt_lines):
+                    line = gt_lines[gt_line_number]
+                    new_gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
+                    new_gt_frame_num, id, left, top, width, height = int(new_gt_frame_num), int(id), int(left), int(top), \
+                                                                     int(width), int(height)
+                    if new_gt_frame_num > gt_frame_num:
+                        gt_frame_num = new_gt_frame_num
+                        # Don't increment gt_line_number
+                        break
+                    cv2.rectangle(frame, (left, top), (left + width, top + height), (255, 255, 255), 2)
+                    # cv2.putText(frame, str(id), (left, top - 5), font, 1, (255, 255, 255), 2, line_type)
+                    gt_line_number += 1
 
         for i in range(res.number_objects):
             id = res.global_IDs[i]
-            # id = 1
             color = [int(c) for c in COLORS[id]]
             vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
             cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color,
@@ -139,9 +163,12 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, roi_path, frame_interv
         if record:
             output_video.write(frame)
 
-        if show_fps and counter % fps_number_frames == 0:
-            print("FPS:", fps_number_frames / (default_timer() - start_time))
-            start_time = default_timer()
+        counter += 1
+
+
+    if mot_path is not None:
+        with open(mot_path, "w") as out:
+            out.writelines(output_lines)
 
     print("Average FPS:", counter / (default_timer() - before_loop - warmup_time))
     print("Average FPS w/o read time:", counter / (default_timer() - before_loop - read_time - warmup_time))

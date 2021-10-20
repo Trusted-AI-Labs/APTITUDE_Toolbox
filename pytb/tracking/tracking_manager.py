@@ -19,6 +19,8 @@ class TrackingManager:
         self.preprocess_parameters = preprocess_parameters
         self.postprocess_parameters = postprocess_parameters
 
+        self.roi = None
+
     @staticmethod
     def _validate_preprocess_parameters(preprocess_parameters: dict):
         # TODO
@@ -32,7 +34,7 @@ class TrackingManager:
     def track(self, detection: Detection, frame: Optional[np.ndarray] = None) -> Detection:
         start = default_timer()
         if frame is not None:
-            frame = tfm.pre_process(self.preprocess_parameters, frame)
+            frame, self.roi = tfm.pre_process(self.preprocess_parameters, frame, self.roi)
             resize_params = self.preprocess_parameters["resize"]
             detection.change_dims(resize_params["width"], resize_params["height"])
         preproc_time = default_timer() - start

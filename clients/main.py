@@ -19,8 +19,6 @@ if __name__ == "__main__":
                     help="interval between two detections + tracking. Default is 1")
     ap.add_argument("-gt", "--ground_truth_path", type=str, default=None,
                     help="path to ground truth file in MOT format. For image sequence, CSV format (read more in docs)")
-    ap.add_argument("-sf", "--show_fps", type=bool, default=False,
-                    help="show current fps every 10 frames")
     ap.add_argument("-hl", "--headless", action='store_true',
                     help="whether the video is shown as it processed")
     ap.add_argument("-rp", "--record_path", type=str, default=None,
@@ -29,18 +27,16 @@ if __name__ == "__main__":
                     help="fps of the output video file")
     ap.add_argument("-mp", "--mot_path", type=str, default=None,
                     help="path to the result of tracking in mot format.")
-    ap.add_argument("-roi", "--roi_path", type=str, default=None,
-                    help="path to the region of interest file (mask)")
     ap.add_argument("-a", "--async", action='store_true',
                     help="for video file only. whether video reading is async")
     args = vars(ap.parse_args())
 
     if os.path.isdir(args["path"]):
         tci.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["roi_path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["headless"], args["show_fps"], args["ground_truth_path"])
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
+                 args["mot_path"], args["headless"], args["ground_truth_path"])
 
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["roi_path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["mot_path"], args["headless"], args["show_fps"], args["async"], args["ground_truth_path"])
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
+                 args["mot_path"], args["headless"], args["async"], args["ground_truth_path"])

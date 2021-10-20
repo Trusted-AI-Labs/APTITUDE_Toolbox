@@ -5,7 +5,7 @@
         },
         "BBoxes2DTracker":{
             "model_type": "SORT",
-            "pref_implem": "SORT-abewley"
+            "pref_implem": "Abewley"
         },
         "SORT":{
             "max_age": 10, 

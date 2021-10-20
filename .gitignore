@@ -149,11 +149,3 @@ configs/*
 !configs/track-deepsort-docker.json
 !configs/classes.json
 
-videos/*
-!videos/traffic_example.mp4
-!videos/traffic_example_full.mp4
-
-models/*
-!models/yolov4-tiny-mio-11.*
-!models/cosine_metric_DETRAC.pb
-

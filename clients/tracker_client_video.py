@@ -1,6 +1,7 @@
 import json
 import time
 from timeit import default_timer
+from tqdm import tqdm
 
 import cv2
 import numpy as np
@@ -19,8 +20,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interval, record_path, record_fps,
-         mot_path, headless, show_fps, async_flag, gt_path):
+def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_path, record_fps,
+         mot_path, headless, async_flag, gt_path):
 
     with open(cfg_detect) as config_file:
         detect1 = json.load(config_file)
@@ -61,16 +62,11 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
     is_reading, frame = cap.read()
     read_time = default_timer() - read_time_start
 
-    # Apply ROI if any
-    if roi_path is not None:
-        roi_mask = ih.get_cv2_img_from_str(roi_path)
-        frame = ih.get_roi_frame_from_mask(frame, roi_mask)
-
     # Read GT file in MOT format
     if gt_path is not None:
         with open(gt_path, 'r') as gt:
             gt_lines = gt.readlines()
-            gt_line_number = 1
+            gt_line_number = 0
             gt_frame_num = 1
 
     is_paused = False
@@ -81,19 +77,24 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
         output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
 
     start_time = default_timer()
+    last_update = default_timer()
     before_loop = start_time
     counter = 0
-    fps_number_frames = 10
 
     output_lines = []
 
+    pbar = tqdm(total=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
     while is_reading:
 
-        k = cv2.waitKey(1) & 0xFF
-        if k == ord('p'):  # pause/play loop if 'p' key is pressed
-            is_paused = not is_paused
-        if k == ord('q'):  # end video loop if 'q' key is pressed
-            break
+        time_update = default_timer()
+        if not headless and time_update - last_update > (1/10):
+            k = cv2.waitKey(1) & 0xFF
+            if k == ord('p'):  # pause/play loop if 'p' key is pressed
+                is_paused = not is_paused
+            if k == ord('q'):  # end video loop if 'q' key is pressed
+                break
+            last_update = time_update
+
 
         if is_paused:
             time.sleep(0.5)
@@ -112,9 +113,10 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
             # Add to output file
             if mot_path is not None:
                 for i in range(res.number_objects):
-                    output_lines.append("{0},{1},{2},{3},{4},{5},{6},-1,-1,-1\n".format(counter+1, res.global_IDs[i],
-                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3],
-                                        res.det_confs[i]))
+                    # counter + 2 for residues
+                    output_lines.append("{0},{1},{2},{3},{4},{5},-1,-1,-1,-1\n".format(counter+1, res.global_IDs[i],
+                                        res.bboxes[i][0], res.bboxes[i][1], res.bboxes[i][2], res.bboxes[i][3]))
+                                        # res.det_confs[i]))
 
             # Visualize
             res.to_x1_y1_x2_y2()
@@ -122,11 +124,14 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
 
             # Apply GT bboxes
             if gt_path is not None:
-                while gt_frame_num == counter+1:
+                while gt_frame_num == counter+1 and gt_line_number < len(gt_lines):
                     line = gt_lines[gt_line_number]
-                    gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
-                    gt_frame_num, id, left, top, width, height = int(gt_frame_num), int(id), int(left), int(top), \
+                    new_gt_frame_num, id, left, top, width, height, _, _, _, _ = line.split(",")
+                    new_gt_frame_num, id, left, top, width, height = int(new_gt_frame_num), int(id), int(left), int(top), \
                                                               int(width), int(height)
+                    if new_gt_frame_num > gt_frame_num:
+                        gt_frame_num = new_gt_frame_num
+                        break
                     cv2.rectangle(frame, (left, top), (left + width, top + height), (255, 255, 255), 2)
                     # cv2.putText(frame, str(id), (left, top - 5), font, 1, (255, 255, 255), 2, line_type)
                     gt_line_number += 1
@@ -145,20 +150,14 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, roi_path, frame_interva
             if record:
                 output_video.write(frame)
 
+        pbar.update(1)
         counter += 1
-        if show_fps and counter % fps_number_frames == 0:
-            print("FPS:", fps_number_frames / (default_timer() - start_time))
-            start_time = default_timer()
 
         read_time_start = default_timer()
         is_reading, frame = cap.read()
-
-        # Apply ROI if any
-        if is_reading and roi_path is not None:
-            frame = ih.get_roi_frame_from_mask(frame, roi_mask)
-
         read_time += default_timer() - read_time_start
 
+    pbar.close()
     if mot_path is not None:
         with open(mot_path, "w") as out:
             out.writelines(output_lines)

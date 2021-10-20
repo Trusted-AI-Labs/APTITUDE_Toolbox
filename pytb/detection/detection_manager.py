@@ -17,6 +17,8 @@ class DetectionManager:
         self.preprocess_parameters = preprocess_parameters
         self.postprocess_parameters = postprocess_parameters
 
+        self.roi = None
+
     @staticmethod
     def _validate_preprocess_parameters(preprocess_parameters: dict):
         # TODO
@@ -29,7 +31,7 @@ class DetectionManager:
 
     def detect(self, org_frame: np.ndarray) -> Detection:
         start = default_timer()
-        edit_frame = tfm.pre_process(self.preprocess_parameters, org_frame)
+        edit_frame, self.roi = tfm.pre_process(self.preprocess_parameters, org_frame, self.roi)
         preproc_time = default_timer() - start
 
         # call the concrete method of the detector
@@ -45,4 +47,9 @@ class DetectionManager:
             detection = tfm.post_process(self.postprocess_parameters, detection)
         detection.postprocessing_time = default_timer() - start
 
+        # print("--------------")
+        # print(detection.preprocessing_time)
+        # print(detection.processing_time)
+        # print(detection.postprocessing_time)
+        # print(1/(detection.processing_time+detection.processing_time+detection.postprocessing_time))
         return detection
