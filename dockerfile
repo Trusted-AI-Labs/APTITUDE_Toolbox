@@ -26,15 +26,17 @@ COPY setup.py .
 COPY requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl .
 
 # install dependencies
-RUN pip install --upgrade pip \ 
+RUN pip install --no-cache-dir -r requirements.txt \
+&& pip install --no-cache-dir opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl \
+\
+&& pip install --no-cache-dir torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
 && pip install setuptools~=50.3.2 \
-&& pip install -r requirements.txt \
-&& pip install opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl \
-&& pip install -e . \
-&& pip install torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-&& pip install torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-&& pip install torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
-&& pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html
+&& pip install --no-cache-dir pycocotools==2.0.2 \
+&& pip install --no-cache-dir detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html \
+&& pip install -e .
+
+# set the working directory in the container
+WORKDIR /code
 
 
 # copy the content of the local src directory to the working directory
