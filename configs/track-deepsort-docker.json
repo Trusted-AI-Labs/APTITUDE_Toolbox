@@ -28,8 +28,7 @@
         "resize":{
             "width" : 416,
             "height": 416
-        },
-        "roi":{}
+        }
     },
     "Postproc":{}
 }
