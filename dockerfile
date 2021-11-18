@@ -43,6 +43,3 @@ WORKDIR /code
 COPY pytb/ pytb/
 COPY clients/ clients/
 COPY configs/ configs/
-
-# command to run on container start
-CMD python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort.json -c configs/classes.json -hl
