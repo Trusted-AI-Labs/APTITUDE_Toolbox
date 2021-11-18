@@ -17,8 +17,8 @@ class BBoxes2DDetector(Detector, ABC):
         self.pref_implem = detector_parameters["BBoxes2DDetector"]["pref_implem"]
         self.model_path = detector_parameters["BBoxes2DDetector"]["model_path"]
         self.config_path = detector_parameters["BBoxes2DDetector"]["config_path"]
-        self.input_width = detector_parameters["BBoxes2DDetector"]["input_width"]
-        self.input_height = detector_parameters["BBoxes2DDetector"]["input_height"]
+        self.input_width = detector_parameters["BBoxes2DDetector"].get("input_width", 416)
+        self.input_height = detector_parameters["BBoxes2DDetector"].get("input_height", 416)
 
     @abstractmethod
     def detect(self, org_frame: np.ndarray) -> BBoxes2D:
