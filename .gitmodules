@@ -1,6 +1,3 @@
-[submodule "pytb/detection/bboxes/bboxes_2d_detector"]
-	path = pytb/detection/bboxes/bboxes_2d_detector
-	url = ../detection/bboxes/bboxes_2d_detector.git
 [submodule "pytb/tracking/bboxes/bboxes_2d_tracker"]
 	path = pytb/tracking/bboxes/bboxes_2d_tracker
 	url = ../tracking/bboxes/bboxes_2d_tracker.git
