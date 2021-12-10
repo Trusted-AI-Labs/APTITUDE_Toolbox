@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>APTITUDE Toolbox Config Creator</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css"/>
+        <link rel="stylesheet" href="style.css"/>
+        
+        <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1 id="main_title">PyTB JSON Creator</h1>
+                <h5 id="author">by Jonathan Samelson</h5>
+            </div>
+        </header>
+
+        <div class="container">
+        <div class="row">
+        <div class="col-6">
+            <section id="sec_video">
+                <h3>Video</h3>
+                <div class="indent">
+                <label for="path">Enter a video file path or directory path containing the image sequence:</label><br>
+                <input type="text" id="path" name="path" size=50/><br>
+                <label for="async_cb">Async video reading:</label>
+                <input type="checkbox" id="async_cb" name="async_cb" value="async">
+                </div>
+            </section>
+
+            <section id="sec_process">
+                <h3>Process</h3>
+                <div class="indent">
+                <input type="radio" id="radio_detector" name="proc_type" value="detector">
+                <label for="radio_detector">Detector</label><br>
+                <input type="radio" id="radio_tracker" name="proc_type" value="tracker">
+                <label for="radio_tracker">Tracker</label><br>
+                <input type="radio" id="radio_evaluator" name="proc_type" value="evaluator">
+                <label for="radio_evaluator">Evaluator</label>
+
+                <div class="detector" hidden>
+                    <label for="select_detector_type">Select the detector type:</label>
+                    <select name="select_detector_type" id="select_detector_type">
+                        <option value=""></option>
+                        <option value="BBoxes2DDetector">BBoxes2DDetector</option>
+                    </select><br>
+
+                    <div class="detector_type" hidden>
+                        <label for="select_detector_model_type">Select the model type:</label>
+                        <select name="select_detector_model_type" id="select_detector_model_type">
+                            <option value=""></option>
+                            <option value="YOLO">YOLO</option>
+                        </select><br>
+    
+                        <label for="select_detector_implem">Select the model implementation:</label>
+                        <select name="select_detector_implem" id="select_detector_implem">
+                            <option value=""></option>
+                            <option class="yolo" value="cv2-DM" hidden>cv2-DetectionModel</option>
+                            <option class="yolo" value="cv2-RM" hidden>cv2-ReadNet</option>
+                        </select><br>
+                        <label for="path_detector_model">Enter the model path:</label>
+                        <input type="text" id="path_detector_model" name="path_detector_model" size=50/><br>
+                        <label for="path_config_model">Enter the config path of the model:</label>
+                        <input type="text" id="path_config_model" name="path_config_model" size=50/><br>
+
+                        <label for="model_input_width">Model input width:</label>
+                        <input type="number" id="model_input_width" name="model_input_width" size=5 placeholder="416"/><br>
+                        <label for="model_input_height">Model input height:</label>
+                        <input type="number" id="model_input_height" name="model_input_height" size=5 placeholder="416"/><br>
+                    </div>
+
+                    <div class="yolo indent" hidden>
+                        <h5>YOLO</h5>
+                        <div class="indent">
+                        <label for="yolo_conf_thresh">Confidence threshold:</label>
+                        <input type="number" id="yolo_conf_thresh" name="yolo_conf_thresh" size=5 placeholder="0.25" min="0" max="1" step="0.05"/><br>
+                        <label for="yolo_nms_thresh" class="cv2-DM" hidden>Non-max Supression (NMS) threshold:</label>
+                        <input type="number" id="yolo_nms_thresh" name="yolo_nms_thresh" size=5 placeholder="0" 
+                            class="cv2-DM" min="0" max="1" step="0.05" hidden/><br class="cv2-DM" hidden>
+                        </div>
+                    </div>
+
+                    <div class="opencv indent" hidden>
+                        <h5>OpenCV</h5>
+                        <div class="indent">
+                        <label for="ocv_gpu_cb">Use GPU:</label>
+                        <input type="checkbox" id="ocv_gpu_cb" name="ocv_gpu_cb" value="ocv_gpu"><br>
+                        <label for="ocv_hp_cb" class="ocv_gpu" hidden>Use half precision:</label>
+                        <input type="checkbox" id="ocv_hp_cb" name="ocv_hp_cb" value="ocv_hp_cb" class="ocv_gpu" hidden>
+                        </div>
+                    </div>
+                </div>
+                    
+                <div class="tracker" hidden>
+                    <label for="select_tracker_type">Select the tracker type:</label>
+                    <select name="select_tracker_type" id="select_tracker_type">
+                        <option value=""></option>
+                        <option value="BBoxes2DTracker">BBoxes2DTracker</option>
+                    </select><br>
+
+                    <div class="tracker_type" hidden>
+                        <label for="select_tracker_model_type">Select the model type:</label>
+                        <select name="select_tracker_model_type" id="select_tracker_model_type">
+                            <option value=""></option>
+                            <option value="Centroid">Centroid</option>
+                            <option value="SORT">SORT</option>
+                            <option value="DeepSORT">DeepSORT</option>
+                        </select><br>
+
+                        <label for="select_tracker_implem">Select the model implementation:</label>
+                        <select name="select_tracker_implem" id="select_tracker_implem">
+                            <option value=""></option>
+                            <option class="centroid" value="Rosebrock" hidden>Rosebrock</option>
+                            <option class="sort" value="Abewley" hidden>Abewley</option>
+                            <option class="deepsort" value="Leonlok" hidden>Leonlok</option>
+                        </select><br>
+                    </div>
+
+                    <div class="centroid indent" hidden>
+                        <h5>Centroid</h5>
+                        <div class="indent">
+                        <label for="centroid_max_age">Max age:</label>
+                        <input type="number" id="centroid_max_age" name="centroid_max_age" size=5 placeholder="10" min="1"/><br>
+                        </div>
+                    </div>
+
+                    <div class="sort indent" hidden>
+                        <h5>SORT</h5>
+                        <div class="indent">
+                        <label for="sort_max_age">Max age:</label>
+                        <input type="number" id="sort_max_age" name="sort_max_age" size=5 placeholder="10" min="1"/><br>
+                        <label for="sort_min_hits">Min hits:</label>
+                        <input type="number" id="sort_min_hits" name="sort_min_hits" size=5 placeholder="3" min="1"/><br>
+                        <label for="sort_iou_thresh">IOU threshold:</label>
+                        <input type="number" id="sort_iou_thresh" name="sort_iou_thresh" size=5 placeholder="0.3" min="0" max="1" step="0.05"/><br>
+                        <label for="sort_memory_fade">Kalman filter memory fade:</label>
+                        <input type="number" id="sort_memory_fade" name="sort_memory_fade" size=5 placeholder="1.0" min="1" step="0.05"/><br>
+                        </div>
+                    </div>
+
+                    <div class="deepsort indent" hidden>
+                        <h5>DeepSORT</h5>
+                        <div class="indent">
+                            <label for="deepsort_tracker_model">Enter the model path:</label>
+                            <input type="text" id="deepsort_tracker_model" name="deepsort_tracker_model" size=50/><br>
+                            <label for="deepsort_max_age">Max age:</label>
+                            <input type="number" id="deepsort_max_age" name="deepsort_max_age" size=5 placeholder="30" min="1"/><br>
+                            <label for="deepsort_min_hits">Min hits:</label>
+                            <input type="number" id="deepsort_min_hits" name="deepsort_min_hits" size=5 placeholder="3" min="1"/><br>
+                            <label for="deepsort_iou_thresh">IOU threshold:</label>
+                            <input type="number" id="deepsort_iou_thresh" name="deepsort_iou_thresh" size=5 placeholder="0.7" min="0" max="1" step="0.05"/><br>
+                            <label for="deepsort_max_cosine_dist">Max cosine distance:</label>
+                            <input type="number" id="deepsort_max_cosine_dist" name="deepsort_max_cosine_dist" size=5 placeholder="0.3" min="0" max="1" step="0.05"/><br>
+
+                            <label for="deepsort_avg_conf_cb">Use average detection confidence:</label>
+                            <input type="checkbox" id="deepsort_avg_conf_cb" name="deepsort_avg_conf_cb" value="avg_conf"><br>
+                            <label for="deepsort_avg_conf_thresh" class="deepsort_avg_conf indent" hidden>Average detection confidence threshold:</label>
+                            <input type="number" id="deepsort_avg_conf_thresh" name="deepsort_avg_conf_thresh" size=5 placeholder="0.25" min="0" max="1" step="0.05"
+                                    class="deepsort_avg_conf" hidden/><br  class="deepsort_avg_conf" hidden>
+                            <label for="deepsort_most_common_class_cb">Use most common class:</label>
+                            <input type="checkbox" id="deepsort_most_common_class_cb" name="deepsort_most_common_class_cb" value="most_common_class"><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="evaluator" hidden>
+                    <label for="select_evaluator_type">Select the evaluator type:</label>
+                    <select name="select_evaluator_type" id="select_evaluator_type">
+                        <option value=""></option>
+                        <option value="MOT2DBBoxes">MOT2DBBoxes</option>
+                    </select><br>
+                    <label for="multiple_select_metrics">Select the metrics to be evaluated:</label>
+                    <select name="multiple_select_metrics" id="multiple_select_metrics" class="js-example-basic-multiple"
+                        multiple="multiple" style="width: 25%">
+                        <option value=""></option>
+                        <option value="HOTA">HOTA</option>
+                        <option value="CLEAR">CLEAR</option>
+                        <option value="Identity">Identity</option>
+                        <option value="VACE">Vace</option>
+                        <option value="Count">Count</option>
+                    </select>
+                </div>
+                </div>
+            </section>
+
+            <section id="sec_preprocess">
+                <h3>Pre-process</h3>
+                <div class="indent">
+                <input type="radio" id="radio_stretch" name="ar_type" value="stretch">
+                <label for="radio_stretch">Stretch</label><br>
+                <input type="radio" id="radio_letterbox" name="ar_type" value="letterbox">
+                <label for="radio_letterbox">Letterbox (border)</label><br>
+                <label for="center_cb" class="letterbox indent" hidden>Centered border:</label>
+                <input type="checkbox" id="center_cb" name="center_cb" value="centered" class="letterbox" hidden><br class="letterbox" hidden>
+
+                <label for="resize_width">Resize width:</label>
+                <input type="number" id="resize_width" name="resize_width" size=5 placeholder="416" min="1"/><br>
+                <label for="resize_height">Resize height:</label>
+                <input type="number" id="resize_height" name="resize_height" size=5 placeholder="416" min="1"/><br>
+
+                <label for="roi_cb">Region of Interest (ROI):</label>
+                <input type="checkbox" id="roi_cb" name="roi_cb" value="roi"><br>
+
+                <div class="roi indent" hidden>
+                    <input type="radio" id="radio_roi_file" name="roi_type" value="file">
+                    <label for="radio_roi_file">File</label><br>
+                    <label for="roi_file_path" class="roi_file" hidden>Enter the ROI mask file path:</label>
+                    <input type="text" id="roi_file_path" name="roi_file_path" size=50 class="roi_file" hidden/><br class="roi_file" hidden>
+
+                    <input type="radio" id="radio_roi_coords" name="roi_type" value="coords">
+                    <label for="radio_roi_coords">Coords</label><br>
+                    <label for="roi_coords" class="roi_coords" hidden>Enter the polygon coords of the ROI:</label>
+                    <input type="text" id="roi_coords" name="roi_coords" size=50 class="roi_coords"
+                        placeholder="(0, 0), (1500, 0), (1500, 800), (0, 800)" hidden/>
+                </div>
+                </div>
+            </section>
+
+            <section id="sec_postprocess">
+                <h3>Post-process</h3>
+                <div class="indent">
+                <label for="select_NMS_implem">Non-max Supression (NMS) implementation:</label>
+                <select name="select_NMS_implem" id="select_NMS_implem">
+                    <option value=""></option>
+                    <option value="cv2">cv2</option>
+                    <option value="Malisiewicz">Malisiewicz</option>
+                </select><br>
+                <label for="post_nms_thresh" class="post_nms indent" hidden>NMS threshold:</label>
+                <input type="number" id="post_nms_thresh" name="post_nms_thresh" size=5 min="0" max="1" step="0.05"
+                        placeholder="0.45" class= "post_nms" hidden/><br class= "post_nms" hidden>
+                <label for="post_conf_thresh">Confidence threshold:</label>
+                <input type="number" id="post_conf_thresh" name="post_conf_thresh" size=5 placeholder="0.25" min="0" max="1" step="0.05"/><br>
+                <label for="post_max_height">Max height:</label>
+                <input type="number" id="post_max_height" name="post_max_height" size=5 placeholder="0.75" min="0" max="1" step="0.05"/><br>
+                <label for="post_min_height">Min height:</label>
+                <input type="number" id="post_min_height" name="post_min_height" size=5 placeholder="0.1" min="0" max="1" step="0.05"/><br>
+                <label for="post_max_width">Max width:</label>
+                <input type="number" id="post_max_width" name="post_max_width" size=5 placeholder="0.75" min="0" max="1" step="0.05"/><br>
+                <label for="post_min_width">Min width:</label>
+                <input type="number" id="post_min_width" name="post_min_width" size=5 placeholder="0.1" min="0" max="1" step="0.05"/><br>
+                <label for="post_top_k">Top k detections:</label>
+                <input type="number" id="post_top_k" name="post_top_k" size=5 placeholder="15" min="1"/><br>
+                <label for="post_coi">Classes of interest:</label>
+                <input type="text" id="post_coi" name="post_coi" placeholder="[0, 3]"/><br>
+                <label for="post_resize_width">Resize results width:</label>
+                <input type="number" id="post_resize_width" name="post_resize_width" size=5 placeholder="1280" min="1"/><br>
+                <label for="post_resize_height">Resize results height:</label>
+                <input type="number" id="post_resize_height" name="post_resize_height" size=5 placeholder="720 " min="1"/><br>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-4">
+            <section id="gen_json" >
+                <h3>Generated JSON</h3>
+                <input type="text" placeholder="filename (.json)" id="filename_input"/>
+                <button onclick="saveTextAsFile(text_area_json.value, id=filename_input.value + '.json')" download>Download</button>
+                <button onclick="copyToClipboard()" id="text_area_json_btn">Copy to clipboard</button><br>
+                <textarea cols="75" rows="30" id="text_area_json" 
+                placeholder="Start editing the fields to see the result!"></textarea>
+            </section>
+        </div>
+        </div>
+        </div>
+    </body>
+    <footer/>
+</html>

@@ -14,11 +14,11 @@ if __name__ == "__main__":
     ap.add_argument("-c", "--classes", required=True,
                     help="path to classes (json file)")
     ap.add_argument("-p", "--path", type=str, required=True,
-                    help="path to video file / folder path")
+                    help="path to video file / folder path containing images (.png/.jpg/.bmp) in lexical order")
     ap.add_argument("-fi", "--frame_interval", type=int, default=1,
                     help="interval between two detections + tracking. Default is 1")
     ap.add_argument("-gt", "--ground_truth_path", type=str, default=None,
-                    help="path to ground truth file in MOT format. For image sequence, CSV format (read more in docs)")
+                    help="path to ground truth file in MOT format.")
     ap.add_argument("-hl", "--headless", action='store_true',
                     help="whether the video is shown as it processed")
     ap.add_argument("-rp", "--record_path", type=str, default=None,
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     ap.add_argument("-rf", "--record_fps", type=int, default=10,
                     help="fps of the output video file")
     ap.add_argument("-mp", "--mot_path", type=str, default=None,
-                    help="path to the result of tracking in mot format.")
+                    help="path to the result of tracking in MOT format")
     ap.add_argument("-a", "--async", action='store_true',
-                    help="for video file only. whether video reading is async")
+                    help="for video file only. whether video reading is asynchronous")
     args = vars(ap.parse_args())
 
     if os.path.isdir(args["path"]):
