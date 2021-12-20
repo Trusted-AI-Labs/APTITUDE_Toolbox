@@ -40,7 +40,7 @@ Once built, type `docker images` and you should see the image ready to use.
 
 ```
 REPOSITORY    TAG                                 IMAGE ID       CREATED        SIZE
-apt_tb        0.1.4                               1b4926340c4b   3 hours ago    9.05GB
+apt_tb        latest                              1b4926340c4b   3 hours ago    9.05GB
 nvidia/cuda   11.0.3-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   3.85GB
 ```
 </details>
@@ -156,7 +156,7 @@ docker run -it \
 -v <your-path>/APTITUDE_Toolbox/configs/:/code/configs \
 -v <your-path>/APTITUDE_Toolbox/models/:/code/models \
 -v <your-path>/APTITUDE_Toolbox/videos:/code/videos \
-pytb:0.1.3 python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort.json -c configs/classes.json -p videos/video.mp4 -hl -rp /code/out.mp4
+apt_tb python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort.json -c configs/classes.json -p videos/video.mp4 -hl -rp /code/out.mp4
 ```
 
 If you wish to extract the output video from the container, you can use the following command:
@@ -174,3 +174,21 @@ This section is work in progress. 🔨
 ## Acknowledgement
 
 The APTITUDE toolbox comes from the APTITUDE project (**A**pprentissage **P**rofond et **T**raitement des **I**mages pour la **T**élésurveillance **U**rbaine et la **D**étection d’**E**vénements) funded by the Walloon Region of Belgium (#1910045).
+
+## References
+
+Refer to the following repositories for more information on individual algorithms. Part of the code present in this repository was adapted from those repositories, see individual source files for details.
+
+YOLO & Tiny-YOLO inference: [OpenCV Documentation - DNN module](https://docs.opencv.org/4.5.3/d0/db7/tutorial_js_table_of_contents_dnn.html)
+
+SORT: [abewley - SORT](https://github.com/abewley/sort)
+
+DeepSORT : [nwojke - DeepSORT](https://github.com/nwojke/deep_sort) & [LeonLok - DeepSORT inference](https://github.com/LeonLok/Deep-SORT-YOLOv4)
+
+IOU : [bochinski - IOU](https://github.com/bochinski/iou-tracker)
+
+KIOU: [siyuanc - KIOU](https://github.com/siyuanc2/kiout)
+
+Centroid : [pyimagesearch - Centroid](https://www.pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/)
+
+This repository is released under GPL-3.0 License, please consult LICENSE file for details.

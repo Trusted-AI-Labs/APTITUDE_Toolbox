@@ -34,6 +34,6 @@
             "pref_implem" : "Malisiewicz",
             "nms_thresh" : 0.45
         },
-        "max_height_percentage": 50
+        "max_height": 0.5
     }
 }

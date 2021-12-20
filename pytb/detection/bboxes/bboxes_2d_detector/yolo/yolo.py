@@ -4,7 +4,9 @@ from pytb.output.bboxes_2d import BBoxes2D
 from timeit import default_timer
 import cv2
 import numpy as np
+import logging
 
+log = logging.getLogger("aptitude-toolbox")
 
 class YOLO(BBoxes2DDetector):
 
@@ -19,7 +21,10 @@ class YOLO(BBoxes2DDetector):
 
         self.ocv_gpu = detector_parameters["OpenCV"].get("GPU", False)
         self.ocv_half_precision = detector_parameters["OpenCV"].get("half_precision", False)
+        log.debug("OpenCV selected with GPU set to {} and half precision set to {}."
+                  .format(self.ocv_gpu, self.ocv_half_precision))
 
+        log.debug("YOLO {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "cv2-DetectionModel":
             self.nms_thresh = detector_parameters["YOLO"].get("nms_thresh", 0)
             self.nms_across_classes = detector_parameters["YOLO"].get("nms_across_classes", True)
@@ -32,16 +37,21 @@ class YOLO(BBoxes2DDetector):
 
         elif self.pref_implem == "cv2-ReadNet":
             self.net = cv2.dnn.readNet(self.model_path, self.config_path)
+        else:
+            assert False, "[ERROR] Unknown implementation of YOLO: {}".format(self.pref_implem)
 
         if self.ocv_gpu:
             self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
             if self.ocv_half_precision:
                 self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA_FP16)
+                log.debug("OpenCV with DNN_BACKEND_CUDA target CUDAFP16.")
             else:
                 self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+                log.debug("OpenCV with DNN_BACKEND_CUDA target CUDA.")
         else:
             self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
             self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+            log.debug("OpenCV with DNN_BACKEND_OPENCV and target CPU.")
 
     def detect(self, frame: np.ndarray) -> BBoxes2D:
         """Performs a YOLO inference on the given frame. 
@@ -59,9 +69,12 @@ class YOLO(BBoxes2DDetector):
             output = self._detect_cv2_detection_model(frame)
 
         elif self.pref_implem == "cv2-ReadNet":
-            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (self.input_width, self.input_height), swapRB=True,
-                                         crop=False)
+            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (self.input_width, self.input_height),
+                                         swapRB=True, crop=False)
             output = self._detect_cv2_read_net(blob)
+        
+        else:
+            assert False, "[ERROR] Unknown implementation of YOLO: {}".format(self.pref_implem)
 
         return output
 

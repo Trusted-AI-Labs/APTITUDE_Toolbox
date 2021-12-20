@@ -5,6 +5,9 @@ from .centroid_rosebrock import CentroidTracker
 
 import numpy as np
 from timeit import default_timer
+import logging
+
+log = logging.getLogger("aptitude-toolbox")
 
 
 class Centroid(BBoxes2DTracker):
@@ -18,8 +21,11 @@ class Centroid(BBoxes2DTracker):
         super().__init__(tracker_parameters)
 
         self.max_age = tracker_parameters["Centroid"].get("max_age", 10)
+        log.debug("Centroid {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Rosebrock":
             self.tracker = CentroidTracker(maxDisappeared=self.max_age)
+        else:
+            assert False, "[ERROR] Unknown implementation of Centroid: {}".format(self.pref_implem)
 
     def track(self, detection: BBoxes2D) -> BBoxes2DTrack:
         """Performs an inference on the given frame.
@@ -60,6 +66,9 @@ class Centroid(BBoxes2DTracker):
                                    bboxes_format="x1_y1_x2_y2")
             output.to_xt_yt_w_h()
             return output
+        
+        else:
+            assert False, "[ERROR] Unknown implementation of Centroid: {}".format(self.pref_implem)
 
     def reset_state(self, reset_id: bool = False):
         """Reset the current state of the tracker."""

@@ -1,12 +1,16 @@
+import logging
+import pytb.utils.validator as val
 from pytb.detection.detector import Detector
 from pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector import BBoxes2DDetector
 
+log = logging.getLogger("aptitude-toolbox")
 
 class DetectorFactory:
 
     @staticmethod
     def create_detector(detector_parameters: dict) -> Detector:
-        # _validate_parameters(detector_parameters)
+        assert val.validate_detector_parameters(detector_parameters), \
+            "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
         det_type = detector_parameters["Detector"]["type"]
 
         if det_type == "BBoxes2DDetector":
@@ -19,6 +23,7 @@ class DetectorFactory:
     def _bboxes_2d_detector(detector_parameters: dict) -> BBoxes2DDetector:
         model_type = detector_parameters["BBoxes2DDetector"]["model_type"]
 
+        log.info("Model type {} selected.".format(model_type))
         if model_type == "YOLO":
             from pytb.detection.bboxes.bboxes_2d_detector.yolo.yolo import YOLO
             return YOLO(detector_parameters)
@@ -32,17 +37,4 @@ class DetectorFactory:
 
     @staticmethod
     def _pose_detector(detector_parameters: dict) -> None:
-        pass
-
-    @staticmethod
-    def _validate_parameters(detector_parameters: dict) -> bool:
-        """Check compatibility between provided parameters.
-
-        Args:
-            detector_parameters (dict): the dictionary containing detector parameters.
-
-        Returns:
-            bool: whether it is a valid configuration
-        """
-        # TODO validate parameters from create_detector
         pass

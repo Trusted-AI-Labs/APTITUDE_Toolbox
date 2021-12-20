@@ -35,7 +35,9 @@
                 <label for="path">Enter a video file path or directory path containing the image sequence:</label><br>
                 <input type="text" id="path" name="path" size=50/><br>
                 <label for="async_cb">Async video reading:</label>
-                <input type="checkbox" id="async_cb" name="async_cb" value="async">
+                <input type="checkbox" id="async_cb" name="async_cb" value="async"><br>
+                <label for="frame_interval">Frame interval:</label>
+                <input type="number" id="frame_interval" name="frame_interval" size=5 placeholder="1">
                 </div>
             </section>
 
@@ -61,6 +63,8 @@
                         <select name="select_detector_model_type" id="select_detector_model_type">
                             <option value=""></option>
                             <option value="YOLO">YOLO</option>
+                            <option value="Detectron2">Detectron2</option>
+                            <option value="BackgroundSubtractor">BackgroundSubtractor</option>
                         </select><br>
     
                         <label for="select_detector_implem">Select the model implementation:</label>
@@ -68,16 +72,23 @@
                             <option value=""></option>
                             <option class="yolo" value="cv2-DM" hidden>cv2-DetectionModel</option>
                             <option class="yolo" value="cv2-RM" hidden>cv2-ReadNet</option>
+                            <option class="detectron2" value="Default" hidden>Default</option>
+                            <option class="bs" value="mean" hidden>Mean</option>
+                            <option class="bs" value="median" hidden>Median</option>
+                            <option class="bs" value="frame_diff" hidden>Frame Difference</option>
                         </select><br>
-                        <label for="path_detector_model">Enter the model path:</label>
-                        <input type="text" id="path_detector_model" name="path_detector_model" size=50/><br>
-                        <label for="path_config_model">Enter the config path of the model:</label>
-                        <input type="text" id="path_config_model" name="path_config_model" size=50/><br>
-
-                        <label for="model_input_width">Model input width:</label>
-                        <input type="number" id="model_input_width" name="model_input_width" size=5 placeholder="416"/><br>
-                        <label for="model_input_height">Model input height:</label>
-                        <input type="number" id="model_input_height" name="model_input_height" size=5 placeholder="416"/><br>
+                        <div class="dl" hidden>
+                            <label for="path_detector_model">Enter the model path:</label>
+                            <input type="text" id="path_detector_model" name="path_detector_model" size=50/><br>
+                            <label for="path_config_model">Enter the config path of the model:</label>
+                            <input type="text" id="path_config_model" name="path_config_model" size=50/><br>
+                        </div>
+                        <div class="yolo" hidden>
+                            <label for="model_input_width">Model input width:</label>
+                            <input type="number" id="model_input_width" name="model_input_width" size=5 placeholder="416"/><br>
+                            <label for="model_input_height">Model input height:</label>
+                            <input type="number" id="model_input_height" name="model_input_height" size=5 placeholder="416"/><br>
+                        </div>
                     </div>
 
                     <div class="yolo indent" hidden>
@@ -100,6 +111,33 @@
                         <input type="checkbox" id="ocv_hp_cb" name="ocv_hp_cb" value="ocv_hp_cb" class="ocv_gpu" hidden>
                         </div>
                     </div>
+
+                    <div class="detectron2 indent" hidden>
+                        <h5>Detectron2</h5>
+                        <div class="indent">
+                        <label for="det2_conf_thresh">Confidence threshold:</label>
+                        <input type="number" id="det2_conf_thresh" name="det2_conf_thresh" size=5 placeholder="0.25" min="0" max="1" step="0.05"/><br>
+                        <label for="det2_nms_thresh">Non-max Supression (NMS) threshold:</label>
+                        <input type="number" id="det2_nms_thresh" name="det2_nms_thresh" size=5 placeholder="0" 
+                           min="0" max="1" step="0.05"/><br>
+                        <label for="det2_gpu_cb">Use GPU:</label>
+                        <input type="checkbox" id="det2_gpu_cb" name="det2_gpu_cb" value="det2_gpu_cb"><br>
+                        </div>
+                    </div>
+
+                    <div class="bs indent" hidden>
+                        <h5>Background Subtractor</h5>
+                        <div class="indent">
+                        <label for="bs_contour_thresh">Contour threshold:</label>
+                        <input type="number" id="bs_contour_thresh" name="bs_contour_thresh" size=5 placeholder="3" min="0" step="1"/><br>
+                        <label for="bs_intensity">Intensity:</label>
+                        <input type="number" id="bs_intensity" name="bs_intensity" size=5 placeholder="50" min="0" step="1"/><br>
+                        <div class=mean_median hidden>
+                            <label for="bs_max_last_images">Maximum of last images:</label>
+                            <input type="number" id="bs_max_last_images" name="bs_max_last_images" size=5 placeholder="50" min="0" step="1"/><br>
+                        </div>
+                        </div>
+                    </div>
                 </div>
                     
                 <div class="tracker" hidden>
@@ -116,6 +154,7 @@
                             <option value="Centroid">Centroid</option>
                             <option value="SORT">SORT</option>
                             <option value="DeepSORT">DeepSORT</option>
+                            <option value="IOU">IOU</option>
                         </select><br>
 
                         <label for="select_tracker_implem">Select the model implementation:</label>
@@ -124,6 +163,8 @@
                             <option class="centroid" value="Rosebrock" hidden>Rosebrock</option>
                             <option class="sort" value="Abewley" hidden>Abewley</option>
                             <option class="deepsort" value="Leonlok" hidden>Leonlok</option>
+                            <option class="iou" value="SimpleIOU" hidden>SimpleIOU</option>
+                            <option class="iou" value="KIOU" hidden>KIOU</option>
                         </select><br>
                     </div>
 
@@ -132,6 +173,18 @@
                         <div class="indent">
                         <label for="centroid_max_age">Max age:</label>
                         <input type="number" id="centroid_max_age" name="centroid_max_age" size=5 placeholder="10" min="1"/><br>
+                        </div>
+                    </div>
+
+                    <div class="iou indent" hidden>
+                        <h5>IOU</h5>
+                        <div class="indent">
+                        <label class="kiou" for="iou_max_age" hidden>Max age:</label>
+                        <input class="kiou" type="number" id="iou_max_age" name="iou_max_age" size=5 placeholder="10" min="1" hidden/><br class="kiou" hidden>
+                        <label for="iou_min_hits">Min hits:</label>
+                        <input type="number" id="iou_min_hits" name="iou_min_hits" size=5 placeholder="3" min="1"/><br>
+                        <label for="iou_iou_thresh">IOU threshold:</label>
+                        <input type="number" id="iou_iou_thresh" name="iou_iou_thresh" size=5 placeholder="0.3" min="0" max="1" step="0.05"/><br>
                         </div>
                     </div>
 
@@ -248,6 +301,8 @@
                 <input type="number" id="post_max_width" name="post_max_width" size=5 placeholder="0.75" min="0" max="1" step="0.05"/><br>
                 <label for="post_min_width">Min width:</label>
                 <input type="number" id="post_min_width" name="post_min_width" size=5 placeholder="0.1" min="0" max="1" step="0.05"/><br>
+                <label for="post_min_area">Min area:</label>
+                <input type="number" id="post_min_area" name="post_min_area" size=5 placeholder="125" min="0" step="1"/><br>
                 <label for="post_top_k">Top k detections:</label>
                 <input type="number" id="post_top_k" name="post_top_k" size=5 placeholder="15" min="1"/><br>
                 <label for="post_coi">Classes of interest:</label>

@@ -1,17 +1,21 @@
 from timeit import default_timer
-
+import logging
 import numpy as np
 
 import pytb.utils.transformation as tfm
+import pytb.utils.validator as val
 from pytb.detection.detector import Detector
 from pytb.output.detection import Detection
 
+log = logging.getLogger("aptitude-toolbox")
 
 class DetectionManager:
 
     def __init__(self, detector: Detector, preprocess_parameters: dict, postprocess_parameters: dict):
-        # _validate_preprocess_parameters(preprocess_parameters)
-        # _validate_postprocess_parameters(postprocess_parameters)
+        assert val.validate_preprocess_parameters(preprocess_parameters), \
+            "[ERROR] Invalid Preproc parameter(s) detected, check any error reported above for details."
+        assert val.validate_postprocess_parameters(postprocess_parameters), \
+            "[ERROR] Invalid Postproc parameter(s) detected, check any error reported above for details."
 
         self.detector = detector
         self.preprocess_parameters = preprocess_parameters
@@ -19,21 +23,12 @@ class DetectionManager:
 
         self.roi = None
 
-    @staticmethod
-    def _validate_preprocess_parameters(preprocess_parameters: dict):
-        # TODO
-        pass
-
-    @staticmethod
-    def _validate_postprocess_parameters(postprocess_parameters: dict):
-        # TODO
-        pass
-
     def detect(self, org_frame: np.ndarray) -> Detection:
         start = default_timer()
         edit_frame, self.roi = tfm.pre_process(self.preprocess_parameters, org_frame, self.roi)
         preproc_time = default_timer() - start
 
+        log.debug("Preprocessing done.")
         # call the concrete method of the detector
         start = default_timer()
         detection = self.detector.detect(edit_frame)
@@ -41,15 +36,12 @@ class DetectionManager:
 
         detection.preprocessing_time = preproc_time
 
+        log.debug("Actual detection done.")
         # Post process
         start = default_timer()
         if detection.number_objects != 0:
             detection = tfm.post_process(self.postprocess_parameters, detection)
         detection.postprocessing_time = default_timer() - start
+        log.debug("Postprocessing done.")
 
-        # print("--------------")
-        # print(detection.preprocessing_time)
-        # print(detection.processing_time)
-        # print(detection.postprocessing_time)
-        # print(1/(detection.processing_time+detection.processing_time+detection.postprocessing_time))
         return detection

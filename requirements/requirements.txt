@@ -10,6 +10,7 @@ PyTurboJPEG==1.4.1
 h5py~=2.9
 tqdm~=4.62.3
 pykalman~=0.9.5
+coloredlogs~=15.0.1
 
 # Uncomment the following for Linux not on docker
 #torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html \

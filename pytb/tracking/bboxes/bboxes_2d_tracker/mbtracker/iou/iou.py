@@ -1,3 +1,17 @@
+"""
+Simple IOU based tracker with Kalman filter.
+
+Copyright (c) 2017 TU Berlin, Communication Systems Group
+Licensed under The MIT License [see LICENSE for details]
+Written by Erik Bochinski
+
+See https://github.com/bochinski/iou-tracker for more information
+
+Copyright (c) 2021 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Adapted for online tracking by Jonathan Samelson (2021)
+"""
+
 from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTracker
 from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.iou.kiou import KIOU
 from pytb.tracking.bboxes.bboxes_2d_tracker.mbtracker.iou.simple_iou import SimpleIOU
@@ -5,7 +19,9 @@ from pytb.output.bboxes_2d import BBoxes2D
 from pytb.output.bboxes_2d_track import BBoxes2DTrack
 from timeit import default_timer
 import numpy as np
+import logging
 
+log = logging.getLogger("aptitude-toolbox")
 
 class IOU(BBoxes2DTracker):
 
@@ -19,12 +35,16 @@ class IOU(BBoxes2DTracker):
         self.min_hits = tracker_parameters["IOU"].get("min_hits", 3)
         self.iou_thresh = tracker_parameters["IOU"].get("iou_thresh", 0.3)
 
+        log.debug("IOU {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "SimpleIOU":
             self.tracker = SimpleIOU(self.min_hits, self.iou_thresh)
 
-        if self.pref_implem == "KIOU":
+        elif self.pref_implem == "KIOU":
             self.max_age = tracker_parameters["IOU"].get("max_age", 10)
             self.tracker = KIOU(self.min_hits, self.iou_thresh, self.max_age)
+
+        else:
+            assert False, "[ERROR] Unknown implementation of IOU: {}".format(self.pref_implem)
 
     def track(self, detection: BBoxes2D) -> BBoxes2DTrack:
         """Performs an inference on the given frame.
@@ -57,11 +77,14 @@ class IOU(BBoxes2DTracker):
             class_IDs = [res['classes'][-1] for res in res]
             global_IDs = [res['id'] for res in res]
 
-        if self.pref_implem == "KIOU":
+        elif self.pref_implem == "KIOU":
             bboxes = [res[-1]['bbox'] for res in res]
             det_confs = [res[-1]['score'] for res in res]
             class_IDs = [res[-1]['class'] for res in res]
             global_IDs = [res[0]['id'] for res in res]
+
+        else:
+            assert False, "[ERROR] Unknown implementation of IOU: {}".format(self.pref_implem)
 
         # TODO add avg_det_conf and most_common_class options
 

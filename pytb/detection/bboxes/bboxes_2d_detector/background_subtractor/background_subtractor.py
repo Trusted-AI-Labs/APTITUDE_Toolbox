@@ -4,6 +4,9 @@ from pytb.output.bboxes_2d import BBoxes2D
 from timeit import default_timer
 import cv2
 import numpy as np
+import logging
+
+log = logging.getLogger("aptitude-toolbox")
 
 
 class BackgroundSubtractor(BBoxes2DDetector):
@@ -18,12 +21,16 @@ class BackgroundSubtractor(BBoxes2DDetector):
         self.contour_thresh = detector_parameters["BackgroundSubtractor"].get("contour_thresh", 3)
         self.intensity = detector_parameters["BackgroundSubtractor"].get("intensity", 50)
 
+        log.debug("BackgroundSubtractor {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "mean" or self.pref_implem == "median":
             self.max_last_images = detector_parameters["BackgroundSubtractor"].get("max_last_images", 50)
             self.last_images = []
 
-        if self.pref_implem == "frame_diff":
+        elif self.pref_implem == "frame_diff":
             self.prev_image = None
+
+        else:
+            assert False, "[ERROR] Unknown implementation of BackgroundSubtractor: {}".format(self.pref_implem)
 
     def detect(self, frame: np.ndarray) -> BBoxes2D:
         """Performs an inference using a background subtraction method on the given frame.
@@ -51,7 +58,7 @@ class BackgroundSubtractor(BBoxes2DDetector):
             foreground_image = cv2.absdiff(frame_gray, background_image)
             img_sub = np.where(foreground_image > self.intensity, frame_gray, np.array([0], np.uint8))
 
-        if self.pref_implem == "frame_diff":
+        elif self.pref_implem == "frame_diff":
             if self.prev_image is None:
                 self.prev_image = frame_gray
                 return BBoxes2D(0, np.array([]), np.array([]), np.array([]), frame.shape[1], frame.shape[0])
@@ -60,7 +67,9 @@ class BackgroundSubtractor(BBoxes2DDetector):
                 img_sub = np.where(foreground_image > self.intensity, frame_gray, np.array([0], np.uint8))
                 self.prev_image = frame_gray
 
-        before_cont = default_timer()
+        else:
+            assert False, "[ERROR] Unknown implementation of BackgroundSubtractor: {}".format(self.pref_implem)
+
         bboxes = []
         contours = cv2.findContours(img_sub, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for cont in contours[0]:
@@ -69,10 +78,5 @@ class BackgroundSubtractor(BBoxes2DDetector):
             bboxes.append([x, y, w, h])
         end = default_timer()
 
-        # print("-----------------------")
-        # print("method", before_cont-start)
-        # print("contour", end-before_cont)
-        # print("total", end-start)
-
-        return BBoxes2D(end-start, np.array(bboxes), np.zeros(len(bboxes)), np.ones(len(bboxes)),
-                        frame.shape[1], frame.shape[0])
+        return BBoxes2D(end-start, np.array(bboxes).astype(int), np.zeros(len(bboxes)).astype(int),
+                        np.ones(len(bboxes)), frame.shape[1], frame.shape[0])

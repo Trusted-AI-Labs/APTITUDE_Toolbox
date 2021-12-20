@@ -5,6 +5,9 @@ from pytb.output.bboxes_2d_track import BBoxes2DTrack
 
 import numpy as np
 from timeit import default_timer
+import logging
+
+log = logging.getLogger("aptitude-toolbox")
 
 
 class SORT(BBoxes2DTracker):
@@ -21,8 +24,11 @@ class SORT(BBoxes2DTracker):
         self.iou_thresh = tracker_parameters["SORT"].get("iou_thresh", 0.3)
         self.memory_fade = tracker_parameters["SORT"].get("memory_fade", 1.0)
 
+        log.debug("SORT {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Abewley":
             self.tracker = SortAbewley(self.max_age, self.min_hits, self.iou_thresh, self.memory_fade)
+        else:
+            assert False, "[ERROR] Unknown implementation of SORT: {}".format(self.pref_implem)
 
     def track(self, detection: BBoxes2D) -> BBoxes2DTrack:
         """Performs an inference on the given frame. 
@@ -55,6 +61,9 @@ class SORT(BBoxes2DTracker):
                                    bboxes_format="x1_y1_x2_y2")
             output.to_xt_yt_w_h()
             return output
+        
+        else:
+            assert False, "[ERROR] Unknown implementation of SORT: {}".format(self.pref_implem)
 
     def reset_state(self, reset_id: bool = False):
         """Reset the current state of the tracker."""

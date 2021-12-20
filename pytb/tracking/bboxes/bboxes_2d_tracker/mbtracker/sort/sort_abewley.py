@@ -14,15 +14,24 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    Copyright (c) 2021 UCLouvain, ICTEAM
+    Licensed under GPL-3.0 [see LICENSE for details]
+    Adapted by Jonathan Samelson (2021)
+
+    NOTE:
+    This file was modified from the original repository
+    https://github.com/abewley/sort/
+    1) To access the alpha parameter of the Kalman filter
+    to turn on the fading memory filter.
+    This allows to reduce the impact of previous bounding boxes of the objects.
+    Older bounding boxes are less significant because vehicles move quite fast.
+    2) To allow to get back the vehicle class that corresponds to the predictions.
+    Note that vehicle classes are not used in this repository.
 """
 from __future__ import print_function
 
-import os
 import numpy as np
-from skimage import io
-
-import glob
-import time
 from filterpy.kalman import KalmanFilter
 
 # try:
@@ -48,7 +57,7 @@ def iou_batch(bb_test, bb_gt):
     """
     bb_gt = np.expand_dims(bb_gt, 0)
     bb_test = np.expand_dims(bb_test, 1)
-    
+
     xx1 = np.maximum(bb_test[..., 0], bb_gt[..., 0])
     yy1 = np.maximum(bb_test[..., 1], bb_gt[..., 1])
     xx2 = np.minimum(bb_test[..., 2], bb_gt[..., 2])
@@ -56,9 +65,9 @@ def iou_batch(bb_test, bb_gt):
     w = np.maximum(0., xx2 - xx1)
     h = np.maximum(0., yy2 - yy1)
     wh = w * h
-    o = wh / ((bb_test[..., 2] - bb_test[..., 0]) * (bb_test[..., 3] - bb_test[..., 1])                                      
-        + (bb_gt[..., 2] - bb_gt[..., 0]) * (bb_gt[..., 3] - bb_gt[..., 1]) - wh)                                              
-    return(o)   
+    o = wh / ((bb_test[..., 2] - bb_test[..., 0]) * (bb_test[..., 3] - bb_test[..., 1])
+        + (bb_gt[..., 2] - bb_gt[..., 0]) * (bb_gt[..., 3] - bb_gt[..., 1]) - wh)
+    return(o)
 
 # @jit
 # def iou(bb_test, bb_gt):
@@ -114,7 +123,7 @@ class KalmanBoxTracker(object):
         Initialises a tracker using initial bounding box.
         """
         #define constant velocity model
-        self.kf = KalmanFilter(dim_x=7, dim_z=4) 
+        self.kf = KalmanFilter(dim_x=7, dim_z=4)
         self.kf.F = np.array([[1,0,0,0,1,0,0],[0,1,0,0,0,1,0],[0,0,1,0,0,0,1],[0,0,0,1,0,0,0],  [0,0,0,0,1,0,0],[0,0,0,0,0,1,0],[0,0,0,0,0,0,1]])
         self.kf.H = np.array([[1,0,0,0,0,0,0],[0,1,0,0,0,0,0],[0,0,1,0,0,0,0],[0,0,0,1,0,0,0]])
 
@@ -282,7 +291,7 @@ class Sort(object):
             d = trk.get_state()[0]
             conf = trk.confidence
             cl = trk.type
-        
+
             # Refers to https://github.com/abewley/sort/issues/22
             # if((trk.time_since_update < self.max_age+1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits)):
             if (trk.time_since_update < 1) and (trk.hit_streak >= self.min_hits or self.frame_count <= self.min_hits):

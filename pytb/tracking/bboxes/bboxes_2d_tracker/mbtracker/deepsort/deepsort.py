@@ -9,7 +9,9 @@ from . import generate_detections as gdet
 
 import numpy as np
 from timeit import default_timer
+import logging
 
+log = logging.getLogger("aptitude-toolbox")
 
 class DeepSORT(BBoxes2DTracker):
 
@@ -38,8 +40,11 @@ class DeepSORT(BBoxes2DTracker):
 
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_dist, self.nn_budget)
 
+        log.debug("DeepSORT {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Leonlok":
             self.tracker = Tracker(metric, self.iou_thresh, self.max_age, self.min_hits, self.avg_det_conf_thresh)
+        else:
+            assert False, "[ERROR] Unknown implementation of DeepSORT: {}".format(self.pref_implem)
 
     def track(self, detection: BBoxes2D, frame=np.ndarray) -> BBoxes2DTrack:
         """Performs an inference on the given frame. 
@@ -88,6 +93,9 @@ class DeepSORT(BBoxes2DTracker):
                                  np.array(classes), np.array(confidences),
                                  detection.dim_width, detection.dim_height,
                                  tracking_time, np.array(track_IDs))
+
+        else:
+            assert False, "[ERROR] Unknown implementation of DeepSORT: {}".format(self.pref_implem)
 
     def reset_state(self, reset_id: bool = False):
         """Reset the current state of the tracker."""

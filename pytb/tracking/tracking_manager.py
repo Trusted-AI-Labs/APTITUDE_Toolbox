@@ -1,19 +1,23 @@
 from pytb.tracking.tracker import Tracker
 from pytb.output.detection import Detection
 import pytb.utils.transformation as tfm
+import pytb.utils.validator as val
 
 from typing import Optional
 from timeit import default_timer
 import numpy as np
-import cv2
+import logging
+
+log = logging.getLogger("aptitude-toolbox")
 
 
 class TrackingManager:
 
     def __init__(self, tracker: Tracker, preprocess_parameters: dict, postprocess_parameters: dict):
-
-        # _validate_preprocess_parameters(preprocess_parameters)
-        # _validate_postprocess_parameters(postprocess_parameters)
+        assert val.validate_preprocess_parameters(preprocess_parameters), \
+            "[ERROR] Invalid Preproc parameter(s) detected, check any error reported above for details."
+        assert val.validate_postprocess_parameters(postprocess_parameters), \
+            "[ERROR] Invalid Postproc parameter(s) detected, check any error reported above for details."
 
         self.tracker = tracker
         self.preprocess_parameters = preprocess_parameters
@@ -35,8 +39,7 @@ class TrackingManager:
         start = default_timer()
         if frame is not None:
             frame, self.roi = tfm.pre_process(self.preprocess_parameters, frame, self.roi)
-            resize_params = self.preprocess_parameters["resize"]
-            detection.change_dims(resize_params["width"], resize_params["height"])
+            log.debug("Preprocessing done.")
         preproc_time = default_timer() - start
 
         # call the concrete method of the tracker
@@ -48,13 +51,17 @@ class TrackingManager:
         track.processing_time += default_timer() - start
 
         track.preprocessing_time = preproc_time
+        log.debug("Actual tracking done.")
 
         # Post process
         start = default_timer()
         if track.number_objects != 0:
             track = tfm.post_process(self.postprocess_parameters, track)
         track.postprocessing_time = default_timer() - start
+        log.debug("Postprocessing done.")
+
         return track
 
     def reset_state(self):
         self.tracker.reset_state()
+        log.debug("Tracker state reset.")

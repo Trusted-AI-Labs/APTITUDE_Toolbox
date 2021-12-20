@@ -59,8 +59,24 @@ function displayDetector() {
     $("select[name='select_detector_model_type']").change(function(){
         if ($(this).children(':selected')[0].value === "YOLO") {
             $(".yolo").attr("hidden", false)
+            $(".detectron2").attr("hidden", true)
+            $(".bs").attr("hidden", true)
+            $(".dl").attr("hidden", false)
+        } else if ($(this).children(':selected')[0].value === "Detectron2") {
+            $(".yolo").attr("hidden", true)
+            $(".detectron2").attr("hidden", false)
+            $(".bs").attr("hidden", true)
+            $(".dl").attr("hidden", false)
+        } else if ($(this).children(':selected')[0].value === "BackgroundSubtractor") {
+            $(".yolo").attr("hidden", true)
+            $(".detectron2").attr("hidden", true)
+            $(".bs").attr("hidden", false)
+            $(".dl").attr("hidden", true)
         } else{
             $(".yolo").attr("hidden", true)
+            $(".detectron2").attr("hidden", true)
+            $(".bs").attr("hidden", true)
+            $(".dl").attr("hidden", true)
         }
     })
 
@@ -75,6 +91,11 @@ function displayDetector() {
             }
         } else{
             $(".opencv").attr("hidden", true)
+        }
+        if (val === "mean" || val === "median"){
+            $(".mean_median").attr("hidden", false)
+        }else{
+            $(".mean_median").attr("hidden", true)
         }
     })
 
@@ -101,33 +122,37 @@ function displayTracker() {
         if (val == "Centroid"){
             $(".sort").attr("hidden", true)
             $(".deepsort").attr("hidden", true)
+            $(".iou").attr("hidden", true)
             $(".centroid").attr("hidden", false)
         } else if (val  === "SORT") {
             $(".sort").attr("hidden", false)
             $(".deepsort").attr("hidden", true)
+            $(".iou").attr("hidden", true)
             $(".centroid").attr("hidden", true)
         } else if (val === "DeepSORT") {
             $(".sort").attr("hidden", true)
             $(".deepsort").attr("hidden", false)
+            $(".iou").attr("hidden", true)
+            $(".centroid").attr("hidden", true)
+        } else if (val === "IOU") {
+            $(".sort").attr("hidden", true)
+            $(".deepsort").attr("hidden", true)
+            $(".iou").attr("hidden", false)
             $(".centroid").attr("hidden", true)
         } else {
             $(".sort").attr("hidden", true)
             $(".deepsort").attr("hidden", true)
             $(".centroid").attr("hidden", true)
+            $(".iou").attr("hidden", true)
         }
     })
 
-    $("select[name='select_detector_implem']").change(function(){
-        val = $(this).children(':selected')[0].value 
-        if (val === "cv2-DM" || val === "cv2-RM") {
-            $(".opencv").attr("hidden", false)
-            if (val === "cv2-DM") {
-                $(".cv2-DM").attr("hidden", false)
-            }else{
-                $(".cv2-DM").attr("hidden", true)
-            }
-        } else{
-            $(".opencv").attr("hidden", true)
+    $("select[name='select_tracker_implem']").change(function(){
+        val = $(this).children(':selected')[0].value
+        if (val === "KIOU"){
+            $(".kiou").attr("hidden", false)
+        }else{
+            $(".kiou").attr("hidden", true)
         }
     })
 
@@ -185,12 +210,13 @@ function displayPostProc() {
 function generateJSONVideo() {
     $("input[name='path']").change(function(){
         jsonOut['Video']['path'] = this.value
-        console.log(jsonOut)
     })
     
     $("input[name='async_cb']").change(function(){
         jsonOut['Video']['async'] = this.checked
-        console.log(jsonOut)
+    })
+    $("input[name='frame_interval']").change(function(){
+        jsonOut['Video']['frame_interval'] = Number(this.value)
     })
 }
 
@@ -250,6 +276,8 @@ function generateJSONDetector() {
         }
     })
 
+    // YOLO
+
     $("input[name='model_input_width'], input[name='model_input_height']").change(function(){
         var type = $("select[name='select_detector_type']").children(':selected')[0].value
         var width = Number($("input[name='model_input_width']")[0].value) || 416
@@ -268,9 +296,9 @@ function generateJSONDetector() {
 
     $("input[name='yolo_nms_thresh']").change(function(){
         if ($(this)[0].value){
-            jsonOut['Proc']['YOLO']['nms_tresh'] = Number($(this)[0].value)
+            jsonOut['Proc']['YOLO']['nms_thresh'] = Number($(this)[0].value)
         }else{
-            delete jsonOut['Proc']['nms']['nms_tresh'] 
+            delete jsonOut['Proc']['nms']['nms_thresh']
         }
     })
 
@@ -285,6 +313,55 @@ function generateJSONDetector() {
     $("input[name='ocv_hp_cb']").change(function(){
         jsonOut['Proc']['cv2']['half_precision'] = this.checked
     })
+
+    // Detectron2
+
+    $("input[name='det2_conf_thresh']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['Detectron2']['conf_thresh'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['YOLO']['conf_thresh']
+        }
+    })
+
+    $("input[name='det2_nms_thresh']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['Detectron2']['nms_thresh'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['nms']['nms_thresh']
+        }
+    })
+
+    $("input[name='det2_gpu_cb']").change(function(){
+        jsonOut['Proc']['Detectron2']['GPU'] = this.checked
+    })
+
+    // Background subtraction
+
+    $("input[name='bs_contour_thresh']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['Detectron2']['bs_contour_thresh'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['Detectron2']['bs_contour_thresh']
+        }
+    })
+
+    $("input[name='bs_intensity']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['Detectron2']['bs_intensity'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['Detectron2']['bs_intensity']
+        }
+    })
+
+    $("input[name='bs_max_last_images']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['Detectron2']['bs_max_last_images'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['Detectron2']['bs_max_last_images']
+        }
+    })
+
 }
 
 function generateJSONTracker() {
@@ -328,6 +405,32 @@ function generateJSONTracker() {
             jsonOut['Proc']['Centroid']['max_age'] = Number($(this)[0].value)
         }else{
             delete jsonOut['Proc']['Centroid']['max_age']
+        }
+    })
+
+    // IOU
+
+    $("input[name='iou_max_age']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['IOU']['max_age'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['IOU']['max_age']
+        }
+    })
+
+    $("input[name='iou_min_hits']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['IOU']['min_hits'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['IOU']['min_hits']
+        }
+    })
+
+    $("input[name='iou_iou_thresh']").change(function(){
+        if ($(this)[0].value){
+            jsonOut['Proc']['IOU']['iou_thresh'] = Number($(this)[0].value)
+        }else{
+            delete jsonOut['Proc']['IOU']['iou_thresh']
         }
     })
 
@@ -493,7 +596,7 @@ function generateJSONPostproc() {
         if (val !== ""){
             jsonOut['Postproc']['nms'] = {}
             jsonOut['Postproc']['nms']['pref_implem'] = $(this).children(':selected')[0].value
-            jsonOut['Postproc']['nms']['nms_tresh'] = 0.45
+            jsonOut['Postproc']['nms']['nms_thresh'] = 0.45
         }else {
             delete jsonOut['Postproc']['nms']
         }
@@ -501,9 +604,9 @@ function generateJSONPostproc() {
 
     $("input[name='post_nms_thresh']").change(function(){
         if (this.value){
-            jsonOut['Postproc']['nms']['nms_tresh'] = Number(this.value)
+            jsonOut['Postproc']['nms']['nms_thresh'] = Number(this.value)
         }else{
-            delete jsonOut['Postproc']['nms']['nms_tresh'] 
+            delete jsonOut['Postproc']['nms']['nms_thresh']
         }
     })
 
@@ -544,6 +647,14 @@ function generateJSONPostproc() {
             jsonOut['Postproc']['min_width'] = Number(this.value)
         }else{
             delete jsonOut['Postproc']['min_width']
+        }
+    })
+
+    $("input[name='post_min_area']").change(function(){
+        if (this.value){
+            jsonOut['Postproc']['min_area'] = Number(this.value)
+        }else{
+            delete jsonOut['Postproc']['min_area']
         }
     })
 
