@@ -15,8 +15,8 @@ class BBoxes2DDetector(Detector, ABC):
         """
         super().__init__()
         self.pref_implem = detector_parameters["BBoxes2DDetector"]["pref_implem"]
-        self.model_path = detector_parameters["BBoxes2DDetector"]["model_path"]
-        self.config_path = detector_parameters["BBoxes2DDetector"]["config_path"]
+        self.model_path = detector_parameters["BBoxes2DDetector"].get("model_path", "")
+        self.config_path = detector_parameters["BBoxes2DDetector"].get("config_path", "")
         self.input_width = detector_parameters["BBoxes2DDetector"].get("input_width", 416)
         self.input_height = detector_parameters["BBoxes2DDetector"].get("input_height", 416)
 

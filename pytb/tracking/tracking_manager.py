@@ -37,10 +37,15 @@ class TrackingManager:
 
     def track(self, detection: Detection, frame: Optional[np.ndarray] = None) -> Detection:
         start = default_timer()
+        border_px = None
         if frame is not None:
-            frame, self.roi = tfm.pre_process(self.preprocess_parameters, frame, self.roi)
+            frame, self.roi, border_px, detection = tfm.pre_process(self.preprocess_parameters, frame,
+                                                                    self.roi, detection)
             log.debug("Preprocessing done.")
         preproc_time = default_timer() - start
+
+        if border_px is not None:
+            self.postprocess_parameters["borders_detection"] = border_px
 
         # call the concrete method of the tracker
         start = default_timer()

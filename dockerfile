@@ -21,12 +21,12 @@ RUN apt-get update \
 WORKDIR /code
 
 # copy the dependencies file to the working directory
-COPY requirements/requirements.txt .
+COPY requirements/requirements_docker.txt .
 COPY setup.py .
 COPY requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl .
 
 # install dependencies
-RUN pip install --no-cache-dir -r requirements.txt \
+RUN pip install --no-cache-dir -r requirements_docker.txt \
 && pip install --no-cache-dir opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl \
 \
 && pip install --no-cache-dir torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \

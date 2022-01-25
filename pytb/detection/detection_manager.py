@@ -25,18 +25,21 @@ class DetectionManager:
 
     def detect(self, org_frame: np.ndarray) -> Detection:
         start = default_timer()
-        edit_frame, self.roi = tfm.pre_process(self.preprocess_parameters, org_frame, self.roi)
+        edit_frame, self.roi, border_px, _ = tfm.pre_process(self.preprocess_parameters, org_frame, self.roi)
         preproc_time = default_timer() - start
-
         log.debug("Preprocessing done.")
+
+        if border_px is not None:
+            self.postprocess_parameters["borders_detection"] = border_px
+
         # call the concrete method of the detector
         start = default_timer()
         detection = self.detector.detect(edit_frame)
         detection.processing_time = default_timer() - start
 
         detection.preprocessing_time = preproc_time
-
         log.debug("Actual detection done.")
+
         # Post process
         start = default_timer()
         if detection.number_objects != 0:

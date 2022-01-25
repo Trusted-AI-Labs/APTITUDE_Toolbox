@@ -22,6 +22,10 @@ section{
     margin-bottom: 3%;
 }
 
+input{
+    margin-bottom: 1%;
+}
+
 #path_config_model, #deepsort_tracker_model{
     margin-bottom: 0.5%;
 }

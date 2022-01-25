@@ -116,6 +116,28 @@ class BBoxes2D(Detection):
         self.dim_width = new_width
         self.dim_height = new_height
 
+    def remove_borders(self, borders_px):
+        if borders_px[1] > 0 or borders_px[3] > 0:
+            for i, bbox in enumerate(self.bboxes):
+                if self.bboxes_format == "xt_yt_w_h":
+                    self.bboxes[i] = bbox - np.array([borders_px[1], borders_px[3], 0, 0])
+                else:
+                    self.bboxes[i] = bbox - np.array([borders_px[1], borders_px[3], borders_px[1], borders_px[3]])
+
+        self.dim_width -= borders_px[0] + borders_px[1]
+        self.dim_height -= borders_px[2] + borders_px[3]
+
+    def add_borders(self, borders_px):
+        self.dim_width += borders_px[0] + borders_px[1]
+        self.dim_height += borders_px[2] + borders_px[3]
+
+        if borders_px[1] > 0 or borders_px[3] > 0:
+            for i, bbox in enumerate(self.bboxes):
+                if self.bboxes_format == "xt_yt_w_h":
+                    self.bboxes[i] = bbox + np.array([borders_px[1], borders_px[3], 0, 0])
+                else:
+                    self.bboxes[i] = bbox + np.array([borders_px[1], borders_px[3], borders_px[1], borders_px[3]])
+
     def remove_idx(self, s):
         self.bboxes = np.delete(self.bboxes, s, axis=0)
         self.class_IDs = np.delete(self.class_IDs, s)

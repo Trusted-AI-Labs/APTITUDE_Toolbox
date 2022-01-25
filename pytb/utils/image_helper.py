@@ -56,7 +56,7 @@ def apply_roi(image, roi):
 
 def add_borders(image: np.ndarray, centered=False):
     """Add black border to 'frame' keep aspect ratio
-    return the frame in letterbox format
+    return the frame in letterbox format and the number of black pixels on each side
 
     Args:
         image (np.ndarray): The image
@@ -64,6 +64,7 @@ def add_borders(image: np.ndarray, centered=False):
 
     Returns:
         np.ndarray: The image in letterbox format
+        np.array: The border applied on each side (right, left, bottom, top) in pixels
     """
     black = (0, 0, 0)
     (H, W, _) = image.shape
@@ -71,8 +72,9 @@ def add_borders(image: np.ndarray, centered=False):
         sides = max(0, int(H - W)) // 2
         top_bot = max(0, int(W - H)) // 2
         border_frame = cv2.copyMakeBorder(image, top_bot, top_bot, sides, sides, cv2.BORDER_CONSTANT, black)
+        return  border_frame, np.array([sides, sides, top_bot, top_bot])
     else:
         right = max(0, int(H - W))
         bottom = max(0, int(W - H))
         border_frame = cv2.copyMakeBorder(image, 0, bottom, 0, right, cv2.BORDER_CONSTANT, black)
-    return border_frame
+        return border_frame, np.array([right, 0, bottom, 0])

@@ -9,6 +9,8 @@ import coloredlogs
 if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("tensorflow").setLevel(logging.WARNING)
+    logging.getLogger("fvcore.common.checkpoint").setLevel(logging.WARNING)  # Detectron2 logger
+    logging.getLogger("utils.general").setLevel(logging.WARNING)  # yolov5 logger
 
     ap = argparse.ArgumentParser()
     ap.add_argument("-d", "--detector", required=True,
@@ -33,7 +35,7 @@ if __name__ == "__main__":
                     help="path to the result of tracking in MOT format")
     ap.add_argument("-a", "--async", action='store_true',
                     help="for video file only. whether video reading is asynchronous")
-    ap.add_argument("-l", "--log_level", type=str, default="info",
+    ap.add_argument("-l", "--log_level", type=str, default="INFO",
                     help="Log level."
                          "Possible values : \"NOTSET\", \"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", \"CRITICAL\".")
     args = vars(ap.parse_args())

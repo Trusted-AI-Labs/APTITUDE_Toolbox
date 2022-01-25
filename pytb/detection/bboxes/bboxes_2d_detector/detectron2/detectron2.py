@@ -32,10 +32,10 @@ class Detectron2(BBoxes2DDetector):
             cfg.MODEL.ROI_HEADS.NMS_THRESH_TEST = self.nms_thresh
             cfg.INPUT.FORMAT = "BGR"
             if self.gpu:
-                cfg.DEVICE = "cuda"
+                cfg.MODEL.DEVICE = "cuda"
                 log.debug("Device CUDA selected.")
-            else:  # It may have no effect if PyTorch is compiled with CUDA
-                cfg.DEVICE = "cpu"
+            else:
+                cfg.MODEL.DEVICE = "cpu"
                 log.debug("Device CPU selected.")
 
             self.predictor = DefaultPredictor(cfg)
@@ -56,7 +56,7 @@ class Detectron2(BBoxes2DDetector):
 
         # Seemingly, Detectron2 uses the original image dimension for inference,
         # no specific dimensions are required
-        output = BBoxes2D(end-start, bboxes.astype(int), classes, confs, org_frame.shape[1], org_frame.shape[0],
+        output = BBoxes2D(end-start, bboxes, classes, confs, org_frame.shape[1], org_frame.shape[0],
                           bboxes_format="x1_y1_x2_y2")
         output.to_xt_yt_w_h()
         return output

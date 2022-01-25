@@ -11,9 +11,10 @@ h5py~=2.9
 tqdm~=4.62.3
 pykalman~=0.9.5
 coloredlogs~=15.0.1
+torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
+torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
+torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
+seaborn~=0.11.2
 
-# Uncomment the following for Linux not on docker
-#torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-#torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-#torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
-#detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html #Not working on Windows 10
+# Uncomment if on Linux, this is not working on Windows
+#detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html

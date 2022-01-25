@@ -61,36 +61,40 @@ function displayDetector() {
             $(".yolo").attr("hidden", false)
             $(".detectron2").attr("hidden", true)
             $(".bs").attr("hidden", true)
-            $(".dl").attr("hidden", false)
+            $(".needs_model").attr("hidden", false)
+            $(".needs_config").attr("hidden", false)
         } else if ($(this).children(':selected')[0].value === "Detectron2") {
             $(".yolo").attr("hidden", true)
             $(".detectron2").attr("hidden", false)
             $(".bs").attr("hidden", true)
-            $(".dl").attr("hidden", false)
+            $(".needs_model").attr("hidden", false)
+            // $(".needs_config").attr("hidden", false)
         } else if ($(this).children(':selected')[0].value === "BackgroundSubtractor") {
             $(".yolo").attr("hidden", true)
             $(".detectron2").attr("hidden", true)
             $(".bs").attr("hidden", false)
-            $(".dl").attr("hidden", true)
+            $(".needs_model").attr("hidden", true)
+            $(".needs_config").attr("hidden", true)
         } else{
             $(".yolo").attr("hidden", true)
             $(".detectron2").attr("hidden", true)
             $(".bs").attr("hidden", true)
-            $(".dl").attr("hidden", true)
+            $(".needs_model").attr("hidden", true)
+            $(".needs_config").attr("hidden", true)
         }
     })
 
     $("select[name='select_detector_implem']").change(function(){
         val = $(this).children(':selected')[0].value 
-        if (val === "cv2-DM" || val === "cv2-RM") {
-            $(".opencv").attr("hidden", false)
-            if (val === "cv2-DM") {
-                $(".cv2-DM").attr("hidden", false)
-            }else{
-                $(".cv2-DM").attr("hidden", true)
-            }
-        } else{
-            $(".opencv").attr("hidden", true)
+        if (val === "cv2-DM" || val === "torch-Ultralytics") {
+            $(".yolo_nms").attr("hidden", false)
+        }else{
+            $(".yolo_nms").attr("hidden", true)
+        }
+        if (val === "cv2-DM" || val === "cv2-RN" || val === "Default"){
+            $(".needs_config").attr("hidden", false)
+        } else if (val === "torch-Ultralytics"){
+            $(".needs_config").attr("hidden", true)
         }
         if (val === "mean" || val === "median"){
             $(".mean_median").attr("hidden", false)
@@ -99,11 +103,12 @@ function displayDetector() {
         }
     })
 
-    $("#ocv_gpu_cb").change(function(){
-        if (this.checked) {
-            $(".ocv_gpu").attr("hidden", false)
+    $("#yolo_gpu_cb").change(function(){
+        det_implem = $("select[name='select_detector_implem']").children(':selected')[0].value
+        if (this.checked && det_implem.startsWith("cv2")) {
+            $(".yolo_hp").attr("hidden", false)
         } else {
-            $(".ocv_gpu").attr("hidden", true)
+            $(".yolo_hp").attr("hidden", true)
         }
     })
 }
@@ -249,12 +254,8 @@ function generateJSONDetector() {
         var val = $(this).children(':selected')[0].value
         if (val !== ""){
             jsonOut['Proc'][type]['pref_implem'] = val
-            if (val.startsWith("cv2")){
-                jsonOut['Proc']['cv2'] = {}
-            }
         } else {
             delete jsonOut['Proc'][type]['pref_implem']
-            delete jsonOut['Proc']['cv2']
         }
     })
 
@@ -302,16 +303,20 @@ function generateJSONDetector() {
         }
     })
 
-    $("input[name='ocv_gpu_cb']").change(function(){
-        jsonOut['Proc']['cv2']['GPU'] = this.checked
+    $("input[name='yolo_nms_across_classes_cb']").change(function() {
+        jsonOut['Proc']['YOLO']['nms_across_classes'] = this.checked
+    })
+
+    $("input[name='yolo_gpu_cb']").change(function(){
+        jsonOut['Proc']['YOLO']['GPU'] = this.checked
         if (!this.checked){
-            $("input[name='ocv_hp_cb']").prop("checked", false);
-            jsonOut['Proc']['cv2']['half_precision'] = false
+            $("input[name='yolo_hp_cb']").prop("checked", false);
+            jsonOut['Proc']['YOLO']['half_precision'] = false
         }
     })
 
-    $("input[name='ocv_hp_cb']").change(function(){
-        jsonOut['Proc']['cv2']['half_precision'] = this.checked
+    $("input[name='yolo_hp_cb']").change(function(){
+        jsonOut['Proc']['YOLO']['half_precision'] = this.checked
     })
 
     // Detectron2

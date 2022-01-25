@@ -78,5 +78,5 @@ class BackgroundSubtractor(BBoxes2DDetector):
             bboxes.append([x, y, w, h])
         end = default_timer()
 
-        return BBoxes2D(end-start, np.array(bboxes).astype(int), np.zeros(len(bboxes)).astype(int),
+        return BBoxes2D(end-start, np.array(bboxes), np.zeros(len(bboxes)).astype(int),
                         np.ones(len(bboxes)), frame.shape[1], frame.shape[0])

@@ -13,9 +13,7 @@
         },
         "YOLO":{
             "conf_thresh": 0.25, 
-            "nms_thresh": 0
-        },
-        "OpenCV":{
+            "nms_thresh": 0,
             "GPU": false,
             "half_precision": false
         }

@@ -74,9 +74,6 @@ Otherwise, refer to [this link](https://pypi.org/project/opencv-python/) (manual
 
 Additionally, if you are on Linux want to use Detectron2, you can install the following dependencies:
 ```
-pip install torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html
-pip install torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html
-pip install torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html
 ```
 

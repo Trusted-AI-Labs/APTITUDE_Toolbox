@@ -5,9 +5,9 @@ log = logging.getLogger("aptitude-toolbox")
 
 valid_preproc_keys = ["border", "resize", "roi"]
 valid_postproc_keys = ["coi", "nms", "min_conf", "max_height", "min_height",
-                       "max_width", "min_width", "min_area", "top_k"]
+                       "max_width", "min_width", "min_area", "top_k", "resize_results"]
 valid_nms_values = ["cv2", "Malisiewicz"]
-valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "OpenCV", "BackgroundSubtractor", "Detectron2"]
+valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "BackgroundSubtractor", "Detectron2"]
 valid_tracker_keys = ["Tracker", "BBoxes2DTracker", "SORT", "DeepSORT", "Centroid", "IOU"]
 
 
@@ -129,6 +129,21 @@ def validate_postprocess_parameters(post_params: dict):
         log.error("\"top_k\" value must be greater or equal to 0.")
         valid = False
 
+    if "resize_results" in list_keys:
+        if "width" not in post_params["resize_results"]:
+            log.error("\"resize_results\" entry without \"width\" sub-entries.")
+            valid = False
+        if "height" not in post_params["resize_results"]:
+            log.error("\"resize_results\" entry without \"height\" sub-entries.")
+            valid = False
+        if not isinstance(post_params["resize_results"]["width"], int) \
+                or not isinstance(post_params["resize_results"]["height"], int):
+            log.error("resize_results width or height must be of type int.")
+            valid = False
+        if post_params["resize_results"]["width"] <= 0 or post_params["resize_results"]["height"] <= 0:
+            log.error("resize_results width or height must be positive.")
+            valid = False
+
     return valid
 
 
@@ -189,20 +204,24 @@ def _validate_bboxes2ddetector_parameters(det_params: dict):
     elif not isinstance(b2d_params["pref_implem"], str):
         log.error("The value of \"pref_implem\" sub-entry must be of type string.")
         valid = False
-    elif b2d_params["pref_implem"].startswith("cv2"):
-        _validate_opencv_parameters(det_params["OpenCV"])
 
-    if "config_path" not in b2d_params and b2d_params["model_type"] != "BackgroundSubtractor":
+    # CV2 and DefaultPredictor of Detectron2 needs config
+    needs_config = b2d_params["pref_implem"] in ["cv2-DetectionModel", "cv2-ReadNet", "Default"]
+
+    # All implementations except BackgroundSubtractor needs models
+    needs_model = b2d_params["model_type"] != "BackgroundSubtractor"
+
+    if "config_path" not in b2d_params and needs_config:
         log.error("\"config_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
         valid = False
-    elif not isinstance(b2d_params["config_path"], str):
+    elif needs_config and not isinstance(b2d_params["config_path"], str):
         log.error("The value of \"config_path\" sub-entry must be of type string")
         valid = False
 
-    if "model_path" not in b2d_params and b2d_params["model_type"] != "BackgroundSubtractor":
+    if "model_path" not in b2d_params and needs_model:
         log.error("\"model_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
         valid = False
-    elif not isinstance(b2d_params["model_path"], str):
+    elif needs_model and not isinstance(b2d_params["model_path"], str):
         log.error("The value of \"model_path\" sub-entry must be of type string.")
         valid = False
 
@@ -229,6 +248,15 @@ def _validate_yolo_parameters(det_params: dict):
         valid = False
     if "nms_thresh" in yolo_params and (yolo_params["nms_thresh"] < 0 or yolo_params["nms_thresh"] > 1):
         log.error("\"nms_thresh\" (YOLO) value must be included between 0 and 1.")
+        valid = False
+    if "nms_across_classes" in yolo_params and not isinstance(yolo_params.get("nms_across_classes"), bool):
+        log.error("\"nms_across_classes\" sub-entry must be of type bool.")
+        valid = False
+    if "GPU" in yolo_params and not isinstance(yolo_params.get("GPU"), bool):
+        log.error("\"GPU\" sub-entry must be of type bool.")
+        valid = False
+    if "half_precision" in yolo_params and not isinstance(yolo_params.get("half_precision"), bool):
+        log.error("\"half_precision\" sub-entry must be of type bool.")
         valid = False
     return valid
 
@@ -263,19 +291,6 @@ def _validate_detectron2_parameters(det_params: dict):
         valid = False
     if "GPU" in det2_params and not isinstance(det2_params.get("GPU"), bool):
         log.error("\"GPU\" sub-entry must be of type bool.")
-        valid = False
-    return valid
-
-
-def _validate_opencv_parameters(opencv_params: dict):
-    if not opencv_params:
-        return True  # Empty dict for OpenCV is valid
-    valid = True
-    if "GPU" in opencv_params and not isinstance(opencv_params.get("GPU"), bool):
-        log.error("\"GPU\" sub-entry must be of type bool.")
-        valid = False
-    if "half_precision" in opencv_params and not isinstance(opencv_params.get("half_precision"), bool):
-        log.error("\"half_precision\" sub-entry must be of type bool.")
         valid = False
     return valid
 

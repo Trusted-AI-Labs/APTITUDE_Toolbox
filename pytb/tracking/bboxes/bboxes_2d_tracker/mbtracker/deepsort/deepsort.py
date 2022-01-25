@@ -89,7 +89,7 @@ class DeepSORT(BBoxes2DTracker):
                 else:
                     confidences.append(track.detection_confidence)
 
-            return BBoxes2DTrack(detection.detection_time, np.array(bboxes).astype("int"),
+            return BBoxes2DTrack(detection.detection_time, np.array(bboxes),
                                  np.array(classes), np.array(confidences),
                                  detection.dim_width, detection.dim_height,
                                  tracking_time, np.array(track_IDs))

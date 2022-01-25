@@ -51,10 +51,10 @@ class SORT(BBoxes2DTracker):
             tracking_time = default_timer() - start
 
             res_split = np.hsplit(res, np.array([4, 5, 6, 7]))
-            bboxes = res_split[0].astype("int")
-            class_IDs = res_split[2].flatten().astype("int")
+            bboxes = res_split[0]
+            class_IDs = res_split[2].flatten().astype(int)
             det_confs = res_split[1].flatten()
-            global_IDs = res_split[3].flatten().astype("int")
+            global_IDs = res_split[3].flatten().astype(int)
 
             output = BBoxes2DTrack(detection.detection_time, bboxes, class_IDs, det_confs,
                                    detection.dim_width, detection.dim_height, tracking_time, global_IDs,

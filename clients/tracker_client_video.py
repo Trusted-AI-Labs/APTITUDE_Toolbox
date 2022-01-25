@@ -162,10 +162,10 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
                 id = res.global_IDs[i]
                 color = [int(c) for c in COLORS[id]]
                 vehicle_label = 'I: {0}, T: {1} ({2})'.format(id, CLASSES[res.class_IDs[i]], str(res.det_confs[i])[:4])
-                cv2.rectangle(frame, (res.bboxes[i][0], res.bboxes[i][1]), (res.bboxes[i][2], res.bboxes[i][3]), color,
-                              thickness)
-                cv2.putText(frame, vehicle_label, (res.bboxes[i][0], res.bboxes[i][1] - 5), font, 1, color, thickness,
-                            line_type)
+                cv2.rectangle(frame, (round(res.bboxes[i][0]), round(res.bboxes[i][1])),
+                              (round(res.bboxes[i][2]), round(res.bboxes[i][3])), color, thickness)
+                cv2.putText(frame, vehicle_label, (round(res.bboxes[i][0]), round(res.bboxes[i][1] - 5)),
+                            font, 1, color, thickness, line_type)
             log.debug("Results bounding boxes added to the image.")
 
             if not headless:

@@ -28,7 +28,20 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.nda
     else:
         roi = None
 
+    border_px = None
+    if "border" in preprocess_parameters:
+        if detection is not None:
+            detection.change_dims(image.shape[1], image.shape[0])
+            log.debug("Detection resized to match image size")
+        border_params = preprocess_parameters["border"]
+        image, border_px = ih.add_borders(image, centered=border_params.get("centered", False))
+        log.debug("Borders added to the image.")
+        if detection is not None:
+            detection.add_borders(border_px)
+            log.debug("Borders added to the detections")
+
     if "resize" in preprocess_parameters:
+        prev_dims = image.shape
         resize_params = preprocess_parameters["resize"]
         image = ih.resize(image, resize_params["width"], resize_params["height"])
         log.debug("Image resized.")
@@ -36,14 +49,17 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.nda
             detection.change_dims(resize_params["width"], resize_params["height"])
             log.debug("Detection resized.")
 
-    if "border" in preprocess_parameters:
-        border_params = preprocess_parameters["border"]
-        image = ih.add_borders(image, centered=border_params.get("centered", False))
-        log.debug("Borders added to the image.")
-    return image, roi
+        if border_px is not None:
+            new_dims = image.shape
+            ratio_width = prev_dims[1] / new_dims[1]
+            ratio_height = prev_dims[0] / new_dims[0]
+            border_px = np.array([border_px[0]/ratio_width, border_px[1]/ratio_width,
+                                 border_px[2]/ratio_height, border_px[3]/ratio_height], np.int)
+
+    return image, roi, border_px, detection
 
 
-def post_process(postprocess_parameters: dict, detection: Detection) -> Detection:
+def post_process(postprocess_parameters: dict,  detection: Detection) -> Detection:
     if "nms" in postprocess_parameters:
         nms_params = postprocess_parameters["nms"]
         detection.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
@@ -72,6 +88,11 @@ def post_process(postprocess_parameters: dict, detection: Detection) -> Detectio
     if "min_area" in postprocess_parameters:
         detection.min_area_filter(postprocess_parameters["min_area"])
         log.debug("Only detections above min area threshold were kept.")
+    # borders_detection comes from preprocess
+    if "borders_detection" in postprocess_parameters:
+        border_px = postprocess_parameters["borders_detection"]
+        detection.remove_borders(border_px)
+        log.debug("Results were adjusted to take borders into account")
     if "resize_results" in postprocess_parameters:
         resize_res = postprocess_parameters["resize_results"]
         detection.change_dims(resize_res["width"], resize_res["height"])
