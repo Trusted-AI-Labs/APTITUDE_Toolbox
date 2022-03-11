@@ -1,2 +1,0 @@
-# Detectron2
-

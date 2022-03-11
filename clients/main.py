@@ -12,6 +12,13 @@ if __name__ == "__main__":
     logging.getLogger("fvcore.common.checkpoint").setLevel(logging.WARNING)  # Detectron2 logger
     logging.getLogger("utils.general").setLevel(logging.WARNING)  # yolov5 logger
 
+    def dims(s):
+        try:
+            w, h = map(int, s.split(','))
+            return w, h
+        except:
+            raise argparse.ArgumentTypeError("Dimensions must be expressed as widht,height without quotes or parantheses")
+
     ap = argparse.ArgumentParser()
     ap.add_argument("-d", "--detector", required=True,
                     help="path to detector config (json file)")
@@ -26,11 +33,15 @@ if __name__ == "__main__":
     ap.add_argument("-gt", "--ground_truth_path", type=str, default=None,
                     help="path to ground truth file in MOT format.")
     ap.add_argument("-hl", "--headless", action='store_true',
-                    help="whether the video is shown as it processed")
+                    help="whether the video is shown as it is processed")
+    ap.add_argument("-ds", "--display_size", type=dims, default=None,
+                    help="dimension of the video shown as it is processed: width,height")
     ap.add_argument("-rp", "--record_path", type=str, default=None,
                     help="path of the output video file")
     ap.add_argument("-rf", "--record_fps", type=int, default=10,
                     help="fps of the output video file")
+    ap.add_argument("-rs", "--record_size", type=dims, default=None,
+                    help="dimension of the recorded video: width,height. each image is resized just before being written")
     ap.add_argument("-mp", "--mot_path", type=str, default=None,
                     help="path to the result of tracking in MOT format")
     ap.add_argument("-a", "--async", action='store_true',
@@ -49,10 +60,10 @@ if __name__ == "__main__":
 
     if os.path.isdir(args["path"]):
         tci.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["mot_path"], args["headless"], args["ground_truth_path"],)
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"], args["record_size"],
+                 args["mot_path"], args["headless"], args["display_size"], args["ground_truth_path"],)
 
     else:
         tcv.main(args["detector"], args["tracker"], args["classes"],
-                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"],
-                 args["mot_path"], args["headless"], args["async"], args["ground_truth_path"])
+                 args["path"], args["frame_interval"], args["record_path"], args["record_fps"], args["record_size"],
+                 args["mot_path"], args["headless"], args["display_size"], args["async"], args["ground_truth_path"])

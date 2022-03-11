@@ -22,8 +22,8 @@ line_type = cv2.LINE_AA
 thickness = 2
 
 
-def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps,
-         mot_path, headless, gt_path):
+def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record_path, record_fps, record_size,
+         mot_path, headless, display_size, gt_path):
 
     log = logging.getLogger("aptitude-toolbox")
 
@@ -75,7 +75,9 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     frame_test = ih.get_cv2_img_from_str(os.path.join(folder_path, file_list[0]))
     H, W, _ = frame_test.shape
     if record:
-        output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, (W, H))
+        if record_size is None:
+            record_size = (H, W)
+        output_video = cv2.VideoWriter(record_path, cv2.VideoWriter_fourcc(*'mp4v'), record_fps, record_size)
         log.debug("VideoWriter opened successfully.")
 
     if gt_path is not None and not os.path.isdir(gt_path):
@@ -185,10 +187,18 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         log.debug("Results bounding boxes added to the image.")
 
         if not headless:
-            cv2.imshow("Result", frame)
+            frame_display = frame
+            if display_size is not None:
+                frame_display = cv2.resize(frame_display, display_size)
+                log.debug("Frame resized for display")
+            cv2.imshow("Result", frame_display)
             log.debug("Frame displayed.")
         if record:
-            output_video.write(frame)
+            frame_record = frame
+            if record_size is not None:
+                frame_record = cv2.resize(frame_record, record_size)
+                log.debug("Frame resized for record")
+            output_video.write(frame_record)
             log.debug("Frame written to VideoWriter.")
 
         counter += 1

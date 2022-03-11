@@ -27,7 +27,9 @@ The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use
 <details> 
   <summary>Using Docker (recommended)</summary>
 
-If you want to infer result with the provided models or with your own model, we recommend to download the last Docker image (link available soon) or build it yourself. To do so, enter the following command. The build process should last ~15 minutes.
+If you want to infer result with the provided models or with your own model, we recommend to pull the latest Docker image available on [Dockerhub](https://hub.docker.com/repository/docker/jonathansamelson/aptitude-toolbox). 
+
+You can also build it yourself. To do so, enter the following command. The build process should last ~15 minutes.
 
 ```
 git clone https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/
@@ -118,8 +120,10 @@ The toolbox comes with two "client" scripts that can be used to produce an annot
 | -fi |--frame_interval | Interval between two detections + tracking. | 1
 | -gt |--ground_truth_path | Path to ground truth file in MOT format. It will be displayed in white. |
 | -hl |--headless | Whether the video is shown while being processed. | False
+| -ds |--display_size | Dimension of the video shown as it is processed: width,height. |
 | -rp |--record_path | Path of the output video file. |
 | -rf |--record_fps | FPS of the output video file. | 10
+| -rs |--record_size | Dimension of the recorded video: width,height. Each image is resized just before being written. |
 | -mp |--mot_path | Path to the result of tracking in MOT format.
 | -a | --async | For video files only. Whether the video reading is asynchronous. | False
 
@@ -176,7 +180,9 @@ The APTITUDE toolbox comes from the APTITUDE project (**A**pprentissage **P**rof
 
 Refer to the following repositories for more information on individual algorithms. Part of the code present in this repository was adapted from those repositories, see individual source files for details.
 
-YOLO & Tiny-YOLO inference: [OpenCV Documentation - DNN module](https://docs.opencv.org/4.5.3/d0/db7/tutorial_js_table_of_contents_dnn.html)
+YOLO & Tiny-YOLO (v2-4) inference: [OpenCV Documentation - DNN module](https://docs.opencv.org/4.5.3/d0/db7/tutorial_js_table_of_contents_dnn.html)
+
+YOLOv5 inference: [Ultralytics - YOLOv5](https://github.com/ultralytics/yolov5)
 
 SORT: [abewley - SORT](https://github.com/abewley/sort)
 

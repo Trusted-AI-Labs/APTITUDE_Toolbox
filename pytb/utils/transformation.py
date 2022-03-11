@@ -11,7 +11,7 @@ log = logging.getLogger("aptitude-toolbox")
 
 def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.ndarray = None,
                 detection: Detection = None) \
-        -> Tuple[np.ndarray, Union[np.ndarray, None]]:
+        -> Tuple[np.ndarray, Union[np.ndarray, None], Union[np.ndarray, None], Union[Detection, None]]:
     if "roi" in preprocess_parameters:
         roi = prev_roi
         if prev_roi is None:
