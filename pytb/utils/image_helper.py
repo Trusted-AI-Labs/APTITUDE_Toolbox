@@ -1,15 +1,17 @@
 import cv2
 import numpy as np
-import timeit
 import urllib.request
 import ast
+import logging
+
+log = logging.getLogger("aptitude-toolbox")
 
 try:
     from turbojpeg import TurboJPEG
-
     tjpeg = TurboJPEG()
 except:
     tjpeg = None
+    log.warning("TurboJPEG could not be found, using cv2 to decode images instead.")
 
 
 def get_cv2_img_from_str(path: str, flags=cv2.IMREAD_COLOR):
@@ -72,7 +74,7 @@ def add_borders(image: np.ndarray, centered=False):
         sides = max(0, int(H - W)) // 2
         top_bot = max(0, int(W - H)) // 2
         border_frame = cv2.copyMakeBorder(image, top_bot, top_bot, sides, sides, cv2.BORDER_CONSTANT, black)
-        return  border_frame, np.array([sides, sides, top_bot, top_bot])
+        return border_frame, np.array([sides, sides, top_bot, top_bot])
     else:
         right = max(0, int(H - W))
         bottom = max(0, int(W - H))

@@ -10,7 +10,8 @@ if __name__ == "__main__":
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
     logging.getLogger("tensorflow").setLevel(logging.WARNING)
     logging.getLogger("fvcore.common.checkpoint").setLevel(logging.WARNING)  # Detectron2 logger
-    logging.getLogger("utils.general").setLevel(logging.WARNING)  # yolov5 logger
+    logging.getLogger("utils.torch_utils").setLevel(logging.WARNING)  # yolov5 loggers
+    logging.getLogger("models.yolo").setLevel(logging.WARNING)
 
     def dims(s):
         try:

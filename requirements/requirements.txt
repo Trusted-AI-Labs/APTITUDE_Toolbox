@@ -1,20 +1,19 @@
-setuptools~=50.3.2
-wheel==0.36.2
-numpy~=1.19.3
-scikit-image~=0.17.2
-filterpy~=1.4.5
-scipy~=1.5.4
-tensorflow~=2.4.0
-pillow~=8.0.1
-PyTurboJPEG==1.4.1
-h5py~=2.9
-tqdm~=4.62.3
-pykalman~=0.9.5
-coloredlogs~=15.0.1
-torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html \
-torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
-seaborn~=0.11.2
+setuptools==58.0.4
+wheel==0.37.1
+numpy==1.22.3
+scikit-image==0.19.2
+filterpy==1.4.5
+tensorflow-gpu==2.8.0
+pillow==9.0.1
+PyTurboJPEG==1.6.6
+h5py==3.6.0
+tqdm==4.63.0
+pykalman==0.9.5
+coloredlogs==15.0.1
+pyyaml==6.0
+seaborn==0.11.2
+torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 
 # Uncomment if on Linux, this is not working on Windows
-#detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html
+# detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html

@@ -2,6 +2,7 @@ from pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector import BBoxes2D
 from pytb.output.bboxes_2d import BBoxes2D
 
 from timeit import default_timer
+
 import cv2
 import torch
 import numpy as np
@@ -29,7 +30,6 @@ class YOLO(BBoxes2DDetector):
 
         log.debug("YOLO {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "cv2-DetectionModel":
-
             self.net = cv2.dnn_DetectionModel(self.model_path, self.config_path)
             self.net.setInputSize(self.input_width, self.input_height)
             self.net.setInputScale(1.0 / 255)
@@ -42,7 +42,7 @@ class YOLO(BBoxes2DDetector):
             self._setup_cv2()
 
         elif self.pref_implem == "torch-Ultralytics":
-            self.net = torch.hub.load('ultralytics/yolov5', 'custom', path=self.model_path, verbose=False)
+            self.net = torch.hub.load('ultralytics/yolov5:v6.0', 'custom', path=self.model_path, verbose=False)
             if self.gpu:
                 self.net.cuda()
             else:
@@ -63,7 +63,6 @@ class YOLO(BBoxes2DDetector):
         Returns:
             BBoxes2D: A set of 2DBBoxes of the detected objects.
         """
-        output = None
         if self.pref_implem == "cv2-DetectionModel":
             if frame.shape[:2] != (self.input_height, self.input_width):
                 frame = cv2.resize(frame, (self.input_width, self.input_height), interpolation=cv2.INTER_AREA)
@@ -76,7 +75,7 @@ class YOLO(BBoxes2DDetector):
 
         elif self.pref_implem == self.pref_implem == "torch-Ultralytics":
             output = self._detect_torch_ultralytics(frame[..., ::-1])  # BGR to RGB
-        
+
         else:
             assert False, "[ERROR] Unknown implementation of YOLO: {}".format(self.pref_implem)
 
@@ -149,8 +148,7 @@ class YOLO(BBoxes2DDetector):
 
         results = np.array(output.xyxy[0].cpu())
 
-        bboxes = BBoxes2D((end-start), results[:,0:4], results[:,5].astype(int), results[:,4],
-                        self.input_width, self.input_height, "x1_y1_x2_y2")
+        bboxes = BBoxes2D((end - start), results[:, 0:4], results[:, 5].astype(int), results[:, 4],
+                          self.input_width, self.input_height, "x1_y1_x2_y2")
         bboxes.to_xt_yt_w_h()
         return bboxes
-
