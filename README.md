@@ -18,7 +18,7 @@ A video demo showing the results of the inference can be consulted [here](https:
 
 The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use a high-end GPU in order to obtain real-time performance. 
 
-**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. It was tested with CUDA 11.3 and cuDNN 8.3.2, using previous versions may lead to unexcpeted results**
+**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. It was tested with CUDA 11.3 and cuDNN 8.3.2, using previous versions may lead to unexpected results**
 <!-- Refer to [this link]() for their installation. -->
 
 

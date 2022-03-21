@@ -12,8 +12,3 @@ pykalman==0.9.5
 coloredlogs==15.0.1
 pyyaml==6.0
 seaborn==0.11.2
-torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
-torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
-
-# Uncomment if on Linux, this is not working on Windows
-# detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html

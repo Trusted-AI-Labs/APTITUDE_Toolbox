@@ -27,11 +27,11 @@ COPY setup.py .
 COPY requirements/opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl .
 
 # install dependencies
-RUN pip install --no-cache-dir -r requirements_docker.txt
+RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl
-RUN pip install torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html \
-&& pip install torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
-RUN pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
+RUN pip install --no-cache-dir torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html \
+&& pip install --no-cache-dir torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+RUN pip install --no-cache-dir detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 RUN pip install -e .
 
 # set the working directory in the container
