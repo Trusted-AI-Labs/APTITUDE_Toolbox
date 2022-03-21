@@ -65,7 +65,7 @@ Then, you can use the wheel file to install OpenCV, which is already built with 
 
 For Windows:
 ```
-pip install requirements/opencv_contrib_python-4.5.5.64-cp39-cp39-win_amd64.whl
+pip install requirements/opencv_contrib_python-4.5.5-cp39-cp39-win_amd64.whl
 ```
 For Linux:
 ```
