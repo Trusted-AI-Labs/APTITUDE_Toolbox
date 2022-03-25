@@ -1,17 +1,18 @@
 # set base image (host OS)
-FROM nvidia/cuda:11.0.3-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
 
 RUN apt-get update \
-&& apt-get install software-properties-common -y \ 
+&& apt-get install software-properties-common -y \
 && add-apt-repository ppa:deadsnakes/ppa -y \
+&& apt install python3.9 -y \
 && apt-get update \
 \
 && apt-get install build-essential -y \
-&& apt-get install -y --no-install-recommends python3.7-dev python3-pip \
-&& update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1 \
+&& apt-get install --no-install-recommends python3.9-dev python3-pip -y  \
+&& update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 \
 && python -m pip install --upgrade pip \
 \
-&& apt-get install python3.7-tk -y \
+&& apt-get install python3.9-tk -y \
 && apt-get install libgtk2.0-0 -y \
 && apt-get install ffmpeg libsm6 libxext6 -y \
 && apt-get clean \
@@ -21,19 +22,17 @@ RUN apt-get update \
 WORKDIR /code
 
 # copy the dependencies file to the working directory
-COPY requirements/requirements_docker.txt .
+COPY requirements/requirements.txt .
 COPY setup.py .
-COPY requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl .
+COPY requirements/opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl .
 
 # install dependencies
-RUN pip install --no-cache-dir -r requirements_docker.txt \
-&& pip install --no-cache-dir opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl \
-\
-&& pip install --no-cache-dir torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html \
-&& pip install setuptools~=50.3.2 \
-&& pip install --no-cache-dir pycocotools==2.0.2 \
-&& pip install --no-cache-dir detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html \
-&& pip install -e .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl
+RUN pip install --no-cache-dir torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html \
+&& pip install --no-cache-dir torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+RUN pip install --no-cache-dir detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
+RUN pip install -e .
 
 # set the working directory in the container
 WORKDIR /code

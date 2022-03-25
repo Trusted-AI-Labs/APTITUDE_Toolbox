@@ -18,7 +18,7 @@ A video demo showing the results of the inference can be consulted [here](https:
 
 The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use a high-end GPU in order to obtain real-time performance. 
 
-**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. It was tested with CUDA 11.0 and cuDNN 8, using previous versions may lead to unexcpeted results**
+**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. It was tested with CUDA 11.3 and cuDNN 8.3.2, using previous versions may lead to unexpected results**
 <!-- Refer to [this link]() for their installation. -->
 
 
@@ -43,7 +43,7 @@ Once built, type `docker images` and you should see the image ready to use.
 ```
 REPOSITORY    TAG                                 IMAGE ID       CREATED        SIZE
 apt_tb        latest                              1b4926340c4b   3 hours ago    9.05GB
-nvidia/cuda   11.0.3-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   3.85GB
+nvidia/cuda   11.3.1-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   3.85GB
 ```
 </details>
 
@@ -53,7 +53,7 @@ nvidia/cuda   11.0.3-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   
 If you don't want to use Docker or if you want contribute to the project, you can clone and manually install the dependencies.
 
 ```
-conda create -n apt_tb python=3.7
+conda create -n apt_tb python=3.9
 conda activate apt_tb
 git clone https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/
 cd APTITUDE_Toolbox
@@ -65,18 +65,23 @@ Then, you can use the wheel file to install OpenCV, which is already built with 
 
 For Windows:
 ```
-pip install requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-win_amd64.whl
+pip install requirements/opencv_contrib_python-4.5.5-cp39-cp39-win_amd64.whl
 ```
 For Linux:
 ```
-pip install requirements/opencv_contrib_python-4.5.1.48-cp37-cp37m-linux_x86_64.whl
+pip install requirements/opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl
 ```
 
+Next, enter the following commands to install PyTorch with targeting the CUDA version:
+```
+pip install torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+pip install torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+```
 Otherwise, refer to [this link](https://pypi.org/project/opencv-python/) (manual builds section) to build it yourself.
 
 Additionally, if you are on Linux want to use Detectron2, you can install the following dependencies:
 ```
-pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu110/torch1.7/index.html
+pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
 However, if you are on Windows, this last pip install command does not work. Refer to their [repo](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
@@ -98,7 +103,7 @@ This might be because the path to a DLL is missing. Try to add to your path the 
 <your-path>\envs\apt_tb\Lib\site-packages\h5py
 ```
 
-The first one is for the python37.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
+The first one is for the python39.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
 
 </details>
 
