@@ -259,19 +259,19 @@
                 <label for="resize_height">Resize height:</label>
                 <input type="number" id="resize_height" name="resize_height" size=5 placeholder="416" min="1"/><br>
 
-                <label for="roi_cb">Region of Interest (ROI):</label>
-                <input type="checkbox" id="roi_cb" name="roi_cb" value="roi"><br>
+                <label for="roi_pre_cb">Region of Interest (ROI):</label>
+                <input type="checkbox" id="roi_pre_cb" name="roi_pre_cb" value="roi"><br>
 
-                <div class="roi indent" hidden>
-                    <input type="radio" id="radio_roi_file" name="roi_type" value="file">
-                    <label for="radio_roi_file">File</label><br>
-                    <label for="roi_file_path" class="roi_file" hidden>Enter the ROI mask file path:</label>
-                    <input type="text" id="roi_file_path" name="roi_file_path" size=50 class="roi_file" hidden/><br class="roi_file" hidden>
+                <div class="roi_pre indent" hidden>
+                    <input type="radio" id="radio_roi_pre_file" name="roi_pre_type" value="file">
+                    <label for="radio_roi_pre_file">File</label><br>
+                    <label for="roi_pre_file_path" class="roi_pre_file" hidden>Enter the ROI mask file path:</label>
+                    <input type="text" id="roi_pre_file_path" name="roi_pre_file_path" size=50 class="roi_pre_file" hidden/><br class="roi_pre_file" hidden>
 
-                    <input type="radio" id="radio_roi_coords" name="roi_type" value="coords">
-                    <label for="radio_roi_coords">Coords</label><br>
-                    <label for="roi_coords" class="roi_coords" hidden>Enter the polygon coords of the ROI:</label>
-                    <input type="text" id="roi_coords" name="roi_coords" size=50 class="roi_coords"
+                    <input type="radio" id="radio_roi_pre_coords" name="roi_pre_type" value="coords">
+                    <label for="radio_roi_pre_coords">Coords</label><br>
+                    <label for="roi_pre_coords" class="roi_pre_coords" hidden>Enter the polygon coords (W, H) of the ROI in the order:</label>
+                    <input type="text" id="roi_pre_coords" name="roi_pre_coords" size=50 class="roi_pre_coords"
                         placeholder="(0, 0), (1500, 0), (1500, 800), (0, 800)" hidden/>
                 </div>
                 </div>
@@ -309,6 +309,23 @@
                 <input type="number" id="post_resize_width" name="post_resize_width" size=5 placeholder="1280" min="1"/><br>
                 <label for="post_resize_height">Resize results height:</label>
                 <input type="number" id="post_resize_height" name="post_resize_height" size=5 placeholder="720 " min="1"/><br>
+                <label for="roi_post_cb">Region of Interest (ROI):</label>
+                <input type="checkbox" id="roi_post_cb" name="roi_post_cb" value="roi"><br>
+
+                <div class="roi_post indent" hidden>
+                    <input type="radio" id="radio_roi_post_file" name="roi_post_type" value="file">
+                    <label for="radio_roi_post_file">File</label><br>
+                    <label for="roi_post_file_path" class="roi_post_file" hidden>Enter the ROI mask file path:</label>
+                    <input type="text" id="roi_post_file_path" name="roi_post_file_path" size=50 class="roi_post_file" hidden/><br class="roi_post_file" hidden>
+
+                    <input type="radio" id="radio_roi_post_coords" name="roi_post_type" value="coords">
+                    <label for="radio_roi_post_coords">Coords</label><br>
+                    <label for="roi_post_coords" class="roi_post_coords" hidden>Enter the polygon coords (W, H) of the ROI in the order (This is applied before resizing): </label>
+                    <input type="text" id="roi_post_coords" name="roi_post_coords" size=50 class="roi_post_coords"
+                        placeholder="(0, 0), (400, 0), (400, 250), (0, 250)" hidden/>
+                    <label for="max_outside_roi_thresh">Max outside ROI threshold:</label>
+                    <input type="number" id="max_outside_roi_thresh" name="max_outside_roi_thresh" size=5 placeholder="0.25" min="0" max="1" step="0.05"/><br>
+                </div>
                 </div>
             </section>
         </div>

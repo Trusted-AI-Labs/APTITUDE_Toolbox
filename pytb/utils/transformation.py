@@ -3,6 +3,7 @@ import logging
 import numpy as np
 
 from pytb.output.detection import Detection
+from pytb.output.bboxes_2d import BBoxes2D
 import pytb.utils.image_helper as ih
 import ast
 
@@ -12,18 +13,12 @@ log = logging.getLogger("aptitude-toolbox")
 def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.ndarray = None,
                 detection: Detection = None) \
         -> Tuple[np.ndarray, Union[np.ndarray, None], Union[np.ndarray, None], Union[Detection, None]]:
+
     if "roi" in preprocess_parameters:
+        # Using previous ROI if exists to avoid repeated readings
         roi = prev_roi
         if prev_roi is None:
-            roi_params = preprocess_parameters["roi"]
-            # Apply a mask via a mask file
-            if "path" in roi_params:
-                roi = ih.get_roi_file(roi_params["path"])
-                log.debug("ROI obtained from a mask file.")
-            # Apply a mask via a polyline
-            elif "coords" in roi_params:
-                roi = ih.get_roi_coords(image, roi_params["coords"])
-                log.debug("ROI obtained from polygon coordinates.")
+            roi = _get_roi(preprocess_parameters["roi"], image.shape)
         image = ih.apply_roi(image, roi)
     else:
         roi = None
@@ -54,47 +49,73 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.nda
             ratio_width = prev_dims[1] / new_dims[1]
             ratio_height = prev_dims[0] / new_dims[0]
             border_px = np.array([border_px[0]/ratio_width, border_px[1]/ratio_width,
-                                 border_px[2]/ratio_height, border_px[3]/ratio_height], np.int)
+                                 border_px[2]/ratio_height, border_px[3]/ratio_height], np.uint8)
 
     return image, roi, border_px, detection
 
 
-def post_process(postprocess_parameters: dict,  detection: Detection) -> Detection:
-    if "nms" in postprocess_parameters:
-        nms_params = postprocess_parameters["nms"]
-        detection.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
-        log.debug("NMS algorithm applied.")
-    if "coi" in postprocess_parameters:
-        detection.class_filter(ast.literal_eval(postprocess_parameters["coi"]))
-        log.debug("Only classes of interest were kept.")
-    if "min_conf" in postprocess_parameters:
-        detection.confidence_filter(postprocess_parameters["min_conf"])
-        log.debug("Only detection reaching the confidence threshold were kept.")
-    if "top_k" in postprocess_parameters:
-        detection.top_k(postprocess_parameters["top_k"])
-        log.debug("Only top K detections were kept.")
-    if "max_height" in postprocess_parameters:
-        detection.height_filter(postprocess_parameters["max_height"], max_filter=True)
-        log.debug("Only detections below max height threshold were kept.")
-    if "min_height" in postprocess_parameters:
-        detection.height_filter(postprocess_parameters["min_height"], max_filter=False)
-        log.debug("Only detections above min height threshold were kept.")
-    if "max_width" in postprocess_parameters:
-        detection.width_filter(postprocess_parameters["max_width"], max_filter=True)
-        log.debug("Only detections below max width threshold were kept.")
-    if "min_width" in postprocess_parameters:
-        detection.width_filter(postprocess_parameters["min_width"], max_filter=False)
-        log.debug("Only detections above max width threshold were kept.")
-    if "min_area" in postprocess_parameters:
-        detection.min_area_filter(postprocess_parameters["min_area"])
-        log.debug("Only detections above min area threshold were kept.")
-    # borders_detection comes from preprocess
-    if "borders_detection" in postprocess_parameters:
-        border_px = postprocess_parameters["borders_detection"]
-        detection.remove_borders(border_px)
-        log.debug("Results were adjusted to take borders into account")
-    if "resize_results" in postprocess_parameters:
-        resize_res = postprocess_parameters["resize_results"]
-        detection.change_dims(resize_res["width"], resize_res["height"])
-        log.debug("Results were resized.")
-    return detection
+def post_process(postprocess_parameters: dict,  detection: Detection, prev_roi: np.ndarray = None) \
+        -> Tuple[Detection, Union[np.ndarray, None]]:
+    if isinstance(detection, BBoxes2D):
+        # Using previous ROI if exists to avoid repeated readings
+        roi = prev_roi
+
+        # Order of the below operations matters
+        if "nms" in postprocess_parameters:
+            nms_params = postprocess_parameters["nms"]
+            detection.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
+            log.debug("NMS algorithm applied.")
+        if "coi" in postprocess_parameters:
+            detection.class_filter(ast.literal_eval(postprocess_parameters["coi"]))
+            log.debug("Only classes of interest were kept.")
+        if "min_conf" in postprocess_parameters:
+            detection.confidence_filter(postprocess_parameters["min_conf"])
+            log.debug("Only detection reaching the confidence threshold were kept.")
+        if "top_k" in postprocess_parameters:
+            detection.top_k(postprocess_parameters["top_k"])
+            log.debug("Only top K detections were kept.")
+        if "max_height" in postprocess_parameters:
+            detection.height_filter(postprocess_parameters["max_height"], max_filter=True)
+            log.debug("Only detections below max height threshold were kept.")
+        if "min_height" in postprocess_parameters:
+            detection.height_filter(postprocess_parameters["min_height"], max_filter=False)
+            log.debug("Only detections above min height threshold were kept.")
+        if "max_width" in postprocess_parameters:
+            detection.width_filter(postprocess_parameters["max_width"], max_filter=True)
+            log.debug("Only detections below max width threshold were kept.")
+        if "min_width" in postprocess_parameters:
+            detection.width_filter(postprocess_parameters["min_width"], max_filter=False)
+            log.debug("Only detections above max width threshold were kept.")
+        if "min_area" in postprocess_parameters:
+            detection.min_area_filter(postprocess_parameters["min_area"])
+            log.debug("Only detections above min area threshold were kept.")
+        # borders_detection comes from preprocess
+        if "borders_detection" in postprocess_parameters:
+            border_px = postprocess_parameters["borders_detection"]
+            detection.remove_borders(border_px)
+            log.debug("Results were adjusted to take borders into account")
+        if "roi" in postprocess_parameters:
+            roi_params = postprocess_parameters["roi"]
+            if prev_roi is None:
+                roi = _get_roi(roi_params, (detection.dim_height, detection.dim_width))
+            detection.roi_filter(roi, roi_params["max_outside_roi_thresh"])
+            log.debug("Only classes in the ROI were kept.")
+        if "resize_results" in postprocess_parameters:
+            resize_res = postprocess_parameters["resize_results"]
+            detection.change_dims(resize_res["width"], resize_res["height"])
+            log.debug("Results were resized.")
+        return detection, roi
+
+
+def _get_roi(roi_params, image_shape: tuple) -> np.ndarray:
+    # Apply a mask via a mask file
+    if "path" in roi_params:
+        roi = ih.get_roi_file(roi_params["path"])
+        roi = ih.resize(roi, image_shape[1], image_shape[0])
+        log.debug("ROI obtained from a mask file.")
+        return roi
+    # Apply a mask via a polyline
+    elif "coords" in roi_params:
+        roi = ih.get_roi_coords(image_shape, roi_params["coords"])
+        log.debug("ROI obtained from polygon coordinates.")
+        return roi

@@ -8,6 +8,7 @@ log = logging.getLogger("aptitude-toolbox")
 
 try:
     from turbojpeg import TurboJPEG
+
     tjpeg = TurboJPEG()
 except:
     tjpeg = None
@@ -41,11 +42,18 @@ def get_roi_file(roi_path: str):
     return get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
 
 
-def get_roi_coords(image: np.ndarray, roi_coords: str):
+def get_roi_coords(image_shape: tuple, roi_coords: str):
     roi_coords = ast.literal_eval(roi_coords)
-    roi = np.zeros(image.shape, dtype=np.uint8)
+    for c in roi_coords:
+        assert c[0] <= image_shape[1] and c[1] <= image_shape[0], \
+            "The provided coords (W, H: {}) are outside the image shape (W, H: {})" \
+            .format((c[0], c[1]), (image_shape[1], image_shape[0]))
+
+    roi = np.zeros(image_shape, dtype=np.uint8)
     polygon = np.array([roi_coords], dtype=np.int32)
-    num_frame_channels = image.shape[2]
+
+    # get number of channel or if absent, default is 1
+    num_frame_channels = image_shape[2] if len(image_shape) == 3 else 1
     mask_ignore_color = (255,) * num_frame_channels
     return cv2.fillPoly(roi, polygon, mask_ignore_color)
 

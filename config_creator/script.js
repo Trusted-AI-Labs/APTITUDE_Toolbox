@@ -124,7 +124,7 @@ function displayTracker() {
 
     $("select[name='select_tracker_model_type']").change(function(){
         val = $(this).children(':selected')[0].value
-        if (val == "Centroid"){
+        if (val === "Centroid"){
             $(".sort").attr("hidden", true)
             $(".deepsort").attr("hidden", true)
             $(".iou").attr("hidden", true)
@@ -180,23 +180,23 @@ function displayPreproc () {
         }
     })
 
-    $("input[name='roi_cb']").change(function(){
+    $("input[name='roi_pre_cb']").change(function(){
         if (this.checked) {
-            $(".roi").attr("hidden", false);
+            $(".roi_pre").attr("hidden", false);
         }
         else {
-            $(".roi").attr("hidden", true);
+            $(".roi_pre").attr("hidden", true);
         }
     })
 
-    $("input[name='roi_type']").change(function(){
+    $("input[name='roi_pre_type']").change(function(){
         if (this.value === "file") {
-            $(".roi_file").attr("hidden", false);
-            $(".roi_coords").attr("hidden", true);
+            $(".roi_pre_file").attr("hidden", false);
+            $(".roi_pre_coords").attr("hidden", true);
         }
         else {
-            $(".roi_file").attr("hidden", true);
-            $(".roi_coords").attr("hidden", false);
+            $(".roi_pre_file").attr("hidden", true);
+            $(".roi_pre_coords").attr("hidden", false);
         }
     })
 }
@@ -208,6 +208,26 @@ function displayPostProc() {
             $(".post_nms").attr("hidden", false)
         } else{
             $(".post_nms").attr("hidden", true)
+        }
+    })
+
+    $("input[name='roi_post_cb']").change(function(){
+        if (this.checked) {
+            $(".roi_post").attr("hidden", false);
+        }
+        else {
+            $(".roi_post").attr("hidden", true);
+        }
+    })
+
+    $("input[name='roi_post_type']").change(function(){
+        if (this.value === "file") {
+            $(".roi_post_file").attr("hidden", false);
+            $(".roi_post_coords").attr("hidden", true);
+        }
+        else {
+            $(".roi_post_file").attr("hidden", true);
+            $(".roi_post_coords").attr("hidden", false);
         }
     })
 }
@@ -578,20 +598,20 @@ function generateJSONPreproc() {
         }
     })
 
-    $("input[name='roi_cb']").change(function(){
+    $("input[name='roi_pre_cb']").change(function(){
         if (!this.checked) {
             delete jsonOut['Preproc']['roi']
         }
     })
 
-    $("input[name='roi_file_path']").change(function(){
+    $("input[name='roi_pre_file_path']").change(function(){
         jsonOut['Preproc']['roi'] = {}
-        jsonOut['Preproc']['roi']['path'] = $("input[name='roi_file_path']")[0].value
+        jsonOut['Preproc']['roi']['path'] = $("input[name='roi_pre_file_path']")[0].value
     })
 
-    $("input[name='roi_coords']").change(function(){
+    $("input[name='roi_pre_coords']").change(function(){
         jsonOut['Preproc']['roi'] = {}
-        jsonOut['Preproc']['roi']['coords'] = $("input[name='roi_coords']")[0].value
+        jsonOut['Preproc']['roi']['coords'] = $("input[name='roi_pre_coords']")[0].value
     })
 }
 
@@ -686,6 +706,30 @@ function generateJSONPostproc() {
             jsonOut['Postproc']['coi']  = this.value
         }else{
             delete jsonOut['Postproc']['top_k'] 
+        }
+    })
+
+    $("input[name='roi_post_cb']").change(function(){
+        if (!this.checked) {
+            delete jsonOut['Postproc']['roi']
+        }
+    })
+
+    $("input[name='roi_post_file_path']").change(function(){
+        jsonOut['Postproc']['roi'] = {}
+        jsonOut['Postproc']['roi']['path'] = $("input[name='roi_post_file_path']")[0].value
+    })
+
+    $("input[name='roi_post_coords']").change(function(){
+        jsonOut['Postproc']['roi'] = {}
+        jsonOut['Postproc']['roi']['coords'] = $("input[name='roi_post_coords']")[0].value
+    })
+
+    $("input[name='max_outside_roi_thresh']").change(function(){
+        if (this.value){
+            jsonOut['Postproc']['roi']['max_outside_roi_thresh'] = Number(this.value)
+        }else{
+            delete jsonOut['Postproc']['roi']['max_outside_roi_thresh']
         }
     })
 

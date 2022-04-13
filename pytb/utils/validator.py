@@ -5,7 +5,7 @@ log = logging.getLogger("aptitude-toolbox")
 
 valid_preproc_keys = ["border", "resize", "roi"]
 valid_postproc_keys = ["coi", "nms", "min_conf", "max_height", "min_height",
-                       "max_width", "min_width", "min_area", "top_k", "resize_results"]
+                       "max_width", "min_width", "min_area", "top_k", "resize_results", "roi"]
 valid_nms_values = ["cv2", "Malisiewicz"]
 valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "BackgroundSubtractor", "Detectron2"]
 valid_tracker_keys = ["Tracker", "BBoxes2DTracker", "SORT", "DeepSORT", "Centroid", "IOU"]
@@ -51,20 +51,7 @@ def validate_preprocess_parameters(pre_params: dict):
             log.error("resize width or height must be positive.")
             valid = False
     if "roi" in list_keys:
-        if "path" not in pre_params["roi"] and "coords" not in pre_params["roi"]:
-            log.error("\"roi\" entry without \"path\" or \"coords\" sub-entry.")
-            valid = False
-        if "path" in pre_params["roi"] and not isinstance(pre_params["roi"]["path"], str):
-            log.error("\"path\" (ROI) entry must be of type str.")
-            valid = False
-        if "coords" in pre_params["roi"]:
-            if not isinstance(pre_params["roi"]["coords"], str):
-                log.error("\"coords\" entry must be of type str.")
-                valid = False
-            coords = ast.literal_eval(pre_params["roi"]["coords"])
-            if (not isinstance(coords, tuple)) or (not isinstance(coords[0], tuple)):
-                log.error("\"coords\" entry should evaluate to type tuple of tuples.")
-                valid = False
+        valid = _validate_roi_parameters(pre_params["roi"], preproc=True)
     return valid
 
 
@@ -91,10 +78,11 @@ def validate_postprocess_parameters(post_params: dict):
         if not isinstance(post_params["coi"], str):
             log.error("\"coi\" entry must be of type str.")
             valid = False
-        coi = ast.literal_eval(post_params["coi"])
-        if not isinstance(coi, list):
-            log.error("\"coi\" entry should evaluate to type list.")
-            valid = False
+        else:
+            coi = ast.literal_eval(post_params["coi"])
+            if not isinstance(coi, list):
+                log.error("\"coi\" entry should evaluate to type list.")
+                valid = False
 
     if "nms" in list_keys:
         if "pref_implem" not in post_params["nms"] or "nms_thresh" not in post_params["nms"]:
@@ -129,6 +117,9 @@ def validate_postprocess_parameters(post_params: dict):
         log.error("\"top_k\" value must be greater or equal to 0.")
         valid = False
 
+    if "roi" in list_keys:
+        valid = _validate_roi_parameters(post_params["roi"], preproc=False)
+
     if "resize_results" in list_keys:
         if "width" not in post_params["resize_results"]:
             log.error("\"resize_results\" entry without \"width\" sub-entries.")
@@ -144,6 +135,32 @@ def validate_postprocess_parameters(post_params: dict):
             log.error("resize_results width or height must be positive.")
             valid = False
 
+    return valid
+
+
+def _validate_roi_parameters(roi_params: dict, preproc: bool):
+    valid = True
+    if "path" not in roi_params and "coords" not in roi_params:
+        log.error("\"roi\" entry without \"path\" or \"coords\" sub-entry.")
+        valid = False
+    if "path" in roi_params and not isinstance(roi_params["path"], str):
+        log.error("\"path\" (ROI) entry must be of type str.")
+        valid = False
+    if "coords" in roi_params:
+        if not isinstance(roi_params["coords"], str):
+            log.error("\"coords\" entry must be of type str.")
+            valid = False
+        coords = ast.literal_eval(roi_params["coords"])
+        if (not isinstance(coords, tuple)) or (not isinstance(coords[0], tuple)):
+            log.error("\"coords\" entry should evaluate to type tuple of tuples.")
+            valid = False
+    if not preproc and "max_outside_roi_thresh" not in roi_params:
+        log.error("\"max_outside_roi_thresh\" entry must be provided if in post proc parameters")
+        valid = False
+    if "max_outside_roi_thresh" in roi_params \
+            and (roi_params["max_outside_roi_thresh"] < 0 or roi_params["max_outside_roi_thresh"] > 1):
+        log.error("\"max_outside_roi_thresh\" must be included between 0 and 1")
+        valid = False
     return valid
 
 

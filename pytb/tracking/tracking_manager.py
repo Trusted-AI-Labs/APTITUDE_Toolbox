@@ -23,7 +23,8 @@ class TrackingManager:
         self.preprocess_parameters = preprocess_parameters
         self.postprocess_parameters = postprocess_parameters
 
-        self.roi = None
+        self.preproc_roi = None
+        self.postproc_roi = None
 
     @staticmethod
     def _validate_preprocess_parameters(preprocess_parameters: dict):
@@ -39,8 +40,8 @@ class TrackingManager:
         start = default_timer()
         border_px = None
         if frame is not None:
-            frame, self.roi, border_px, detection = tfm.pre_process(self.preprocess_parameters, frame,
-                                                                    self.roi, detection)
+            frame, self.preproc_roi, border_px, detection = tfm.pre_process(self.preprocess_parameters, frame,
+                                                                    self.preproc_roi, detection)
             log.debug("Preprocessing done.")
         preproc_time = default_timer() - start
 
@@ -61,7 +62,7 @@ class TrackingManager:
         # Post process
         start = default_timer()
         if track.number_objects != 0:
-            track = tfm.post_process(self.postprocess_parameters, track)
+            track, self.postproc_roi = tfm.post_process(self.postprocess_parameters, track, self.postproc_roi)
         track.postprocessing_time = default_timer() - start
         log.debug("Postprocessing done.")
 

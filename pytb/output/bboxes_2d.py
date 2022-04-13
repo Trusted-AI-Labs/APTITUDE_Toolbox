@@ -88,7 +88,6 @@ class BBoxes2D(Detection):
                 [(e[2] - e[0]) * (e[3] - e[1]) > threshold for e in self.bboxes]).flatten()
         self._select_indices(elements_of_interest)
 
-
     def cv2_filter(self, nms_thresh: float, conf_thresh: float, eta=1.0, top_k=0):
         if self.number_objects != 0:
             elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(),
@@ -137,6 +136,42 @@ class BBoxes2D(Detection):
                     self.bboxes[i] = bbox + np.array([borders_px[1], borders_px[3], 0, 0])
                 else:
                     self.bboxes[i] = bbox + np.array([borders_px[1], borders_px[3], borders_px[1], borders_px[3]])
+
+    def roi_filter(self, roi: np.ndarray, max_outside_roi_tresh: float):
+        assert roi.shape[1] == self.dim_width and roi.shape[0] == self.dim_height, \
+            "Could not filter detections using ROI because the ROI dimensions (W, H: {}) " \
+            "does not match detections dimensions (W, H: {})." \
+            .format((roi.shape[1], roi.shape[0]), (self.dim_width, self.dim_height))
+
+        # Convert to 1-channel image if necessary
+        if len(roi.shape) == 3 and roi.shape[2] > 1:
+            roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+        elements_of_interest = []
+
+        for i, bbox in enumerate(self.bboxes):
+            # Create a black image
+            bbox_rect = np.zeros((self.dim_height, self.dim_width), np.uint8)
+
+            # Draw a white rectangle
+            if self.bboxes_format == "xt_yt_w_h":
+                cv2.rectangle(bbox_rect, (round(bbox[0]), round(bbox[1])),
+                              (round(bbox[0] + bbox[2]), round(bbox[1] + bbox[3])), color=255, thickness=-1)
+            else:
+                cv2.rectangle(bbox_rect, (round(bbox[0]), round(bbox[1])),
+                              (round(bbox[2]), round(bbox[3])), color=255, thickness=-1)
+            nb_white_px_before = len(np.where(bbox_rect.flatten() == 255)[0])
+
+            # Bitwise and operation results in a white box that is the area in the ROI
+            after = cv2.bitwise_and(roi, bbox_rect)
+            nb_white_px_after = len(np.where(after.flatten() == 255)[0])
+            percentage_outside_roi = 1 - (nb_white_px_after / nb_white_px_before)
+
+            # Keep only bounding boxes whose the area percentage outside
+            # the ROI are not above the defined threshold
+            if percentage_outside_roi <= max_outside_roi_tresh:
+                elements_of_interest.append(i)
+
+        self._select_indices(np.array(elements_of_interest, np.uint8))
 
     def remove_idx(self, s):
         self.bboxes = np.delete(self.bboxes, s, axis=0)

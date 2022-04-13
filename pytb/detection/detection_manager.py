@@ -21,11 +21,13 @@ class DetectionManager:
         self.preprocess_parameters = preprocess_parameters
         self.postprocess_parameters = postprocess_parameters
 
-        self.roi = None
+        self.preproc_roi = None
+        self.postproc_roi = None
 
     def detect(self, org_frame: np.ndarray) -> Detection:
         start = default_timer()
-        edit_frame, self.roi, border_px, _ = tfm.pre_process(self.preprocess_parameters, org_frame, self.roi)
+        edit_frame, self.preproc_roi, border_px, _ = tfm.pre_process(self.preprocess_parameters,
+                                                                     org_frame, self.preproc_roi)
         preproc_time = default_timer() - start
         log.debug("Preprocessing done.")
 
@@ -43,7 +45,7 @@ class DetectionManager:
         # Post process
         start = default_timer()
         if detection.number_objects != 0:
-            detection = tfm.post_process(self.postprocess_parameters, detection)
+            detection, self.postproc_roi = tfm.post_process(self.postprocess_parameters, detection, self.postproc_roi)
         detection.postprocessing_time = default_timer() - start
         log.debug("Postprocessing done.")
 
