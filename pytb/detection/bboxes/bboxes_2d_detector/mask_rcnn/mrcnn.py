@@ -82,11 +82,12 @@ class YOLO(BBoxes2DDetector):
             boxes = predictions[0]['boxes'].to('cpu')
             labels = predictions[0]['labels'].to('cpu')
             scores = predictions[0]['scores'].to('cpu')
+            #masks = predictions[0]['masks'].to('cpu')
         end = default_timer()
 
         #results = np.array(output.xyxy[0].cpu())
 
-        bboxes = BBoxes2D((end - start), results[:, 0:4], results[:, 5].astype(int), results[:, 4],
+        bboxes = BBoxes2D((end - start), boxes, labels.astype(int), scores,
                           self.input_width, self.input_height, "x1_y1_x2_y2")
         bboxes.to_xt_yt_w_h()
         return bboxes
