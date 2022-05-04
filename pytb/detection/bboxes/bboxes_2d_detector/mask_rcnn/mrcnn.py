@@ -42,6 +42,18 @@ class MRCNN(BBoxes2DDetector):
             self.net.agnostic = self.nms_across_classes
             self.net.eval()
 
+        elif self.pref_implem == "torch-resnet50_from_file":
+            self.net = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=False)
+            self.net.load_state_dict(torch.load(self.model_path))
+            if self.gpu:
+                self.net.cuda()
+            else:
+                self.net.cpu()
+            self.net.conf = self.conf_thresh
+            self.net.iou = self.nms_thresh
+            self.net.agnostic = self.nms_across_classes
+            self.net.eval()
+
         else:
             assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
 
@@ -54,7 +66,13 @@ class MRCNN(BBoxes2DDetector):
         Returns:
             BBoxes2D: A set of 2DBBoxes of the detected objects.
         """
-        if self.pref_implem == self.pref_implem == "torch-resnet50_pretrained":
+        if self.pref_implem == "torch-resnet50_pretrained":
+            frame = frame.astype('float32') / 255.0
+            frame = torch.from_numpy(frame).permute(2, 0, 1)
+            if self.gpu:
+                frame = frame.cuda()
+            output = self._detect_torch_resnet50_pretrained(frame)
+        elif self.pref_implem == "torch-resnet50_from_file":
             frame = frame.astype('float32') / 255.0
             frame = torch.from_numpy(frame).permute(2, 0, 1)
             if self.gpu:
