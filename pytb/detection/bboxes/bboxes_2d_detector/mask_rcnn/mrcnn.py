@@ -11,7 +11,7 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
-class YOLO(BBoxes2DDetector):
+class MRCNN(BBoxes2DDetector):
 
     def __init__(self, detector_parameters: dict):
         """Initializes the detectors with the given parameters.
@@ -40,6 +40,7 @@ class YOLO(BBoxes2DDetector):
             self.net.conf = self.conf_thresh
             self.net.iou = self.nms_thresh
             self.net.agnostic = self.nms_across_classes
+            self.net.eval()
 
         else:
             assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
@@ -54,6 +55,10 @@ class YOLO(BBoxes2DDetector):
             BBoxes2D: A set of 2DBBoxes of the detected objects.
         """
         if self.pref_implem == self.pref_implem == "torch-resnet50_pretrained":
+            frame = frame.astype('float32') / 255.0
+            frame = torch.from_numpy(frame).permute(2, 0, 1)
+            if self.gpu:
+                frame = frame.cuda()
             output = self._detect_torch_resnet50_pretrained(frame)
 
         else:
@@ -79,14 +84,17 @@ class YOLO(BBoxes2DDetector):
         start = default_timer()
         with torch.no_grad():
             predictions = self.net([org_frame])
-            boxes = predictions[0]['boxes'].to('cpu')
-            labels = predictions[0]['labels'].to('cpu')
-            scores = predictions[0]['scores'].to('cpu')
-            #masks = predictions[0]['masks'].to('cpu')
+            boxes = predictions[0]['boxes'].to('cpu').numpy()
+            labels = predictions[0]['labels'].to('cpu').numpy()
+            scores = predictions[0]['scores'].to('cpu').numpy()
+            #masks = predictions[0]['masks'].to('cpu').numpy()
         end = default_timer()
 
         #results = np.array(output.xyxy[0].cpu())
 
+        # print(boxes)
+        # print(labels)
+        # print(scores)
         bboxes = BBoxes2D((end - start), boxes, labels.astype(int), scores,
                           self.input_width, self.input_height, "x1_y1_x2_y2")
         bboxes.to_xt_yt_w_h()
