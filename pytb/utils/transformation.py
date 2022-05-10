@@ -61,10 +61,6 @@ def post_process(postprocess_parameters: dict,  detection: Detection, prev_roi: 
         roi = prev_roi
 
         # Order of the below operations matters
-        if "nms" in postprocess_parameters:
-            nms_params = postprocess_parameters["nms"]
-            detection.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
-            log.debug("NMS algorithm applied.")
         if "coi" in postprocess_parameters:
             detection.class_filter(ast.literal_eval(postprocess_parameters["coi"]))
             log.debug("Only classes of interest were kept.")
@@ -100,6 +96,10 @@ def post_process(postprocess_parameters: dict,  detection: Detection, prev_roi: 
                 roi = _get_roi(roi_params, (detection.dim_height, detection.dim_width))
             detection.roi_filter(roi, roi_params["max_outside_roi_thresh"])
             log.debug("Only classes in the ROI were kept.")
+        if "nms" in postprocess_parameters:
+            nms_params = postprocess_parameters["nms"]
+            detection.nms_filter(nms_params["pref_implem"], nms_params["nms_thresh"])
+            log.debug("NMS algorithm applied.")
         if "resize_results" in postprocess_parameters:
             resize_res = postprocess_parameters["resize_results"]
             detection.change_dims(resize_res["width"], resize_res["height"])

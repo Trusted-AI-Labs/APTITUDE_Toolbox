@@ -93,6 +93,8 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
     last_update = default_timer()
     before_loop = start_time
     counter = 0
+    tot_det_time = 0
+    tot_track_time = 0
     is_paused = False
 
     output_lines = []
@@ -137,6 +139,9 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
             log.debug("After tracking, without frames.")
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_start
+
+        tot_det_time += det.detection_time
+        tot_track_time += res.tracking_time
 
         # Visualize
         res.change_dims(W, H)
@@ -208,8 +213,15 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         with open(mot_path, "w") as out:
             out.writelines(output_lines)
 
-    log.info("Average FPS: {}".format(str(counter / (default_timer() - before_loop - warmup_time))))
-    log.info("Average FPS w/o read time: {}".format(str(counter / (default_timer() - before_loop - read_time - warmup_time))))
+    # Not using warm-up time
+    log.info("Average FPS: {}".format(str(counter / (default_timer() - before_loop))))
+    log.info("Average FPS w/o read time: {}".format(str(counter / (default_timer() - before_loop - read_time))))
+
+    log.info("Total detection time: {}".format(tot_det_time))
+    log.info("Total tracking time: {}".format(tot_track_time))
+
+    log.info("Average detection time: {}".format(tot_det_time / counter))
+    log.info("Average tracking time: {}".format(tot_track_time / counter))
 
     if record:
         output_video.release()
@@ -222,14 +234,11 @@ def add_ground_truths(frame, image_name, gt_folder_path, W, H):
     if os.path.exists(csv_file_name):
         with open(csv_file_name, 'r') as read_obj:
             csv_reader = csv.reader(read_obj, delimiter=";")
+            next(csv_reader)  # Ignore header
             for i, row in enumerate(csv_reader):
-                if i == 0 or row[6] == "-1":
-                    continue
                 max_x, max_y, min_x, min_y = 0, 0, W, H
                 for j in range(44, 60, 2):
                     x, y = int(row[j]), int(row[j + 1])
-                    if x == -1 or y == -1:
-                        continue
                     if x < min_x:
                         min_x = x
                     if y < min_y:
@@ -239,8 +248,5 @@ def add_ground_truths(frame, image_name, gt_folder_path, W, H):
                     if y > max_y:
                         max_y = y
                 cv2.rectangle(frame, (max_x, max_y), (min_x, min_y), (255, 255, 255), thickness)
-                # for j in range(44, 60, 2):
-                #     x, y = int(row[j]), int(row[j+1])
-                #     cv2.line(frame, (x, y), (x, y), (255, 255, 255), thickness)
 
     return frame

@@ -50,6 +50,8 @@ nvidia/cuda   11.3.1-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   
 <details> 
   <summary>Using Anaconda</summary>
 
+Before anything else, please install [ffmpeg](https://ffmpeg.org/download.html) on your machine
+
 If you don't want to use Docker or if you want contribute to the project, you can clone and manually install the dependencies.
 
 ```
@@ -84,7 +86,7 @@ Additionally, if you are on Linux want to use Detectron2, you can install the fo
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, this last pip install command does not work. Refer to their [repo](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
+However, if you are on Windows, you must build it from source. Refer to their [repo](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
 
 <details> 
   <summary>Troubleshooting 🔫</summary>

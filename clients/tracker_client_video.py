@@ -4,6 +4,7 @@ from timeit import default_timer
 from tqdm import tqdm
 
 import cv2
+import ffmpeg
 import numpy as np
 import logging
 
@@ -93,10 +94,16 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     last_update = default_timer()
     before_loop = start_time
     counter = 0
+    tot_det_time = 0
+    tot_track_time = 0
 
     output_lines = []
 
-    pbar = tqdm(total=int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
+    probe = ffmpeg.probe(video_path)
+    video_info = next(s for s in probe['streams'] if s['codec_type'] == 'video')
+    nb_frames = int(video_info['nb_frames'])
+    pbar = tqdm(total=nb_frames)
+
     while is_reading:
 
         time_update = default_timer()
@@ -125,6 +132,9 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
             else:
                 res = tracking_manager.track(det)
                 log.debug("After tracking, without frames.")
+
+            tot_det_time += det.detection_time
+            tot_track_time += res.tracking_time
 
             res.change_dims(W, H)
             log.debug("Dimensions of the results changed: (W: {}, H:{}).".format(W, H))
@@ -192,13 +202,21 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
         read_time += default_timer() - read_time_start
 
     pbar.close()
+
+    log.info("Average FPS: {}".format(str(counter / (default_timer() - before_loop))))
+    log.info("Average FPS without read time: {}".format(str(counter / (default_timer() - before_loop - read_time))))
+
+    log.info("Total detection time: {}".format(tot_det_time))
+    log.info("Total tracking time: {}".format(tot_track_time))
+
+    log.info("Average detection time: {}".format(tot_det_time / counter))
+    log.info("Average tracking time: {}".format(tot_track_time / counter))
+
     if mot_path is not None:
         with open(mot_path, "w") as out:
             out.writelines(output_lines)
             log.debug("Lines written to output path.")
 
-    log.info("Average FPS: {}".format(str(counter / (default_timer() - before_loop))))
-    log.info("Average FPS w/o read time: {}".format(str(counter / (default_timer() - before_loop - read_time))))
 
     if async_flag:
         cap.stop()
