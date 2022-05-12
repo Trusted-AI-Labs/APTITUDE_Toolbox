@@ -143,11 +143,9 @@ cython_debug/
 .idea/
 
 # Json config files
-configs/*
-!configs/detect-DM-docker.json
-!configs/track-sort.json
-!configs/track-deepsort-docker.json
-!configs/classes-mio.json
+configs/base/*
+configs/benchmarks/*
+configs/residues/*
 
 videos/
 

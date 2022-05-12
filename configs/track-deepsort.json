@@ -8,7 +8,7 @@
             "pref_implem": "Leonlok"
         },
         "DeepSORT":{
-            "model_path": "./models/cosine_metric_DETRAC.pb",
+            "model_path": "./models/cosine_metric_DETRAC_LeonLok.pb",
             "max_age": 30,
             "min_hits": 3,
             "iou_thresh": 0.7,

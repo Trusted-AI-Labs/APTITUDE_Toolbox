@@ -1,0 +1,31 @@
+{
+    "Proc":{
+        "Detector":{
+            "type": "BBoxes2DDetector"
+        },
+        "BBoxes2DDetector":{
+            "model_type": "BackgroundSubtractor",
+            "pref_implem": "frame_diff",
+            "model_path": "",
+            "config_path": ""
+        },
+        "BackgroundSubtractor":{
+        }
+    },
+    "Preproc":{
+        "resize":{
+            "width" : 416,
+            "height": 416
+        }
+    },
+    "Postproc":{
+        "nms": {
+            "pref_implem" : "Malisiewicz",
+            "nms_thresh" : 0.45
+        },
+        "max_height": 0.5,
+        "min_height": 0.02,
+        "max_width": 0.5,
+        "min_width": 0.02
+    }
+}

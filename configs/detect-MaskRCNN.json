@@ -1,0 +1,33 @@
+{
+    "Proc":{    
+        "Detector":{
+            "type": "BBoxes2DDetector"
+        },
+        "BBoxes2DDetector":{
+            "model_type": "MRCNN",
+            "pref_implem": "torch-resnet50",
+            "model_path": "./models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth",
+            "input_width" : 736,
+            "input_height" : 416
+        },
+        "MRCNN":{
+            "use_coco_weights": false,
+            "GPU": true
+        }
+    },
+    "Preproc":{
+        "resize":{
+            "width" : 736,
+            "height": 416
+        }
+    },
+    "Postproc":{
+        "min_conf": 0.25,
+        "nms": {
+            "pref_implem" : "Malisiewicz",
+            "nms_thresh" : 0.45
+        },
+        "max_height": 0.5,
+        "coi": "[3,6,8]"
+    }
+}

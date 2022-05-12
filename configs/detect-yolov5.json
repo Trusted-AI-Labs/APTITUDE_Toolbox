@@ -5,23 +5,18 @@
         },
         "BBoxes2DDetector":{
             "model_type": "YOLO",
-            "pref_implem": "cv2-DetectionModel",
-            "model_path": "./models/yolov4-tiny-mio-11.weights",
-            "config_path": "./models/yolov4-tiny-mio-11.cfg",
+            "pref_implem": "torch-Ultralytics",
+            "model_path": "./models/yolov5s-mio.pt",
             "input_width" : 416,
             "input_height" : 416
         },
         "YOLO":{
             "conf_thresh": 0.25, 
             "nms_thresh": 0,
-            "GPU": false,
-            "half_precision": false
+            "GPU": true
         }
     },
     "Preproc":{
-        "border":{
-            "centered": false
-        },
         "resize":{
             "width" : 416,
             "height": 416
@@ -31,7 +26,6 @@
         "nms": {
             "pref_implem" : "Malisiewicz",
             "nms_thresh" : 0.45
-        },
-        "max_height": 0.5
+        }
     }
 }

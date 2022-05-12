@@ -1,0 +1,31 @@
+{
+    "Proc":{    
+        "Detector":{
+            "type": "BBoxes2DDetector"
+        },
+        "BBoxes2DDetector":{
+            "model_type": "Detectron2",
+            "pref_implem": "Default",
+            "model_path": "./models/COCO_faster_rcnn_R_50_C4_1x_137257644.pkl",
+            "config_path": "./models/COCO_faster_rcnn_R_50_C4_1x.yaml"
+        },
+        "Detectron2":{
+            "conf_thresh": 0.25,
+            "nms_thresh": 0,
+            "GPU": true
+        }
+    },
+    "Preproc":{
+        "resize":{
+            "width" : 416,
+            "height": 416
+        }
+    },
+    "Postproc":{
+        "nms": {
+            "pref_implem" : "Malisiewicz",
+            "nms_thresh" : 0.45
+        },
+        "coi": "[0, 1, 2, 3, 5, 7]"
+    }
+}

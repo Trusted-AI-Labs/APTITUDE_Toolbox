@@ -1,0 +1,17 @@
+{
+    "Proc":{
+        "Tracker":{
+            "type": "BBoxes2DTracker"
+        },
+        "BBoxes2DTracker":{
+            "model_type": "IOU",
+            "pref_implem": "SimpleIOU"
+        },
+        "IOU":{
+            "min_hits": 3,
+            "iou_thresh": 0.3
+        }
+    },
+    "Preproc":{},
+    "Postproc":{}
+}

@@ -24,31 +24,13 @@ The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use
 
 ## Installation
 
-<details> 
-  <summary>Using Docker (recommended)</summary>
+### Using Docker (recommended)
 
-If you want to infer result with the provided models or with your own model, we recommend to pull the latest Docker image available on [Dockerhub](https://hub.docker.com/repository/docker/jonathansamelson/aptitude-toolbox). 
+Since version 0.2.3, deployment via Docker is only available to TRAIL affiliates.
+Becoming a TRAIL affiliate allows you to get in touch with a community of researchers, industries and entrepreneurs in the domain of AI. 
+Learn more on [https://trail.ac/](https://trail.ac/)
 
-You can also build it yourself. To do so, enter the following command. The build process should last ~15 minutes.
-
-```
-git clone https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/
-docker build -t apt_tb .
-```
-
-⚠️ You need at least 10GB of storage to build the image with all the dependencies.
-
-Once built, type `docker images` and you should see the image ready to use.
-
-```
-REPOSITORY    TAG                                 IMAGE ID       CREATED        SIZE
-apt_tb        latest                              1b4926340c4b   3 hours ago    9.05GB
-nvidia/cuda   11.3.1-cudnn8-runtime-ubuntu20.04   630325e68c55   2 months ago   3.85GB
-```
-</details>
-
-<details> 
-  <summary>Using Anaconda</summary>
+### Using Anaconda
 
 Before anything else, please install [ffmpeg](https://ffmpeg.org/download.html) on your machine
 
@@ -86,10 +68,10 @@ Additionally, if you are on Linux want to use Detectron2, you can install the fo
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, you must build it from source. Refer to their [repo](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
+However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
 
-<details> 
-  <summary>Troubleshooting 🔫</summary>
+
+### Troubleshooting 🔫
 
 
 On Windows, in case you get the following error when importing cv2:
@@ -107,12 +89,15 @@ This might be because the path to a DLL is missing. Try to add to your path the 
 
 The first one is for the python39.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
 
-</details>
-
-</details>
-
 
 ## Usage
+
+### Models
+
+Models trained on [MIO-TCD Localization dataset](https://tcd.miovision.com/challenge/dataset.html) are available on our [drive](https://drive.google.com/drive/folders/1di8gys9LwbLFeFTY7dLA6PqG4nX5TLSD?usp=sharing). 
+Feel free to try them with the APTITUDE Toolbox before training your own.
+
+We advise to create a /models/ and a /videos/ folder so that you can easily switch from a model/video to another. 
 
 ### Use as a Black Toolbox
 
@@ -136,7 +121,9 @@ The toolbox comes with two "client" scripts that can be used to produce an annot
 
 The detector and tracker configuration JSON files can be created using the *APTITUDE Toolbox Config Creator*. Simply open `config_creator/index.html` in your web browser. The *Video* fields are not needed since it is given using the above parameters.
 
-NB: Config files for Detectron2, BackgroundSubtraction, IOU and KIOU cannot be created (yet) in the config creator. Example files can be provided on demand.
+Example config files are available in /configs/, you can try them directly after changing the paths to your own model paths.
+
+NB: The creation of a MaskRCNN config is not (yet) available in the config creator. Example files can be provided on demand.
 
 The classes JSON config file contains the name of the object classes that can be detected by your detector. It will be displayed along with the detected objects. For example: 
 ```
@@ -157,23 +144,7 @@ The classes JSON config file contains the name of the object classes that can be
 }
 ```
 
-Then, you can run the `clients/main.py` with you environment or your Docker container. To use the latter, create some volumes to share config files, models and videos with it(`-v` option). You can keep the container interactive (`-it` option). For instance:
-
-```
-docker run -it \
--v <your-path>/APTITUDE_Toolbox/configs/:/code/configs \
--v <your-path>/APTITUDE_Toolbox/models/:/code/models \
--v <your-path>/APTITUDE_Toolbox/videos:/code/videos \
-apt_tb python ./clients/main.py -d configs/detect-DM-docker.json -t configs/track-sort.json -c configs/classes.json -p videos/video.mp4 -hl -rp /code/out.mp4
-```
-
-If you wish to extract the output video from the container, you can use the following command:
-
-```
-docker cp <container_name>:/code/out.mp4 ~/pytb/videos/out.mp4
-```
-
-where the name of the container can be found using `docker ps -a`
+Then, you can run the `clients/main.py` with you configured environment and the above parameters. 
 
 ### Use the Toolbox Components
 
@@ -190,6 +161,8 @@ Refer to the following repositories for more information on individual algorithm
 YOLO & Tiny-YOLO (v2-4) inference: [OpenCV Documentation - DNN module](https://docs.opencv.org/4.5.3/d0/db7/tutorial_js_table_of_contents_dnn.html)
 
 YOLOv5 inference: [Ultralytics - YOLOv5](https://github.com/ultralytics/yolov5)
+
+MaskRCNN: [Pytorch models](https://pytorch.org/vision/stable/models.html)
 
 SORT: [abewley - SORT](https://github.com/abewley/sort)
 
