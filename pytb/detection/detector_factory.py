@@ -33,6 +33,12 @@ class DetectorFactory:
         if model_type == "MRCNN":
             from pytb.detection.bboxes.bboxes_2d_detector.mask_rcnn.mrcnn import MRCNN
             return MRCNN(detector_parameters)
+        if model_type == "FASTERRCNN":
+            from pytb.detection.bboxes.bboxes_2d_detector.faster_rcnn.fasterrcnn import FASTERRCNN
+            return FASTERRCNN(detector_parameters)
+        if model_type == "FCOS":
+            from pytb.detection.bboxes.bboxes_2d_detector.fcos.fcos import FCOS
+            return FCOS(detector_parameters)
         if model_type == "BackgroundSubtractor":
             from pytb.detection.bboxes.bboxes_2d_detector.background_subtractor.background_subtractor \
                 import BackgroundSubtractor

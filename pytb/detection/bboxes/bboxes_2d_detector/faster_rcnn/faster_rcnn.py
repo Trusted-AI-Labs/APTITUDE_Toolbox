@@ -11,27 +11,27 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
-class MRCNN(BBoxes2DDetector):
+class FASTERRCNN(BBoxes2DDetector):
 
     def __init__(self, detector_parameters: dict):
         """Initializes the detectors with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the YOLO detector parameters
+            detector_parameters (dict): A dictionary containing the detector parameters
         """
         super().__init__(detector_parameters)
-        self.use_coco = detector_parameters["MRCNN"].get("use_coco_weights", True)
-        self.gpu = detector_parameters["MRCNN"].get("GPU", False)
+        self.use_coco = detector_parameters["FASTERRCNN"].get("use_coco_weights", True)
+        self.gpu = detector_parameters["FASTERRCNN"].get("GPU", False)
 
         log.debug("GPU set to {}.".format(self.gpu))
 
-        log.debug("Mask-RCNN {} implementation selected.".format(self.pref_implem))
+        log.debug("Faster-RCNN {} implementation selected.".format(self.pref_implem))
 
         if self.pref_implem == "torch-resnet50":
             if self.use_coco:
-                self.net = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=True)
+                self.net = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
             else:
-                self.net = torchvision.models.detection.maskrcnn_resnet50_fpn(pretrained=False)
+                self.net = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False)
                 self.net.load_state_dict(torch.load(self.model_path))
             if self.gpu:
                 self.net.cuda()
@@ -40,13 +40,13 @@ class MRCNN(BBoxes2DDetector):
             self.net.eval()
 
         else:
-            assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
+            assert False, "[ERROR] Unknown implementation of Faster-RCNN: {}".format(self.pref_implem)
 
     def detect(self, frame: np.ndarray) -> BBoxes2D:
-        """Performs a Mask-RCNN inference on the given frame.
+        """Performs a Faster-RCNN inference on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer Mask-RCNN detections
+            frame (np.ndarray): The frame to infer Faster-RCNN detections
 
         Returns:
             BBoxes2D: A set of 2DBBoxes of the detected objects.
@@ -59,7 +59,7 @@ class MRCNN(BBoxes2DDetector):
             output = self._detect_torch_resnet50_pretrained(frame)
 
         else:
-            assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
+            assert False, "[ERROR] Unknown implementation of Faster-RCNN: {}".format(self.pref_implem)
 
         return output
 

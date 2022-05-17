@@ -7,7 +7,7 @@ valid_preproc_keys = ["border", "resize", "roi"]
 valid_postproc_keys = ["coi", "nms", "min_conf", "max_height", "min_height",
                        "max_width", "min_width", "min_area", "top_k", "resize_results", "roi"]
 valid_nms_values = ["cv2", "Malisiewicz"]
-valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "MRCNN", "BackgroundSubtractor", "Detectron2"]
+valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "MRCNN", "FASTERRCNN", "FCOS", "BackgroundSubtractor", "Detectron2"]
 valid_tracker_keys = ["Tracker", "BBoxes2DTracker", "SORT", "DeepSORT", "Centroid", "IOU"]
 
 
@@ -213,6 +213,10 @@ def _validate_bboxes2ddetector_parameters(det_params: dict):
         valid = valid and _validate_detectron2_parameters(det_params)
     elif b2d_params["model_type"] == "MRCNN":
         valid = valid and _validate_mrcnn_parameters(det_params)
+    elif b2d_params["model_type"] == "FASTERRCNN":
+        valid = valid and _validate_fasterrcnn_parameters(det_params)
+    elif b2d_params["model_type"] == "FCOS":
+        valid = valid and _validate_fcos_parameters(det_params)
     else:
         log.error("The model type (Detector) {} is unknown.".format(b2d_params["model_type"]))
         valid = False
@@ -227,9 +231,9 @@ def _validate_bboxes2ddetector_parameters(det_params: dict):
     # CV2 and DefaultPredictor of Detectron2 needs config
     needs_config = b2d_params["pref_implem"] in ["cv2-DetectionModel", "cv2-ReadNet", "Default"]
 
-    # All implementations except BackgroundSubtractor and MRCNN needs models
-    # MRCNN can download a model dynamicly.
-    needs_model = b2d_params["model_type"] not in ["BackgroundSubtractor", "MRCNN"]
+    # All implementations except BackgroundSubtractor and {MRCNN,FASTERRCNN,FCOS} needs models
+    # {MRCNN,FASTERRCNN,FCOS} can download a model dynamicly.
+    needs_model = b2d_params["model_type"] not in ["BackgroundSubtractor", "MRCNN", "FASTERRCNN", "FCOS"]
 
     if "config_path" not in b2d_params and needs_config:
         log.error("\"config_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
@@ -326,6 +330,40 @@ def _validate_mrcnn_parameters(det_params: dict):
         log.error("\"use_coco_weights\" sub-entry must be of type bool.")
         valid = False
     if "use_coco_weights" in mrcnn_params and not mrcnn_params["use_coco_weights"] \
+        and "model_path" not in det_params["BBoxes2DDetector"]:
+        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be provided in BBoxes2DDetector.")
+        valid = False
+    return valid
+
+def _validate_fasterrcnn_parameters(det_params: dict):
+    fasterrcnn_params = det_params["FASTERRCNN"]
+    if not fasterrcnn_params:
+        return True  # Empty dict for FASTERRCNN is valid
+    valid = True
+    if "GPU" in fasterrcnn_params and not isinstance(fasterrcnn_params.get("GPU"), bool):
+        log.error("\"GPU\" sub-entry must be of type bool.")
+        valid = False
+    if "use_coco_weights" in fasterrcnn_params and not isinstance(fasterrcnn_params.get("use_coco_weights"), bool):
+        log.error("\"use_coco_weights\" sub-entry must be of type bool.")
+        valid = False
+    if "use_coco_weights" in fasterrcnn_params and not fasterrcnn_params["use_coco_weights"] \
+        and "model_path" not in det_params["BBoxes2DDetector"]:
+        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be provided in BBoxes2DDetector.")
+        valid = False
+    return valid
+
+def _validate_fcos_parameters(det_params: dict):
+    fcos_params = det_params["FCOS"]
+    if not fcos_params:
+        return True  # Empty dict for FCOS is valid
+    valid = True
+    if "GPU" in fcos_params and not isinstance(fcos_params.get("GPU"), bool):
+        log.error("\"GPU\" sub-entry must be of type bool.")
+        valid = False
+    if "use_coco_weights" in fcos_params and not isinstance(fcos_params.get("use_coco_weights"), bool):
+        log.error("\"use_coco_weights\" sub-entry must be of type bool.")
+        valid = False
+    if "use_coco_weights" in fcos_params and not fcos_params["use_coco_weights"] \
         and "model_path" not in det_params["BBoxes2DDetector"]:
         log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be provided in BBoxes2DDetector.")
         valid = False

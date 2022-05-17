@@ -11,21 +11,21 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
-class FCOSRCNN(BBoxes2DDetector):
+class FCOS(BBoxes2DDetector):
 
     def __init__(self, detector_parameters: dict):
         """Initializes the detectors with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the YOLO detector parameters
+            detector_parameters (dict): A dictionary containing the detector parameters
         """
         super().__init__(detector_parameters)
-        self.use_coco = detector_parameters["FCOSRCNN"].get("use_coco_weights", True)
-        self.gpu = detector_parameters["FCOSRCNN"].get("GPU", False)
+        self.use_coco = detector_parameters["FCOS"].get("use_coco_weights", True)
+        self.gpu = detector_parameters["FCOS"].get("GPU", False)
 
         log.debug("GPU set to {}.".format(self.gpu))
 
-        log.debug("FCOS-RCNN {} implementation selected.".format(self.pref_implem))
+        log.debug("FCOS {} implementation selected.".format(self.pref_implem))
 
         if self.pref_implem == "torch-resnet50":
             if self.use_coco:
@@ -40,13 +40,13 @@ class FCOSRCNN(BBoxes2DDetector):
             self.net.eval()
 
         else:
-            assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
+            assert False, "[ERROR] Unknown implementation of FCOS: {}".format(self.pref_implem)
 
     def detect(self, frame: np.ndarray) -> BBoxes2D:
-        """Performs a Mask-RCNN inference on the given frame.
+        """Performs a FCOS inference on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer Mask-RCNN detections
+            frame (np.ndarray): The frame to infer FCOS detections
 
         Returns:
             BBoxes2D: A set of 2DBBoxes of the detected objects.
@@ -59,7 +59,7 @@ class FCOSRCNN(BBoxes2DDetector):
             output = self._detect_torch_resnet50_pretrained(frame)
 
         else:
-            assert False, "[ERROR] Unknown implementation of Mask-RCNN: {}".format(self.pref_implem)
+            assert False, "[ERROR] Unknown implementation of FCOS: {}".format(self.pref_implem)
 
         return output
 

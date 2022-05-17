@@ -17,7 +17,7 @@ class MRCNN(BBoxes2DDetector):
         """Initializes the detectors with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the YOLO detector parameters
+            detector_parameters (dict): A dictionary containing the detector parameters
         """
         super().__init__(detector_parameters)
         self.use_coco = detector_parameters["MRCNN"].get("use_coco_weights", True)
