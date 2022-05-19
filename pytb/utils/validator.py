@@ -230,9 +230,9 @@ def _validate_bboxes2ddetector_parameters(det_params: dict):
     # CV2 and DefaultPredictor of Detectron2 needs config
     needs_config = b2d_params["pref_implem"] in ["cv2-DetectionModel", "cv2-ReadNet", "Default"]
 
-    # All implementations except BackgroundSubtractor and {MRCNN,FASTERRCNN,FCOS} needs models
-    # {MRCNN,FASTERRCNN,FCOS} can download a model dynamicly.
-    needs_model = b2d_params["model_type"] not in ["BackgroundSubtractor", "MRCNN", "FASTERRCNN", "FCOS"]
+    # All implementations except BackgroundSubtractor and {MRCNN,FASTERRCNN} needs models
+    # {MRCNN,FASTERRCNN} can download a model dynamically.
+    needs_model = b2d_params["model_type"] not in ["BackgroundSubtractor", "MRCNN", "FASTERRCNN"]
 
     if "config_path" not in b2d_params and needs_config:
         log.error("\"config_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
