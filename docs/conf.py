@@ -13,18 +13,8 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
-# sys.path.insert(0, os.path.abspath('../pytb/detection'))
-# sys.path.insert(0, os.path.abspath('../pytb/detection/bboxes'))
-# sys.path.insert(0, os.path.abspath('../pytb/detection/bboxes_2d_detector'))
-#
-# sys.path.insert(0, os.path.abspath('../pytb/output'))
-#
-# sys.path.insert(0, os.path.abspath('../pytb/tracking'))
-# sys.path.insert(0, os.path.abspath('../pytb/tracking/bboxes'))
-# sys.path.insert(0, os.path.abspath('../pytb/tracking/bboxes_2d_tracker'))
-# sys.path.insert(0, os.path.abspath('../pytb/tracking/bboxes_2d_tracker/mb_tracker'))
-#
-# sys.path.insert(0, os.path.abspath('../pytb/utils'))
+
+autodoc_mock_imports = ['cv2', 'torch', 'detectron2']
 
 # -- Project information -----------------------------------------------------
 
