@@ -5,13 +5,6 @@ Welcome to the documentation about the outputs. The main packages and modules ar
 
 All functions are defined in details further down the page.
 
-Quick access
-------------
-
-.. autosummary::
-   :toctree: stub
-   :recursive:
-
 detection
 """"""""""""""""
 

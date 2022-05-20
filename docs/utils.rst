@@ -5,13 +5,6 @@ Welcome to the documentation about the detectors. The main packages and modules 
 
 All functions are defined in details further down the page.
 
-Quick access
-------------
-
-.. autosummary::
-   :toctree: stub
-   :recursive:
-
 image_helper
 """""""""""""""""
 
