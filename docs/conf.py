@@ -14,7 +14,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-autodoc_mock_imports = ['cv2', 'torch', 'detectron2']
+autodoc_mock_imports = ['cv2', 'torch', 'torchvision', 'detectron2']
 
 # -- Project information -----------------------------------------------------
 
