@@ -16,23 +16,14 @@ tracker
 """""""""""""""""
 
 .. automodule:: pytb.tracking.tracker
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 tracker_factory
 """""""""""""""""
 
 .. automodule:: pytb.tracking.tracker_factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 tracking_manager
 """"""""""""""""
 
 .. automodule:: pytb.tracking.tracking_manager
-   :members:
-   :undoc-members:
-   :show-inheritance:
 

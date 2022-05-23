@@ -16,23 +16,13 @@ detector
 """"""""""""
 
 .. automodule:: pytb.detection.detector
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 detector_factory
 """"""""""""""""
 
 .. automodule:: pytb.detection.detector_factory
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 detection_manager
 """""""""""""""""
 
 .. automodule:: pytb.detection.detection_manager
-   :members:
-   :undoc-members:
-   :show-inheritance:
-

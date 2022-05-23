@@ -9,23 +9,14 @@ detection
 """"""""""""""""
 
 .. automodule:: pytb.output.detection
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 bboxes_2d
 """""""""""""""""
 
 .. automodule:: pytb.output.bboxes_2d
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 bboxes_2d_track
 """"""""""""""""
 
 .. automodule:: pytb.output.bboxes_2d_track
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
