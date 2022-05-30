@@ -26,16 +26,6 @@ class TrackingManager:
         self.preproc_roi = None
         self.postproc_roi = None
 
-    @staticmethod
-    def _validate_preprocess_parameters(preprocess_parameters: dict):
-        # TODO
-        pass
-
-    @staticmethod
-    def _validate_postprocess_parameters(postprocess_parameters: dict):
-        # TODO
-        pass
-
     def track(self, detection: Detection, frame: Optional[np.ndarray] = None) -> Detection:
         start = default_timer()
         border_px = None

@@ -9,6 +9,7 @@ from pytb.output.detection import Detection
 
 log = logging.getLogger("aptitude-toolbox")
 
+
 class DetectionManager:
 
     def __init__(self, detector: Detector, preprocess_parameters: dict, postprocess_parameters: dict):

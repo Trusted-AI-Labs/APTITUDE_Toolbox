@@ -5,6 +5,7 @@ from pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector import BBoxes2D
 
 log = logging.getLogger("aptitude-toolbox")
 
+
 class DetectorFactory:
 
     @staticmethod

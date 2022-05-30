@@ -50,6 +50,7 @@ autodoc_default_options = {
     'private-members': True,
     'show-inheritance': True,
     'inherited-members': False,
+    'special-members': '__init__',
     'member-order': 'bysource',
     'exclude-members': '_abc_impl'
 }
