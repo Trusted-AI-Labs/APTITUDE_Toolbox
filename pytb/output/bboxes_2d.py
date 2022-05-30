@@ -1,6 +1,5 @@
 from pytb.output.detection import Detection
 
-from typing import Optional
 import numpy as np
 import cv2
 
@@ -55,10 +54,11 @@ class BBoxes2D(Detection):
             nms_thresh (float): The threshold to apply the Non-Max Suppression ranging from 0 to 1.
 
         """
-        if pref_implem == "cv2":
-            self.cv2_filter(nms_thresh, conf_thresh=0, eta=1.0, top_k=0)
-        elif pref_implem == "Malisiewicz":
-            self._nms_malisiewicz(nms_thresh)
+        if self.number_objects > 0:
+            if pref_implem == "cv2":
+                return self.cv2_filter(nms_thresh, conf_thresh=0, eta=1.0, top_k=0)
+            elif pref_implem == "Malisiewicz":
+                return self._nms_malisiewicz(nms_thresh)
 
     def top_k(self, k: int):
         """Keeps only the K most confident prediction. If a choice has to be made between two detections
@@ -182,10 +182,9 @@ class BBoxes2D(Detection):
             eta (float): A coefficient in adaptive threshold formula : nms_thresh i+1 = eta . nms_thresh i
             top_k (int): The maximum numbers of bounding boxes to keep.
         """
-        if self.number_objects != 0:
-            elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(),
-                                                    conf_thresh, nms_thresh, eta, top_k)[:, 0]
-            self._select_indices(elements_of_interest)
+        elements_of_interest = cv2.dnn.NMSBoxes(self.bboxes.tolist(), self.det_confs.tolist(),
+                                                conf_thresh, nms_thresh, eta, top_k)[:, 0]
+        self._select_indices(elements_of_interest)
 
     def roi_filter(self, roi: np.ndarray, max_outside_roi_thresh: float):
         """Removes the bounding boxes that are outside the Region Of Interest (ROI) based on a threshold.
@@ -315,18 +314,19 @@ class BBoxes2D(Detection):
                 else:
                     self.bboxes[i] = bbox + np.array([borders_px[1], borders_px[3], borders_px[1], borders_px[3]])
 
-    def remove_idx(self, indices: list):
+    def remove_idx(self, indices: np.array):
         """Removes the bounding boxes together with their confidence and class ID given a list of indices.
 
         This method does not return the object instance, it modifies directly the instance's attributes.
 
         Args:
-            indices (list): The indices of the detected objects to remove.
+            indices (np.array): The indices of the detected objects to remove.
         """
-        self.bboxes = np.delete(self.bboxes, indices, axis=0)
-        self.class_IDs = np.delete(self.class_IDs, indices)
-        self.det_confs = np.delete(self.det_confs, indices)
-        self.number_objects -= len(indices)
+        if len(indices) > 0:
+            self.bboxes = np.delete(self.bboxes, indices, axis=0)
+            self.class_IDs = np.delete(self.class_IDs, indices)
+            self.det_confs = np.delete(self.det_confs, indices)
+            self.number_objects -= len(indices)
 
     # Private methods
     def _select_indices(self, indices: np.array):
@@ -337,10 +337,11 @@ class BBoxes2D(Detection):
         Args:
             indices (np.array): The indices of the detected objects to keep.
         """
-        self.bboxes = np.take(self.bboxes, indices, axis=0)
-        self.det_confs = np.take(self.det_confs, indices)
-        self.class_IDs = np.take(self.class_IDs, indices)
-        self.number_objects = len(self.bboxes)
+        if len(indices) > 0:
+            self.bboxes = np.take(self.bboxes, indices, axis=0)
+            self.det_confs = np.take(self.det_confs, indices)
+            self.class_IDs = np.take(self.class_IDs, indices)
+            self.number_objects = len(self.bboxes)
 
     def _nms_malisiewicz(self, nms_thresh):
         """An implementation of Non-max Suppression (NMS) by Dr. Tomasz Malisiewicz.

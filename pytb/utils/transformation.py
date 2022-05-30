@@ -56,7 +56,7 @@ def pre_process(preprocess_parameters: dict, image: np.ndarray, prev_roi: np.nda
 
 def post_process(postprocess_parameters: dict,  detection: Detection, prev_roi: np.ndarray = None) \
         -> Tuple[Detection, Union[np.ndarray, None]]:
-    if isinstance(detection, BBoxes2D):
+    if isinstance(detection, BBoxes2D) and detection.number_objects > 0:
         # Using previous ROI if exists to avoid repeated readings
         roi = prev_roi
 

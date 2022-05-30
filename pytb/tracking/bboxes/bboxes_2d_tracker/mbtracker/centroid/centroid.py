@@ -58,8 +58,10 @@ class Centroid(BBoxes2DTracker):
                 if global_IDs[i] == 0:
                     to_remove.append(i)
 
-            detection.remove_idx(to_remove)
-            global_IDs = np.delete(global_IDs, to_remove)
+            to_remove = np.array(to_remove)
+            if len(to_remove) > 0:
+                detection.remove_idx(to_remove)
+                global_IDs = np.delete(global_IDs, to_remove)
 
             output = BBoxes2DTrack(detection.detection_time, detection.bboxes, detection.class_IDs, detection.det_confs,
                                    detection.dim_width, detection.dim_height, tracking_time, global_IDs,
