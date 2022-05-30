@@ -4,6 +4,12 @@ from abc import ABC, abstractmethod
 class Detection(ABC):
 
     def __init__(self, number_objects: int):
+        """An abstract class representing a Detection. It stores the number of detected objects,
+        but also the preprocessing, processing and postprocessing time that are filled by the DetectionManager
+
+        Args:
+            number_objects (int): The number of detected objects.
+        """
         super().__init__()
 
         self.number_objects = number_objects

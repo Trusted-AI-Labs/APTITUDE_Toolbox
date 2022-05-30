@@ -2,6 +2,8 @@
 
 ![Logo](img/logo.png) 
 
+[![Documentation Status](https://readthedocs.org/projects/aptitude-toolbox/badge/?version=latest)](https://aptitude-toolbox.readthedocs.io/en/latest/?badge=latest)
+
 ## Description
 
 The APTITUDE Toolbox gathers open-source implementations of state-of-the-art algorithms for the detection and tracking of moving objects. It integrates popular frameworks such as OpenCV, Tensorflow and Pytorch and it is made easy-to-use via an all-in-one interface.

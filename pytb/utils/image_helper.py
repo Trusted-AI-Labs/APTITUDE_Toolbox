@@ -3,6 +3,7 @@ import numpy as np
 import urllib.request
 import ast
 import logging
+from typing import Tuple
 
 log = logging.getLogger("aptitude-toolbox")
 
@@ -64,17 +65,17 @@ def apply_roi(image, roi):
     return cv2.bitwise_and(image, roi)
 
 
-def add_borders(image: np.ndarray, centered=False):
-    """Add black border to 'frame' keep aspect ratio
-    return the frame in letterbox format and the number of black pixels on each side
+def add_borders(image: np.ndarray, centered=False) -> Tuple[np.ndarray, np.array]:
+    """Adds black border to 'image' to keep the aspect ratio.
+    returns the frame in letterbox format and the number of black pixels on each side.
 
     Args:
-        image (np.ndarray): The image
-        centered (bool): Whether black borders are placed so that the image is always centered
+        image (np.ndarray): The image to apply the transformation.
+        centered (bool): Whether black borders are placed so that the image is always centered.
 
     Returns:
-        np.ndarray: The image in letterbox format
-        np.array: The border applied on each side (right, left, bottom, top) in pixels
+        np.ndarray: The image in letterbox format.
+        np.array: The border applied on each side [right, left, bottom, top] in pixels.
     """
     black = (0, 0, 0)
     (H, W, _) = image.shape

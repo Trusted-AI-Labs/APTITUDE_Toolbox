@@ -36,7 +36,7 @@ class BackgroundSubtractor(BBoxes2DDetector):
         """Performs an inference using a background subtraction method on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer YOLO detections
+            frame (np.ndarray): The frame to infer detections from a background substractor.
 
         Returns:
             BBoxes2D: A set of 2DBBoxes of the detected objects.
