@@ -1,13 +1,16 @@
+import numpy as np
 
 
-def iou(bbox1, bbox2):
+def iou(bbox1: np.array, bbox2: np.array) -> float:
     """
     Calculates the intersection-over-union of two bounding boxes.
+
     Args:
         bbox1 (numpy.array, list of floats): bounding box in format x1,y1,x2,y2.
         bbox2 (numpy.array, list of floats): bounding box in format x1,y1,x2,y2.
+
     Returns:
-        int: intersection-over-onion of bbox1, bbox2
+        float: intersection-over-onion of bbox1, bbox2
     """
 
     bbox1 = [float(x) for x in bbox1]

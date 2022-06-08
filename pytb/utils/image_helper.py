@@ -16,7 +16,18 @@ except:
     log.warning("TurboJPEG could not be found, using cv2 to decode images instead.")
 
 
-def get_cv2_img_from_str(path: str, flags=cv2.IMREAD_COLOR):
+def get_cv2_img_from_str(path: str, flags=cv2.IMREAD_COLOR) -> np.array:
+    """
+    Decodes an image from a path and returns a np.array containing the image, under cv2 format.
+    If installed and if it is a .jpg or .jpeg image, uses TurboJPEG instead for faster reading.
+
+    Args:
+        path (str): Path to the image to be decoded
+        flags (int): A cv2 flag indicating the reading mode. By default, it uses cv2.IMREAD_COLOR.
+
+    Returns:
+        np.array: The image that was read from the input path.
+    """
     with open(path, 'rb') as buffer:
         if tjpeg is not None and (path.endswith(".jpg") or path.endswith(".jpeg")):
             return tjpeg.decode(buffer.read())
@@ -25,25 +36,69 @@ def get_cv2_img_from_str(path: str, flags=cv2.IMREAD_COLOR):
             return cv2.imdecode(nparr, flags)
 
 
-def get_cv2_img_from_buffer(buffer, flags=cv2.IMREAD_COLOR):
+def get_cv2_img_from_url(url, flags=cv2.IMREAD_COLOR) -> np.array:
+    """
+    Decodes an image from an URL and returns a np.array containing the image, under cv2 format.
+
+    Args:
+        url (str): A string containing the URL where the image should be fetched.
+        flags (int): A cv2 flag indicating the reading mode. By default, it uses cv2.IMREAD_COLOR.
+
+    Returns:
+        np.array: The image that was read from the URL.
+    """
+    req = urllib.request.Request(url)
+    return _get_cv2_img_from_buffer(urllib.request.urlopen(req), flags)
+
+
+def _get_cv2_img_from_buffer(buffer, flags=cv2.IMREAD_COLOR):
     nparr = np.frombuffer(buffer.read(), dtype=np.uint8)
     return cv2.imdecode(nparr, flags)
 
 
-def get_cv2_img_from_url(url, flags=cv2.IMREAD_COLOR):
-    req = urllib.request.Request(url)
-    return get_cv2_img_from_buffer(urllib.request.urlopen(req), flags)
+def resize(image: np.array, width: int, height: int) -> np.array:
+    """
+    Applies a resizing method on the image with cv2.INTER_AREA for the interpolation.
 
+    Args:
+        image: The image to be resized.
+        width: The width of the image after resizing, in pixels.
+        height: The height of the image after resizing, in pixels.
 
-def resize(image: np.ndarray, width: int, height: int):
+    Returns:
+        np.array: A new image resized to the required dimension.
+
+    """
     return cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
 
 def get_roi_file(roi_path: str):
+    """
+    Gets the Region of Interest (ROI) from a path to an image file.
+
+    Args:
+        roi_path (str): The path to the image.
+
+    Returns:
+        np.array: A binary mask where white pixels represent the Region of Interest (ROI)\
+        and the black pixels represent the regions to be ignored.
+    """
     return get_cv2_img_from_str(roi_path, flags=cv2.IMREAD_COLOR)
 
 
-def get_roi_coords(image_shape: tuple, roi_coords: str):
+def get_roi_coords(image_shape: tuple, roi_coords: str) -> np.array:
+    """
+    Gets the Region of Interest (ROI) from a set of polygon coords.
+
+    Args:
+        image_shape (tuple): The dimension of the binary mask (the image) that will be returned
+        roi_coords (np.array): The set of the polygon coords that defines the Region of Interest (the white pixels).
+            It must be of the following format: "(0, 0), (450, 0), (450, 200), (0, 200)"
+
+    Returns:
+        np.array: A binary mask where white pixels represent the Region of Interest (ROI)\
+        and the black pixels represent the regions to be ignored.
+    """
     roi_coords = ast.literal_eval(roi_coords)
     for c in roi_coords:
         assert c[0] <= image_shape[1] and c[1] <= image_shape[0], \
@@ -59,23 +114,35 @@ def get_roi_coords(image_shape: tuple, roi_coords: str):
     return cv2.fillPoly(roi, polygon, mask_ignore_color)
 
 
-def apply_roi(image, roi):
+def apply_roi(image: np.array, roi: np.array) -> np.array:
+    """
+    Applies the Region of Interest (ROI), which is a binary mask, onto the image.
+
+    Args:
+        image (np.array): The original image on which the mask will be applied.
+        roi (np.array): The mask to be applied on the image
+
+    Returns:
+        np.array: A new image where black pixels of the mask are applied on the image.
+    """
     assert image.shape[:2] == roi.shape[:2], \
         "The mask image has not the same width or height as the frame to be masked."
     return cv2.bitwise_and(image, roi)
 
 
-def add_borders(image: np.ndarray, centered=False) -> Tuple[np.ndarray, np.array]:
+def add_borders(image: np.array, centered=False) -> Tuple[np.array, np.array]:
     """Adds black border to 'image' to keep the aspect ratio.
     returns the frame in letterbox format and the number of black pixels on each side.
 
     Args:
-        image (np.ndarray): The image to apply the transformation.
+        image (np.array): The image to apply the transformation.
         centered (bool): Whether black borders are placed so that the image is always centered.
 
     Returns:
-        np.ndarray: The image in letterbox format.
-        np.array: The border applied on each side [right, left, bottom, top] in pixels.
+        A tuple containing
+
+        - **frame** (*np.array*): The image in letterbox format.
+        - **border_px** (*np.array*): The border applied on each side [right, left, bottom, top] in pixels.
     """
     black = (0, 0, 0)
     (H, W, _) = image.shape

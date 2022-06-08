@@ -29,9 +29,9 @@ class BBoxes2DTrack(BBoxes2D):
         Args:
             indices (list): The indices of the detected objects to remove.
         """
-        super().remove_idx(indices)
-        self.global_IDs = np.delete(self.global_IDs, indices)
-        self.number_objects -= len(indices)
+        if len(indices) > 0:
+            super().remove_idx(indices)
+            self.global_IDs = np.delete(self.global_IDs, indices)
 
     # Private methods
     def _select_indices(self, indices: np.array):
@@ -44,8 +44,10 @@ class BBoxes2DTrack(BBoxes2D):
             indices (np.array): The indices of the detected objects to keep.
         """
         super()._select_indices(indices)
-        self.global_IDs = np.take(self.global_IDs, indices)
-        self.number_objects = len(self.bboxes)
+        if len(indices) > 0:
+            self.global_IDs = np.take(self.global_IDs, indices)
+        else:
+            self.global_IDs = np.array([])
 
     def __str__(self):
         s = super().__str__()

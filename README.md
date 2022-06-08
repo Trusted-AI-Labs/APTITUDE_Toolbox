@@ -36,7 +36,7 @@ Learn more on [https://trail.ac/](https://trail.ac/)
 
 Before anything else, please install [ffmpeg](https://ffmpeg.org/download.html) on your machine
 
-If you don't want to use Docker or if you want contribute to the project, you can clone and manually install the dependencies.
+If you don't want to use Docker or if you want to contribute to the project, you can clone and manually install the dependencies.
 
 ```
 conda create -n apt_tb python=3.9
@@ -70,7 +70,7 @@ Additionally, if you are on Linux want to use Detectron2, you can install the fo
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) to see how to install on Windows.
+However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints how to install on Windows.
 
 
 ### Troubleshooting 🔫

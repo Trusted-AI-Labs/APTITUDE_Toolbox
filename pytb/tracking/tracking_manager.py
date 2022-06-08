@@ -23,8 +23,12 @@ class TrackingManager:
         self.preprocess_parameters = preprocess_parameters
         self.postprocess_parameters = postprocess_parameters
 
+        # Those two attributes are used to keep the value of the ROI to be applied a sequence of image
+        # to avoid repeated readings.
         self.preproc_roi = None
         self.postproc_roi = None
+
+        # TODO define a method to handle the proper update of the parameters
 
     def track(self, detection: Detection, frame: Optional[np.ndarray] = None) -> Detection:
         start = default_timer()

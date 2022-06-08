@@ -8,7 +8,17 @@ import copy
 
 
 class VideoCaptureAsync:
-    def __init__(self, file_path):
+    def __init__(self, file_path: str):
+        """
+        This class allows to read a video file asynchronously, meaning that the next frame is fetched
+        between the call to the read() function.
+        It is used the same way as cv2.VideoCapture, except that it is created using cap = VideoCaptureAsync(video_path)
+        and that cap.stop() should be called before calling cap.release()
+
+        Args:
+            file_path (str): The path to the video file to read
+        """
+
         # , width=2688, height=1520):
         self.src = file_path
         self.cap = cv2.VideoCapture(self.src)

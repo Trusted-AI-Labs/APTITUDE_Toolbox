@@ -12,7 +12,7 @@ valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "MRCNN", "FASTERR
 valid_tracker_keys = ["Tracker", "BBoxes2DTracker", "SORT", "DeepSORT", "Centroid", "IOU"]
 
 
-def validate_preprocess_parameters(pre_params: dict):
+def validate_preprocess_parameters(pre_params: dict) -> bool:
     """Check validity and compatibility between provided preprocess parameters.
 
     Args:
@@ -56,7 +56,7 @@ def validate_preprocess_parameters(pre_params: dict):
     return valid
 
 
-def validate_postprocess_parameters(post_params: dict):
+def validate_postprocess_parameters(post_params: dict) -> bool:
     """Check validity and compatibility between provided postprocess parameters.
 
     Args:
@@ -139,7 +139,7 @@ def validate_postprocess_parameters(post_params: dict):
     return valid
 
 
-def _validate_roi_parameters(roi_params: dict, preproc: bool):
+def _validate_roi_parameters(roi_params: dict, preproc: bool) -> bool:
     valid = True
     if "path" not in roi_params and "coords" not in roi_params:
         log.error("\"roi\" entry without \"path\" or \"coords\" sub-entry.")
@@ -165,7 +165,7 @@ def _validate_roi_parameters(roi_params: dict, preproc: bool):
     return valid
 
 
-def validate_detector_parameters(det_params: dict):
+def validate_detector_parameters(det_params: dict) -> bool:
     """Check validity and compatibility between provided tracker parameters.
 
     Args:
@@ -197,7 +197,7 @@ def validate_detector_parameters(det_params: dict):
     return valid
 
 
-def _validate_bboxes2ddetector_parameters(det_params: dict):
+def _validate_bboxes2ddetector_parameters(det_params: dict) -> bool:
     b2d_params = det_params["BBoxes2DDetector"]
     valid = True
     if "model_type" not in b2d_params:
@@ -261,7 +261,7 @@ def _validate_bboxes2ddetector_parameters(det_params: dict):
     return valid
 
 
-def _validate_yolo_parameters(det_params: dict):
+def _validate_yolo_parameters(det_params: dict) -> bool:
     yolo_params = det_params["YOLO"]
     if not yolo_params:
         return True  # Empty dict for YOLO is valid
@@ -284,7 +284,7 @@ def _validate_yolo_parameters(det_params: dict):
     return valid
 
 
-def _validate_backgroundsubtraction_parameters(det_params: dict):
+def _validate_backgroundsubtraction_parameters(det_params: dict) -> bool:
     bs_params = det_params["BackgroundSubtractor"]
     if not bs_params:
         return True  # Empty dict for BS is valid
@@ -301,7 +301,7 @@ def _validate_backgroundsubtraction_parameters(det_params: dict):
     return valid
 
 
-def _validate_detectron2_parameters(det_params: dict):
+def _validate_detectron2_parameters(det_params: dict) -> bool:
     det2_params = det_params["Detectron2"]
     if not det2_params:
         return True  # Empty dict for Detectron2 is valid
@@ -318,7 +318,7 @@ def _validate_detectron2_parameters(det_params: dict):
     return valid
 
 
-def _validate_mrcnn_parameters(det_params: dict):
+def _validate_mrcnn_parameters(det_params: dict) -> bool:
     mrcnn_params = det_params["MRCNN"]
     if not mrcnn_params:
         return True  # Empty dict for MRCNN is valid
@@ -336,7 +336,7 @@ def _validate_mrcnn_parameters(det_params: dict):
     return valid
 
 
-def _validate_fasterrcnn_parameters(det_params: dict):
+def _validate_fasterrcnn_parameters(det_params: dict) -> bool:
     fasterrcnn_params = det_params["FASTERRCNN"]
     if not fasterrcnn_params:
         return True  # Empty dict for FASTERRCNN is valid
@@ -354,7 +354,7 @@ def _validate_fasterrcnn_parameters(det_params: dict):
     return valid
 
 
-def validate_tracker_parameters(track_params: dict):
+def validate_tracker_parameters(track_params: dict) -> bool:
     """Check validity and compatibility between provided detector parameters.
 
     Args:
@@ -381,12 +381,12 @@ def validate_tracker_parameters(track_params: dict):
         valid = valid and _validate_bboxes2dtracker_parameters(track_params)
     else:
         log.error("Tracker type {} is unknown.".format(track_params["Detector"]["type"]))
-        vald = False
+        valid = False
 
     return valid
 
 
-def _validate_bboxes2dtracker_parameters(track_params):
+def _validate_bboxes2dtracker_parameters(track_params: dict) -> bool:
     b2t_params = track_params["BBoxes2DTracker"]
     valid = True
     if "model_type" not in b2t_params:
@@ -417,7 +417,7 @@ def _validate_bboxes2dtracker_parameters(track_params):
     return valid
 
 
-def _validate_sort_parameters(track_params):
+def _validate_sort_parameters(track_params: dict) -> bool:
     sort_params = track_params["SORT"]
     if not sort_params:
         return True  # Empty dict for SORT is valid
@@ -438,7 +438,7 @@ def _validate_sort_parameters(track_params):
     return valid
 
 
-def _validate_deepsort_parameters(track_params):
+def _validate_deepsort_parameters(track_params: dict) -> bool:
     valid = True
     deepsort_params = track_params["DeepSORT"]
     if "model_path" not in deepsort_params:
@@ -477,7 +477,7 @@ def _validate_deepsort_parameters(track_params):
     return valid
 
 
-def _validate_centroid_parameters(track_params):
+def _validate_centroid_parameters(track_params: dict) -> bool:
     centroid_params = track_params["Centroid"]
     if not centroid_params:
         return True  # Empty dict for Centroid is valid
@@ -487,7 +487,7 @@ def _validate_centroid_parameters(track_params):
     return True
 
 
-def _validate_iou_parameters(track_params):
+def _validate_iou_parameters(track_params: dict) -> bool:
     iou_params = track_params["IOU"]
     if not iou_params:
         return True

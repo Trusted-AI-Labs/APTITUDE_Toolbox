@@ -220,8 +220,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
 
     if async_flag:
         cap.stop()
-    else:
-        cap.release()
+    cap.release()
 
     if record:
         output_video.release()

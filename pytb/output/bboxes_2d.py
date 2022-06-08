@@ -342,6 +342,11 @@ class BBoxes2D(Detection):
             self.det_confs = np.take(self.det_confs, indices)
             self.class_IDs = np.take(self.class_IDs, indices)
             self.number_objects = len(self.bboxes)
+        else:
+            self.bboxes = np.array([])
+            self.det_confs = np.array([])
+            self.class_IDs = np.array([])
+            self.number_objects = 0
 
     def _nms_malisiewicz(self, nms_thresh):
         """An implementation of Non-max Suppression (NMS) by Dr. Tomasz Malisiewicz.
