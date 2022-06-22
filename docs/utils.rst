@@ -1,7 +1,7 @@
 Utils
 =====================
 
-Welcome to the documentation about the detectors. The main packages and modules are available in the 'Quick access' below.
+Welcome to the documentation about the utilities. The main packages and modules are available in the 'Quick access' below.
 
 All functions are defined in details further down the page.
 
