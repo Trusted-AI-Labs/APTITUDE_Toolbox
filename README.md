@@ -70,16 +70,9 @@ Additionally, if you are on Linux want to use Detectron2, you can install the fo
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, you must build it from source. 
-Refer to their [repository](https://github.com/facebookresearch/detectron2) 
-or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) 
-to have some hints how to install on Windows.
+However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints on how to install on Windows.
 
-To accelerate the reading of image sequences, you can install libjpeg-turbo.
-This way, the jpeg images will be read via this faster library instead of openCV. 
-Refer to their [releases](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) 
-to install it on your system. It was tested with version 2.0.90.
-The library is supported thanks to PyTurboJPEG that is installed via `requirements.txt`
+To accelerate the reading of image sequences, you can install libjpeg-turbo. This way, the jpeg images will be read via this faster library instead of openCV. Refer to their [releases](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) to install it on your system. It was tested with version 2.0.90. The library is supported thanks to PyTurboJPEG that is installed via `requirements.txt`
 
 ### Troubleshooting 🔫
 
