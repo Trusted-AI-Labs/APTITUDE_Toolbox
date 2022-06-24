@@ -17,7 +17,7 @@ class FASTERRCNN(BBoxes2DDetector):
         """Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the detector parameters
+            detector_parameters (dict): A dictionary containing the FasterRCNN parameters.
         """
         super().__init__(detector_parameters)
         # Whether to use the default weights available on PyTorch

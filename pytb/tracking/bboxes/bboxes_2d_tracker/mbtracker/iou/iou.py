@@ -32,7 +32,10 @@ class IOU(BBoxes2DTracker):
             tracker_parameters (dict): A dictionary containing the related SORT's parameters
         """
         super().__init__(tracker_parameters)
+        # Minimum of hits to start tracking the objects
         self.min_hits = tracker_parameters["IOU"].get("min_hits", 3)
+
+        # The minimum IOU threshold to keep the association of a previoulsy detected object
         self.iou_thresh = tracker_parameters["IOU"].get("iou_thresh", 0.3)
 
         log.debug("IOU {} implementation selected.".format(self.pref_implem))
@@ -40,6 +43,7 @@ class IOU(BBoxes2DTracker):
             self.tracker = SimpleIOU(self.min_hits, self.iou_thresh)
 
         elif self.pref_implem == "KIOU":
+            # An object that is not tracked for max_age frame is removed from the memory
             self.max_age = tracker_parameters["IOU"].get("max_age", 10)
             self.tracker = KIOU(self.min_hits, self.iou_thresh, self.max_age)
 
@@ -53,8 +57,9 @@ class IOU(BBoxes2DTracker):
             detection (BBoxes2D): The detection used to infer IDs.
 
         Returns:
-            BBoxes2DTrack: A set of 2D bounding boxes identifying  detections with the tracking information added.
+            BBoxes2DTrack: A set of 2D bounding boxes identifying detected objects with the tracking information added.
         """
+        # Format the detections before giving them to the trackers
         detection.to_x1_y1_x2_y2()
         dets = []
         for i in range(detection.number_objects):
@@ -71,6 +76,8 @@ class IOU(BBoxes2DTracker):
         res = self.tracker.update(dets)
         tracking_time = default_timer() - start
 
+        # Get results depending on the tracker implementation
+        # -1 is for the last step of the tracker
         if self.pref_implem == "SimpleIOU":
             bboxes = [res['bboxes'][-1] for res in res]
             det_confs = [res['scores'][-1] for res in res]

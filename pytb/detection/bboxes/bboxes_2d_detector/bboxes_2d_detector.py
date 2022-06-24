@@ -39,6 +39,6 @@ class BBoxes2DDetector(Detector, ABC):
             org_frame (np.ndarray): The given frame to infer detections
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  detections of the detected objects
+            BBoxes2D: A set of 2D bounding boxes identifying detected objects of the detected objects
         """
         pass

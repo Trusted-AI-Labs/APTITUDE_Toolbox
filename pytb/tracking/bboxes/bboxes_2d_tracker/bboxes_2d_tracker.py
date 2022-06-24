@@ -29,7 +29,7 @@ class BBoxes2DTracker(Tracker):
             detection (BBoxes2D): The detection used to infer IDs.
 
         Returns:
-            BBoxes2DTrack: A set of 2D bounding boxes identifying  detections with the tracking information added.
+            BBoxes2DTrack: A set of 2D bounding boxes identifying detected objects with the tracking information added.
         """
         pass
 
