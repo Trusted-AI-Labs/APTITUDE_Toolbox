@@ -13,14 +13,21 @@ log = logging.getLogger("aptitude-toolbox")
 class Detectron2(BBoxes2DDetector):
 
     def __init__(self, detector_parameters: dict):
-        """Initializes the detectors with the given parameters.
+        """Initializes the detector with the given parameters.
 
         Args:
             detector_parameters (dict): A dictionary containing the Detectron2 detector parameters
         """
         super().__init__(detector_parameters)
+        
+        # The minimum confidence threshold of the detected objects if the implementation allows to provide one.
         self.conf_thresh = detector_parameters["Detectron2"].get("conf_thresh", 0)
+
+        # The minimum non-max suppression threshold of the detected objects if the implementation allows to provide one.
+        # The non-max suppression can be implemented in multiple ways, results can vary.
         self.nms_thresh = detector_parameters["Detectron2"].get("nms_thresh", 0)
+
+        # Whether to use the GPU if available.
         self.gpu = detector_parameters["Detectron2"].get("GPU", False)
 
         log.debug("Detectron2 {} implementation selected.".format(self.pref_implem))
@@ -38,11 +45,20 @@ class Detectron2(BBoxes2DDetector):
                 cfg.MODEL.DEVICE = "cpu"
                 log.debug("Device CPU selected.")
 
+            # Use the DefaultPredictor, which is the most generic
             self.predictor = DefaultPredictor(cfg)
         else:
             assert False, "[ERROR] Unknown implementation of Detectron2: {}".format(self.pref_implem)
 
     def detect(self, org_frame: np.ndarray) -> BBoxes2D:
+        """Performs a Detectron2 inference on the given frame.
+
+        Args:
+            frame (np.ndarray): The frame to infer Detectron2 detections
+
+        Returns:
+            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+        """
         start = default_timer()
         if self.pref_implem == "Default":
             detections = self.predictor(org_frame)
@@ -50,6 +66,7 @@ class Detectron2(BBoxes2DDetector):
             assert False, "[ERROR] Unknown implementation of Detectron2: {}".format(self.pref_implem)
         end = default_timer()
 
+        # Transfer the results to the CPU
         bboxes = detections["instances"].pred_boxes.tensor.cpu().detach().numpy()
         classes = detections["instances"].pred_classes.cpu().detach().numpy()
         confs = detections["instances"].scores.cpu().detach().numpy()

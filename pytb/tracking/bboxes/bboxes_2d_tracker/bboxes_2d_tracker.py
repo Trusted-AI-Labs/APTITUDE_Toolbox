@@ -8,12 +8,17 @@ from pytb.tracking.tracker import Tracker
 class BBoxes2DTracker(Tracker):
 
     def __init__(self, tracker_parameters: dict):
-        """Initializes the BBoxes2D tracker with the given parameters.
-
+        """
+        This class encompasses the attributes that are common to most trackers of 2D bounding boxes.
+        Initializes the BBoxes2D tracker with the given parameters.
+        
         Args:
-            tracker_parameters (dict): A dictionary containing the related tracker's parameters
+            tracker_parameters (dict): A dictionary containing the parameters of the desired tracker.
         """
         super().__init__()
+
+        # A tracker can have multiple implementations (e.g. in different frameworks),
+        # this parameter allows to choose one (required).
         self.pref_implem = tracker_parameters["BBoxes2DTracker"]["pref_implem"]
 
     @abstractmethod
@@ -24,7 +29,7 @@ class BBoxes2DTracker(Tracker):
             detection (BBoxes2D): The detection used to infer IDs.
 
         Returns:
-            BBoxes2DTrack: A set of 2DBBoxes detections with the tracking information added.
+            BBoxes2DTrack: A set of 2D bounding boxes identifying  detections with the tracking information added.
         """
         pass
 

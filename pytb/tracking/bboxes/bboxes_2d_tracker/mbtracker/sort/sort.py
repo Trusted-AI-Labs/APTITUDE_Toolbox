@@ -37,7 +37,7 @@ class SORT(BBoxes2DTracker):
             detection (BBoxes2D): The detection used to infer IDs.
 
         Returns:
-            BBoxes2DTrack: A set of 2DBBoxes detections with the tracking information added.
+            BBoxes2DTrack: A set of 2D bounding boxes identifying  detections with the tracking information added.
         """
         if self.pref_implem == "Abewley":
             if detection.number_objects == 0:

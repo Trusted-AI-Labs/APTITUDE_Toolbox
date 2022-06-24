@@ -54,7 +54,7 @@ class DeepSORT(BBoxes2DTracker):
             frame (np.ndarray): The frame where objects have to be tracked
 
         Returns:
-            BBoxes2DTrack: A set of 2DBBoxes detections with the tracking information added.
+            BBoxes2DTrack: A set of 2D bounding boxes identifying  detections with the tracking information added.
         """
         if self.pref_implem == "Leonlok":
             start = default_timer()
