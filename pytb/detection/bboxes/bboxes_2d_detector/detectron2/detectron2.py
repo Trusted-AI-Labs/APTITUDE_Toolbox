@@ -57,7 +57,7 @@ class Detectron2(BBoxes2DDetector):
             frame (np.ndarray): The frame to infer Detectron2 detections
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         start = default_timer()
         if self.pref_implem == "Default":

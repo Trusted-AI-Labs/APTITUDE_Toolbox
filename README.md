@@ -4,7 +4,16 @@
 
 [![Documentation Status](https://readthedocs.org/projects/aptitude-toolbox/badge/?version=latest)](https://aptitude-toolbox.readthedocs.io/en/latest/?badge=latest)
 
-## Description
+## Table of Contents
+1. [Description](#description)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Acknowledgement](#ack)
+6. [References](#ref)
+
+<a name="description"></a>
+## Description 
 
 The APTITUDE Toolbox gathers open-source implementations of state-of-the-art algorithms for the detection and tracking of moving objects. It integrates popular frameworks such as OpenCV, Tensorflow and Pytorch and it is made easy-to-use via an all-in-one interface.
 
@@ -16,6 +25,7 @@ Currently, the APTITUDE toolbox can infer bounding boxes via YOLO-family, Detect
 
 A video demo showing the results of the inference can be consulted [here](https://youtu.be/d5Dtp69EJC4).
 
+<a name="prerequisites"></a>
 ## Prerequisites
 
 The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use a high-end GPU in order to obtain real-time performance. 
@@ -24,6 +34,7 @@ The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use
 <!-- Refer to [this link]() for their installation. -->
 
 
+<a name="installation"></a>
 ## Installation
 
 ### Using Docker (recommended)
@@ -92,7 +103,7 @@ This might be because the path to a DLL is missing. Try to add to your path the 
 
 The first one is for the python39.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
 
-
+<a name="usage"></a>
 ## Usage
 
 ### Models
@@ -157,11 +168,13 @@ to learn more about the implementation of detection & tracking modules, utilitie
 Have a look to the two Python scripts (`tracker_client_images.py` & `tracker_client_video.py`) for concrete examples
 of how to use the modules to track objects in a sequence of images and in a video.
 
+<a name="ack"></a>
 ## Acknowledgement 🤝
 
 The APTITUDE toolbox comes from the APTITUDE project (**A**pprentissage **P**rofond et **T**raitement des **I**mages pour la **T**élésurveillance **U**rbaine et la **D**étection d’**E**vénements) funded by the Walloon Region of Belgium (#1910045).
 
-## References 📃
+<a name="ref"></a>
+## References 📃 
 
 Refer to the following repositories for more information on individual algorithms. Part of the code present in this repository was adapted from those repositories, see individual source files for details.
 

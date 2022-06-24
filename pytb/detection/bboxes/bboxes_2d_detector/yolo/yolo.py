@@ -78,7 +78,7 @@ class YOLO(BBoxes2DDetector):
             frame (np.array): The frame to infer YOLO detections.
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         if self.pref_implem == "cv2-DetectionModel":
             if frame.shape[:2] != (self.input_height, self.input_width):
@@ -123,7 +123,7 @@ class YOLO(BBoxes2DDetector):
             frame (np.array): The frame to infer YOLOv2-4 detections.
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         start = default_timer()
         classes, confidences, boxes = self.net.detect(cv2_org_frame, confThreshold=self.conf_thresh,
@@ -146,7 +146,7 @@ class YOLO(BBoxes2DDetector):
             frame (Any): The frame to infer YOLOv2-4 detections.
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         # Detect objects
         self.net.setInput(blob_org_frame)
@@ -185,7 +185,7 @@ class YOLO(BBoxes2DDetector):
             frame (np.array): The frame to infer YOLOv5 detections.
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         start = default_timer()
         output = self.net(org_frame, size=self.input_width)

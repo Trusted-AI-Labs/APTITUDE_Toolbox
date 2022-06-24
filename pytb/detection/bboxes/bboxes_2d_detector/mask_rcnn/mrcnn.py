@@ -55,7 +55,7 @@ class MRCNN(BBoxes2DDetector):
             frame (np.ndarray): The frame to infer Mask-RCNN detections
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         if self.pref_implem == "torch-resnet50":
             # Obtain values between 0 and 1 instead of 0 and 255

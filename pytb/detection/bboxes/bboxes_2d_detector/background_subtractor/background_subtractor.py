@@ -46,7 +46,7 @@ class BackgroundSubtractor(BBoxes2DDetector):
             frame (np.ndarray): The frame to infer detections from a background substractor.
 
         Returns:
-            BBoxes2D: A set of 2D bounding boxes identifying  the detected objects.
+            BBoxes2D: A set of 2D bounding boxes identifying the detected objects.
         """
         img_sub = None
 
