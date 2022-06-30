@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
 import logging
 import pytb.utils.validator as val
 from pytb.detection.detector import Detector
@@ -10,6 +16,19 @@ class DetectorFactory:
 
     @staticmethod
     def create_detector(detector_parameters: dict) -> Detector:
+        """
+        Creates a detector given a dictionary of parameters 
+        provided that the defined parameters are valid. 
+        Otherwise, an error message is given indicating the invalid parameters.
+        It first branches on the detector type (e.g. `BBoxes2DDetector`) 
+        and then follow the chain to initialize the required detector.
+
+        Args:
+            detector_parameters (dict): A dictionary describing the detector to initialize.
+
+        Returns:
+            Detection: A concrete implementation of a Detector (e.g YOLO).
+        """
         assert val.validate_detector_parameters(detector_parameters), \
             "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
         det_type = detector_parameters["Detector"]["type"]
@@ -22,6 +41,10 @@ class DetectorFactory:
 
     @staticmethod
     def _bboxes_2d_detector(detector_parameters: dict) -> BBoxes2DDetector:
+        """
+        Creates a `BBoxes2DDetector` given a dictionary of parameters.
+        It then branches on the model type to initialize a concrete detector implementation (e.g YOLO).
+        """
         model_type = detector_parameters["BBoxes2DDetector"]["model_type"]
 
         log.info("Model type {} selected.".format(model_type))
@@ -44,4 +67,9 @@ class DetectorFactory:
 
     @staticmethod
     def _pose_detector(detector_parameters: dict) -> None:
+        """
+        TODO. No implementation of pose detector yet.
+        Creates a PoseDetector given a dictionary of parameters.
+        It then branches on the model type to initialize a concrete detector implementation (e.g XXX).
+        """
         pass

@@ -4,7 +4,16 @@
 
 [![Documentation Status](https://readthedocs.org/projects/aptitude-toolbox/badge/?version=latest)](https://aptitude-toolbox.readthedocs.io/en/latest/?badge=latest)
 
-## Description
+## Table of Contents
+1. [Description](#description)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Acknowledgement](#ack)
+6. [References](#ref)
+
+<a name="description"></a>
+## Description 
 
 The APTITUDE Toolbox gathers open-source implementations of state-of-the-art algorithms for the detection and tracking of moving objects. It integrates popular frameworks such as OpenCV, Tensorflow and Pytorch and it is made easy-to-use via an all-in-one interface.
 
@@ -16,6 +25,7 @@ Currently, the APTITUDE toolbox can infer bounding boxes via YOLO-family, Detect
 
 A video demo showing the results of the inference can be consulted [here](https://youtu.be/d5Dtp69EJC4).
 
+<a name="prerequisites"></a>
 ## Prerequisites
 
 The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use a high-end GPU in order to obtain real-time performance. 
@@ -24,6 +34,7 @@ The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use
 <!-- Refer to [this link]() for their installation. -->
 
 
+<a name="installation"></a>
 ## Installation
 
 ### Using Docker (recommended)
@@ -70,8 +81,9 @@ Additionally, if you are on Linux want to use Detectron2, you can install the fo
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints how to install on Windows.
+However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints on how to install on Windows.
 
+To accelerate the reading of image sequences, you can install libjpeg-turbo. This way, the jpeg images will be read via this faster library instead of openCV. Refer to their [releases](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) to install it on your system. It was tested with version 2.0.90. The library is supported thanks to PyTurboJPEG that is installed via `requirements.txt`
 
 ### Troubleshooting 🔫
 
@@ -91,7 +103,7 @@ This might be because the path to a DLL is missing. Try to add to your path the 
 
 The first one is for the python39.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
 
-
+<a name="usage"></a>
 ## Usage
 
 ### Models
@@ -99,9 +111,9 @@ The first one is for the python39.dll, the second one is for hdf5.dll. If this i
 Models trained on [MIO-TCD Localization dataset](https://tcd.miovision.com/challenge/dataset.html) are available on our [drive](https://drive.google.com/drive/folders/1di8gys9LwbLFeFTY7dLA6PqG4nX5TLSD?usp=sharing). 
 Feel free to try them with the APTITUDE Toolbox before training your own.
 
-We advise to create a /models/ and a /videos/ folder so that you can easily switch from a model/video to another. 
+We advise to create a `/models/` and a `/videos/` folder so that you can easily switch from a model/video to another. 
 
-### Use as a Black Toolbox
+### Use as a Black Toolbox 🧰
 
 The toolbox comes with two "client" scripts that can be used to produce an annotated video and/or to get the results of the inference in MOT format. `tracker_client_video.py` processes a sequence of images while `tracker_client_video` processes a video file. In both cases, `clients/main.py` is the script to run. In accordance with the input type (folder of file), it calls the right script. In the following table, the parameters of this script are described. The bold lines indicate those that are mandatory.
 
@@ -148,15 +160,21 @@ The classes JSON config file contains the name of the object classes that can be
 
 Then, you can run the `clients/main.py` with you configured environment and the above parameters. 
 
-### Use the Toolbox Components
+### Use and Improve the Toolbox Components 🔨
 
-This section is work in progress. 🔨
+Refer to the [APTITUDE Toolbox's documentation](https://aptitude-toolbox.readthedocs.io/en/latest/index.html) 
+to learn more about the implementation of detection & tracking modules, utilities and outputs.
 
-## Acknowledgement
+Have a look to the two Python scripts (`tracker_client_images.py` & `tracker_client_video.py`) for concrete examples
+of how to use the modules to track objects in a sequence of images and in a video.
+
+<a name="ack"></a>
+## Acknowledgement 🤝
 
 The APTITUDE toolbox comes from the APTITUDE project (**A**pprentissage **P**rofond et **T**raitement des **I**mages pour la **T**élésurveillance **U**rbaine et la **D**étection d’**E**vénements) funded by the Walloon Region of Belgium (#1910045).
 
-## References
+<a name="ref"></a>
+## References 📃 
 
 Refer to the following repositories for more information on individual algorithms. Part of the code present in this repository was adapted from those repositories, see individual source files for details.
 
