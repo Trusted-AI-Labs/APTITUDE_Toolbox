@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
 from pytb.output.bboxes_2d import BBoxes2D
 
 import numpy as np

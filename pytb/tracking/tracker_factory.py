@@ -1,9 +1,16 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
 import logging
 from pytb.tracking.tracker import Tracker
 from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTracker
 import pytb.utils.validator as val
 
 log = logging.getLogger("aptitude-toolbox")
+
 
 class TrackerFactory:
 

@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
 import numpy as np
 from abc import ABC, abstractmethod
 

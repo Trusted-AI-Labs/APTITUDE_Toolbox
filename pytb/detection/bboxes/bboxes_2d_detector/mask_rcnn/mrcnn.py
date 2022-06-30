@@ -1,9 +1,14 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson and Benoît Gérin (2022)
+"""
+
 from pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector import BBoxes2DDetector
 from pytb.output.bboxes_2d import BBoxes2D
 
 from timeit import default_timer
 
-import cv2
 import torch
 import torchvision
 import numpy as np

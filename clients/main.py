@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
 import tracker_client_images as tci
 import tracker_client_video as tcv
 

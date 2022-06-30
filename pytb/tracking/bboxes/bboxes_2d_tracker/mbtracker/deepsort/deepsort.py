@@ -1,3 +1,10 @@
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+Written by Jonathan Samelson (2021-2022)
+"""
+
+
 from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTracker
 from pytb.output.bboxes_2d import BBoxes2D
 from pytb.output.bboxes_2d_track import BBoxes2DTrack
@@ -12,6 +19,7 @@ from timeit import default_timer
 import logging
 
 log = logging.getLogger("aptitude-toolbox")
+
 
 class DeepSORT(BBoxes2DTracker):
 

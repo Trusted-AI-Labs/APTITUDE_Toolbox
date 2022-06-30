@@ -1,5 +1,10 @@
-# file: video_capture_async.py
-# from https://github.com/LeonLok/Deep-SORT-YOLOv4/blob/master/tensorflow2.0/deep-sort-yolov4/videocaptureasync.py
+"""
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Licensed under GPL-3.0 [see LICENSE for details]
+From https://github.com/LeonLok/Deep-SORT-YOLOv4/blob/master/tensorflow2.0/deep-sort-yolov4/videocaptureasync.py
+Edited by Jonathan Samelson (2021-2022)
+"""
+
 
 import threading
 import cv2
