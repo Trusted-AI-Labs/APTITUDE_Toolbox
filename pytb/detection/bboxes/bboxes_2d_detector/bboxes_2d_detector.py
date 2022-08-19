@@ -16,7 +16,7 @@ class BBoxes2DDetector(Detector, ABC):
     def __init__(self, detector_parameters: dict):
         """
         This class encompasses the attributes that are common to most detectors of 2D bounding boxes.
-        Initiliazes the detector with the given parameters.
+        Initializes the detector with the given parameters.
 
         Args:
             detector_parameters (dict): A dictionary containing the parameters of the desired detector.

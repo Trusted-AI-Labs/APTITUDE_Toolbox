@@ -33,7 +33,7 @@ class DetectionManager:
             postprocess_parameters (dict): A dictionary containing the thresholds to filter out the results of the detection. 
 
         Returns:
-            Detection: An initalized DetectionManager that can be called on each frame using `detect` method.
+            Detection: An initialized DetectionManager that can be called on each frame using `detect` method.
         """
         assert val.validate_preprocess_parameters(preprocess_parameters), \
             "[ERROR] Invalid Preproc parameter(s) detected, check any error reported above for details."

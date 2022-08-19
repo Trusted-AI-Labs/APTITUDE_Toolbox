@@ -4,14 +4,14 @@
             "type": "BBoxes2DDetector"
         },
         "BBoxes2DDetector":{
-            "model_type": "YOLO",
+            "model_type": "YOLO4",
             "pref_implem": "cv2-DetectionModel",
             "model_path": "./models/yolov4-mio.weights",
             "config_path": "./models/yolov4-mio.cfg",
             "input_width" : 416,
             "input_height" : 416
         },
-        "YOLO":{
+        "YOLO4":{
             "conf_thresh": 0.25, 
             "nms_thresh": 0,
             "GPU": false,

@@ -29,8 +29,8 @@ class DetectorFactory:
         Returns:
             Detection: A concrete implementation of a Detector (e.g YOLO).
         """
-        assert val.validate_detector_parameters(detector_parameters), \
-            "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
+        # assert val.validate_detector_parameters(detector_parameters), \
+        #     "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
         det_type = detector_parameters["Detector"]["type"]
 
         if det_type == "BBoxes2DDetector":
@@ -48,9 +48,12 @@ class DetectorFactory:
         model_type = detector_parameters["BBoxes2DDetector"]["model_type"]
 
         log.info("Model type {} selected.".format(model_type))
-        if model_type == "YOLO":
-            from pytb.detection.bboxes.bboxes_2d_detector.yolo.yolo import YOLO
-            return YOLO(detector_parameters)
+        if model_type == "YOLO4":
+            from pytb.detection.bboxes.bboxes_2d_detector.yolo4.yolo4 import YOLO4
+            return YOLO4(detector_parameters)
+        if model_type == "YOLO5":
+            from pytb.detection.bboxes.bboxes_2d_detector.yolo5.yolo5 import YOLO5
+            return YOLO5(detector_parameters)
         if model_type == "Detectron2":
             from pytb.detection.bboxes.bboxes_2d_detector.detectron2.detectron2 import Detectron2
             return Detectron2(detector_parameters)

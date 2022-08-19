@@ -4,13 +4,13 @@
             "type": "BBoxes2DDetector"
         },
         "BBoxes2DDetector":{
-            "model_type": "YOLO",
+            "model_type": "YOLO5",
             "pref_implem": "torch-Ultralytics",
             "model_path": "./models/yolov5s-mio.pt",
             "input_width" : 416,
             "input_height" : 416
         },
-        "YOLO":{
+        "YOLO5":{
             "conf_thresh": 0.25, 
             "nms_thresh": 0,
             "GPU": true
