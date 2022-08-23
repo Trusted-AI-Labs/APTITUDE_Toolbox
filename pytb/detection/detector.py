@@ -13,12 +13,12 @@ from pytb.output.detection import Detection
 class Detector(ABC):
 
     @abstractmethod
-    def detect(self, org_frame: np.ndarray) -> Detection:
+    def detect(self, org_frame: np.array) -> Detection:
         """
         Performs an inference on the given frame. 
 
         Args:
-            org_frame (np.ndarray): The given frame to infer detections
+            org_frame (np.array): The given frame to infer detections
 
         Returns:
             Detection: A set of detections of the detected objects

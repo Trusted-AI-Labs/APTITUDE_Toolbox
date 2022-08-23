@@ -72,13 +72,13 @@ def validate_postprocess_parameters(post_params: dict) -> bool:
         bool: whether it is a valid configuration.
     """
     if not post_params:
-        return True  # Empty dict for Postproc is valid
+        return True  # Empty dict for postproc is valid
 
     list_keys = post_params.keys()
     valid = True
     for key in list_keys:
         if key not in valid_postproc_keys:
-            log.error("{} is not a valid entry for Postproc configuration.".format(key))
+            log.error("{} is not a valid entry for postproc configuration.".format(key))
             valid = False
 
     if "coi" in list_keys:
@@ -99,11 +99,11 @@ def validate_postprocess_parameters(post_params: dict) -> bool:
             log.error("\"pref_implem\" of nms unknown. Valid values are : {}".format(valid_nms_values))
             valid = False
         if post_params["nms"]["nms_thresh"] < 0 or post_params["nms"]["nms_thresh"] > 1:
-            log.error("\"nms_thresh\" (Postproc) value must be included between 0 and 1.")
+            log.error("\"nms_thresh\" (postproc) value must be included between 0 and 1.")
             valid = False
 
     if "min_conf" in list_keys and (post_params["min_conf"] < 0 or post_params["min_conf"] > 1):
-        log.error("\"min_conf\" (Postproc) value must be included between 0 and 1.")
+        log.error("\"min_conf\" (postproc) value must be included between 0 and 1.")
         valid = False
     if "max_height" in list_keys and (post_params["max_height"] < 0 or post_params["max_height"] > 1):
         log.error("\"max_height\" value must be included between 0 and 1.")
@@ -184,11 +184,11 @@ def validate_detector_parameters(det_params: dict) -> bool:
     valid = True
     for key in list_keys:
         if key not in valid_detector_keys:
-            log.error("{} is not a valid entry for Proc configuration.".format(key))
+            log.error("{} is not a valid entry for proc configuration.".format(key))
             valid = False
 
     if "Detector" not in list_keys:
-        log.error("\"Detector\" entry is missing in Proc Configuration.")
+        log.error("\"Detector\" entry is missing in proc Configuration.")
         valid = False
 
     if "type" not in det_params["Detector"]:
@@ -373,11 +373,11 @@ def validate_tracker_parameters(track_params: dict) -> bool:
     valid = True
     for key in list_keys:
         if key not in valid_tracker_keys:
-            log.error("{} is not a valid entry for Proc configuration.".format(key))
+            log.error("{} is not a valid entry for proc configuration.".format(key))
             valid = False
 
     if "Tracker" not in list_keys:
-        log.error("\"Detector\" entry is missing in Proc Configuration.")
+        log.error("\"Detector\" entry is missing in proc Configuration.")
         valid = False
 
     if "type" not in track_params["Tracker"]:

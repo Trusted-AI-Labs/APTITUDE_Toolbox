@@ -14,19 +14,19 @@ from pytb.tracking.tracker import Tracker
 
 class BBoxes2DTracker(Tracker):
 
-    def __init__(self, tracker_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """
         This class encompasses the attributes that are common to most trackers of 2D bounding boxes.
         Initializes the BBoxes2D tracker with the given parameters.
         
         Args:
-            tracker_parameters (dict): A dictionary containing the parameters of the desired tracker.
+            proc_parameters (dict): A dictionary containing the parameters of the desired tracker.
         """
         super().__init__()
 
         # A tracker can have multiple implementations (e.g. in different frameworks),
         # this parameter allows to choose one (required).
-        self.pref_implem = tracker_parameters["BBoxes2DTracker"]["pref_implem"]
+        self.pref_implem = proc_parameters["pref_implem"]
 
     @abstractmethod
     def track(self, detection: BBoxes2D) -> BBoxes2DTrack:

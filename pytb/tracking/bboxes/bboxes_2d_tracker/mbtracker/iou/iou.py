@@ -23,20 +23,21 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
+
 class IOU(BBoxes2DTracker):
 
-    def __init__(self, tracker_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes a IOU tracker with the given parameters.
 
         Args:
-            tracker_parameters (dict): A dictionary containing the related SORT's parameters
+            proc_parameters (dict): A dictionary containing the related SORT's parameters
         """
-        super().__init__(tracker_parameters)
+        super().__init__(proc_parameters)
         # Minimum of hits to start tracking the objects
-        self.min_hits = tracker_parameters["IOU"].get("min_hits", 3)
+        self.min_hits = proc_parameters["params"].get("min_hits", 3)
 
-        # The minimum IOU threshold to keep the association of a previoulsy detected object
-        self.iou_thresh = tracker_parameters["IOU"].get("iou_thresh", 0.3)
+        # The minimum IOU threshold to keep the association of a previously detected object
+        self.iou_thresh = proc_parameters["params"].get("iou_thresh", 0.3)
 
         log.debug("IOU {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "SimpleIOU":
@@ -44,7 +45,7 @@ class IOU(BBoxes2DTracker):
 
         elif self.pref_implem == "KIOU":
             # An object that is not tracked for max_age frame is removed from the memory
-            self.max_age = tracker_parameters["IOU"].get("max_age", 10)
+            self.max_age = proc_parameters["params"].get("max_age", 10)
             self.tracker = KIOU(self.min_hits, self.iou_thresh, self.max_age)
 
         else:

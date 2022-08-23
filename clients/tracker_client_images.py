@@ -38,18 +38,18 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         detect1 = json.load(config_file)
         log.debug("Detector config loaded.")
 
-    detect1_proc = detect1['Proc']
-    detect1_preproc = detect1['Preproc']
-    detect1_postproc = detect1['Postproc']
+    detect1_proc = detect1['proc']
+    detect1_preproc = detect1['preproc']
+    detect1_postproc = detect1['postproc']
 
     # Get parameters of the different stages of the tracking process
     with open(cfg_track) as config_file:
         track1 = json.load(config_file)
         log.debug("Tracker config loaded.")
 
-    track1_proc = track1['Proc']
-    track1_preproc = track1['Preproc']
-    track1_postproc = track1['Postproc']
+    track1_proc = track1['proc']
+    track1_preproc = track1['preproc']
+    track1_postproc = track1['postproc']
 
     # Get the classes of the object to be detected
     with open(cfg_classes) as config_file:

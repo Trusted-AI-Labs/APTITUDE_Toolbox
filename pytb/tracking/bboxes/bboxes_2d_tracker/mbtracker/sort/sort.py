@@ -19,25 +19,25 @@ log = logging.getLogger("aptitude-toolbox")
 
 class SORT(BBoxes2DTracker):
 
-    def __init__(self, tracker_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes a SORT tracker with the given parameters.
 
         Args:
-            tracker_parameters (dict): A dictionary containing the related SORT's parameters
+            proc_parameters (dict): A dictionary containing the related SORT's parameters
         """
-        super().__init__(tracker_parameters)
+        super().__init__(proc_parameters)
 
         # An object that is not tracked for max_age frame is removed from the memory
-        self.max_age = tracker_parameters["SORT"].get("max_age", 10)
+        self.max_age = proc_parameters["params"].get("max_age", 10)
 
         # Minimum of hits to start tracking the objects
-        self.min_hits = tracker_parameters["SORT"].get("min_hits", 3)
+        self.min_hits = proc_parameters["params"].get("min_hits", 3)
 
-        # The minimum IOU threshold to keep the association of a previoulsy detected object 
-        self.iou_thresh = tracker_parameters["SORT"].get("iou_thresh", 0.3)
+        # The minimum IOU threshold to keep the association of a previously detected object
+        self.iou_thresh = proc_parameters["params"].get("iou_thresh", 0.3)
 
-        # Above 1.0, it enables a fading memory which gives less importance to the older tracks in the memory
-        self.memory_fade = tracker_parameters["SORT"].get("memory_fade", 1.0)
+        # Above a value of 1.0, it enables a fading memory which gives less importance to the older tracks in the memory
+        self.memory_fade = proc_parameters["params"].get("memory_fade", 1.0)
 
         log.debug("SORT {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Abewley":

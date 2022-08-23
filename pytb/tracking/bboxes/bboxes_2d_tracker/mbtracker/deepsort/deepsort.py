@@ -23,40 +23,40 @@ log = logging.getLogger("aptitude-toolbox")
 
 class DeepSORT(BBoxes2DTracker):
 
-    def __init__(self, tracker_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes a DeepSORT tracker with the given parameters.
 
         Args:
-            tracker_parameters (dict): A dictionary containing the related SORT's parameters
+            proc_parameters (dict): A dictionary containing the related SORT's parameters
         """
-        super().__init__(tracker_parameters)
+        super().__init__(proc_parameters)
         self.need_frame = True
 
         # An object that is not tracked for max_age frame is removed from the memory
-        self.max_age = tracker_parameters["DeepSORT"].get("max_age", 30)
+        self.max_age = proc_parameters["params"].get("max_age", 30)
         
         # Minimum of hits to start tracking the objects
-        self.min_hits = tracker_parameters["DeepSORT"].get("min_hits", 3)
+        self.min_hits = proc_parameters["params"].get("min_hits", 3)
         
-        # The minimum IOU threshold to keep the association of a previoulsy detected object 
-        self.iou_thresh = tracker_parameters["DeepSORT"].get("iou_thresh", 0.7)
+        # The minimum IOU threshold to keep the association of a previously detected object
+        self.iou_thresh = proc_parameters["params"].get("iou_thresh", 0.7)
 
         # DeepSORT requires a model weight
-        self.model_path = tracker_parameters["DeepSORT"]["model_path"]
+        self.model_path = proc_parameters["params"]["model_path"]
         
         # See underlying implementation
-        self.max_cosine_dist = tracker_parameters["DeepSORT"].get("max_cosine_dist", 0.3)
-        self.nn_budget = tracker_parameters["DeepSORT"].get("nn_budget", None)
+        self.max_cosine_dist = proc_parameters["params"].get("max_cosine_dist", 0.3)
+        self.nn_budget = proc_parameters["params"].get("nn_budget", None)
 
         # Whether the average detection confidence should be evaluated to filter out detection
-        self.avg_det_conf = tracker_parameters["DeepSORT"].get("avg_det_conf", False)
+        self.avg_det_conf = proc_parameters["params"].get("avg_det_conf", False)
 
         # If avg_det_conf is used, the thresholds defines the average confidence 
         # under which a detection will be filtered out
-        self.avg_det_conf_thresh = tracker_parameters["DeepSORT"].get("avg_det_conf_thresh", 0)
+        self.avg_det_conf_thresh = proc_parameters["params"].get("avg_det_conf_thresh", 0)
 
         # If true, the object class will be the most common class detected over time 
-        self.most_common_class = tracker_parameters["DeepSORT"].get("most_common_class", False)
+        self.most_common_class = proc_parameters["params"].get("most_common_class", False)
 
         self.encoder = gdet.create_box_encoder(self.model_path, batch_size=1)
 

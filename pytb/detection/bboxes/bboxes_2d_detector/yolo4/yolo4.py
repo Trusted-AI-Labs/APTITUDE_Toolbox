@@ -12,29 +12,31 @@ log = logging.getLogger("aptitude-toolbox")
 
 class YOLO4(BBoxes2DDetector):
 
-    def __init__(self, detector_parameters: dict):
-        """Initializes the detector with the given parameters.
+    def __init__(self, proc_parameters: dict):
+        """This class can be used for YOLO v2, v3, v4 models from Darknet.
+
+        Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the YOLO detector parameters
+            proc_parameters (dict): A dictionary containing the YOLO detector parameters
         """
-        super().__init__(detector_parameters)
+        super().__init__(proc_parameters)
 
         # The minimum confidence threshold of the detected objects if the implementation allows to provide one.
-        self.conf_thresh = detector_parameters["YOLO4"].get("conf_thresh", 0)
+        self.conf_thresh = proc_parameters["params"].get("conf_thresh", 0)
         
         # The minimum non-max suppression threshold of the detected objects if the implementation allows to provide one.
         # The non-max suppression can be implemented in multiple ways, results can vary.
-        self.nms_thresh = detector_parameters["YOLO4"].get("nms_thresh", 0)
+        self.nms_thresh = proc_parameters["params"].get("nms_thresh", 0)
         
         # Whether to perform the NMS algorithm across the different classes of object or separately.
-        self.nms_across_classes = detector_parameters["YOLO4"].get("nms_across_classes", True)
+        self.nms_across_classes = proc_parameters["params"].get("nms_across_classes", True)
         
         # Whether to use the GPU if available.
-        self.gpu = detector_parameters["YOLO4"].get("GPU", False)
+        self.gpu = proc_parameters["params"].get("GPU", False)
         
         # Whether to use the half precision capability of the recent GPU cards. 
-        self.half_precision = detector_parameters["YOLO4"].get("half_precision", False)
+        self.half_precision = proc_parameters["params"].get("half_precision", False)
 
         log.debug("GPU set to {} and half precision set to {}.".format(self.gpu, self.half_precision))
         log.debug("YOLOv2-3-4 {} implementation selected.".format(self.pref_implem))

@@ -15,61 +15,60 @@ log = logging.getLogger("aptitude-toolbox")
 class DetectorFactory:
 
     @staticmethod
-    def create_detector(detector_parameters: dict) -> Detector:
+    def create_detector(proc_parameters: dict) -> Detector:
         """
         Creates a detector given a dictionary of parameters 
         provided that the defined parameters are valid. 
         Otherwise, an error message is given indicating the invalid parameters.
-        It first branches on the detector type (e.g. `BBoxes2DDetector`) 
-        and then follow the chain to initialize the required detector.
+        Based on a model type and an implementation, it initializes the appropriate detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary describing the detector to initialize.
+            proc_parameters (dict): A dictionary describing the detector to initialize.
 
         Returns:
             Detection: A concrete implementation of a Detector (e.g YOLO).
         """
-        # assert val.validate_detector_parameters(detector_parameters), \
+        # assert val.validate_proc_parameters(proc_parameters), \
         #     "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
-        det_type = detector_parameters["Detector"]["type"]
+        output_type = proc_parameters["output_type"]
 
-        if det_type == "BBoxes2DDetector":
-            return DetectorFactory._bboxes_2d_detector(detector_parameters)
+        if output_type == "bboxes2D":
+            return DetectorFactory._bboxes_2d_detector(proc_parameters)
 
-        elif det_type == "PoseDetector":
-            return DetectorFactory._pose_detector(detector_parameters)
+        elif output_type == "pose":
+            return DetectorFactory._pose_detector(proc_parameters)
 
     @staticmethod
-    def _bboxes_2d_detector(detector_parameters: dict) -> BBoxes2DDetector:
+    def _bboxes_2d_detector(proc_parameters: dict) -> BBoxes2DDetector:
         """
         Creates a `BBoxes2DDetector` given a dictionary of parameters.
         It then branches on the model type to initialize a concrete detector implementation (e.g YOLO).
         """
-        model_type = detector_parameters["BBoxes2DDetector"]["model_type"]
+        model_type = proc_parameters["model_type"]
 
         log.info("Model type {} selected.".format(model_type))
         if model_type == "YOLO4":
             from pytb.detection.bboxes.bboxes_2d_detector.yolo4.yolo4 import YOLO4
-            return YOLO4(detector_parameters)
+            return YOLO4(proc_parameters)
         if model_type == "YOLO5":
             from pytb.detection.bboxes.bboxes_2d_detector.yolo5.yolo5 import YOLO5
-            return YOLO5(detector_parameters)
+            return YOLO5(proc_parameters)
         if model_type == "Detectron2":
             from pytb.detection.bboxes.bboxes_2d_detector.detectron2.detectron2 import Detectron2
-            return Detectron2(detector_parameters)
-        if model_type == "MRCNN":
-            from pytb.detection.bboxes.bboxes_2d_detector.mask_rcnn.mrcnn import MRCNN
-            return MRCNN(detector_parameters)
-        if model_type == "FASTERRCNN":
-            from pytb.detection.bboxes.bboxes_2d_detector.faster_rcnn.faster_rcnn import FASTERRCNN
-            return FASTERRCNN(detector_parameters)
+            return Detectron2(proc_parameters)
+        if model_type == "MaskRCNN":
+            from pytb.detection.bboxes.bboxes_2d_detector.mask_rcnn.mask_rcnn import MaskRCNN
+            return MaskRCNN(proc_parameters)
+        if model_type == "FasterRCNN":
+            from pytb.detection.bboxes.bboxes_2d_detector.faster_rcnn.faster_rcnn import FasterRCNN
+            return FasterRCNN(proc_parameters)
         if model_type == "BackgroundSubtractor":
             from pytb.detection.bboxes.bboxes_2d_detector.background_subtractor.background_subtractor \
                 import BackgroundSubtractor
-            return BackgroundSubtractor(detector_parameters)
+            return BackgroundSubtractor(proc_parameters)
 
     @staticmethod
-    def _pose_detector(detector_parameters: dict) -> None:
+    def _pose_detector(proc_parameters: dict) -> None:
         """
         TODO. No implementation of pose detector yet.
         Creates a PoseDetector given a dictionary of parameters.

@@ -29,15 +29,15 @@ faster_rcnn
 mask_rcnn
 """"""""""""""""""""""""
 
-.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.mask_rcnn.mrcnn
+.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.mask_rcnn.mask_rcnn
 
 yolo_2_3_4
 """"""""""""""""""""""""
 
-.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.yolo_2_3_4.yolo_2_3_4
+.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.yolo4.yolo4
 
 yolo_5
 """"""""""""""""""""""""
 
-.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.yolo_5.yolo_5
+.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.yolo5.yolo5
 

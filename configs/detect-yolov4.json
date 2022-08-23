@@ -1,30 +1,27 @@
 {
-    "Proc":{    
-        "Detector":{
-            "type": "BBoxes2DDetector"
-        },
-        "BBoxes2DDetector":{
-            "model_type": "YOLO4",
-            "pref_implem": "cv2-DetectionModel",
+    "proc":{
+        "task": "detection",
+        "output_type": "bboxes2D",
+        "model_type": "YOLO4",
+        "pref_implem": "cv2-DetectionModel",
+        "params": {
             "model_path": "./models/yolov4-mio.weights",
             "config_path": "./models/yolov4-mio.cfg",
             "input_width" : 416,
-            "input_height" : 416
-        },
-        "YOLO4":{
-            "conf_thresh": 0.25, 
+            "input_height" : 416,
+            "conf_thresh": 0.25,
             "nms_thresh": 0,
-            "GPU": false,
+            "GPU": true,
             "half_precision": false
         }
     },
-    "Preproc":{
+    "preproc":{
         "resize":{
             "width" : 416,
             "height": 416
         }
     },
-    "Postproc":{
+    "postproc":{
         "nms": {
             "pref_implem" : "Malisiewicz",
             "nms_thresh" : 0.45

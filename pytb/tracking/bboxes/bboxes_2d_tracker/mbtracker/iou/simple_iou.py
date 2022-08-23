@@ -26,7 +26,7 @@ class SimpleIOU:
     def update(self, dets):
         """
         Simple IOU based tracker, adapted for online tracking
-        See "High-Speed Tracking-by-Detection Without Using Image Information by E. Bochinski, V. Eiselein, T. Sikora"
+        See "High-Speed Tracking-by-Detection Without Using Image Information" by E. Bochinski, V. Eiselein, T. Sikora
         for more information.
         Args:
              dets (list): list of detections, field names: ['bbox': ('x1', 'y1', 'x2', 'y2'), 'score', 'class']
