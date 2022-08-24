@@ -61,7 +61,7 @@ class Detectron2(BBoxes2DDetector):
         """Performs a Detectron2 inference on the given frame.
 
         Args:
-            frame (np): The frame to infer Detectron2 detections
+            frame (np.array): The frame to infer Detectron2 detections
 
         Returns:
             BBoxes2D: A set of 2D bounding boxes identifying the detected objects.

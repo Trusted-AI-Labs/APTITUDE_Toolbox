@@ -8,7 +8,7 @@
             "model_path": "./models/maskrcnn_resnet50_fpn_coco-bf2d0c1e.pth",
             "input_width" : 736,
             "input_height" : 416,
-            "use_coco_weights": true,
+            "use_coco_weights": false,
             "GPU": true
         }
     },

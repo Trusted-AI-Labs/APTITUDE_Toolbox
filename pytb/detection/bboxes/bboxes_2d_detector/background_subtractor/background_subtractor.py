@@ -45,11 +45,11 @@ class BackgroundSubtractor(BBoxes2DDetector):
         else:
             assert False, "[ERROR] Unknown implementation of BackgroundSubtractor: {}".format(self.pref_implem)
 
-    def detect(self, frame: np.ndarray) -> BBoxes2D:
+    def detect(self, frame: np.array) -> BBoxes2D:
         """Performs an inference using a background subtraction method on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer detections from a background substractor.
+            frame (np.array): The frame to infer detections from a background substractor.
 
         Returns:
             BBoxes2D: A set of 2D bounding boxes identifying the detected objects.

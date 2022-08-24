@@ -28,8 +28,8 @@ class TrackerFactory:
         Returns:
             Detection: A concrete implementation of a Tracker (e.g YOLO).
         """
-        # assert val.validate_proc_parameters(proc_parameters), \
-        #     "[ERROR] Invalid Proc (tracker) parameter(s) detected, check the above for details."
+        assert val.validate_tracker_parameters(proc_parameters), \
+            "[ERROR] Invalid Proc (tracker) parameter(s) detected, check the above for details."
         track_type = proc_parameters["output_type"]
 
         if track_type == "bboxes2D":

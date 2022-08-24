@@ -5,7 +5,7 @@
         "model_type": "FasterRCNN",
         "pref_implem": "torch-resnet50",
         "params": {
-            "model_path": "./models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth\"",
+            "model_path": "./models/fasterrcnn_resnet50_fpn_coco-258fb6c6.pth",
             "input_width" : 736,
             "input_height" : 416,
             "use_coco_weights": false,

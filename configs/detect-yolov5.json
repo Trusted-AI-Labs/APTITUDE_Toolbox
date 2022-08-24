@@ -9,6 +9,7 @@
             "input_width" : 416,
             "input_height" : 416,
             "conf_thresh": 0.25,
+            "nms_across_classes": true,
             "nms_thresh": 0,
             "GPU": true
         }

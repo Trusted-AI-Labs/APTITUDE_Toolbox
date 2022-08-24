@@ -138,7 +138,7 @@ class YOLO4(BBoxes2DDetector):
         # Detect objects
         self.net.setInput(blob_org_frame)
         layer_names = self.net.getLayerNames()
-        output_layers = [layer_names[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
+        output_layers = [layer_names[i - 1] for i in self.net.getUnconnectedOutLayers()]
 
         # Inference
         start = default_timer()

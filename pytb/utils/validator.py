@@ -13,9 +13,10 @@ valid_preproc_keys = ["border", "resize", "roi"]
 valid_postproc_keys = ["coi", "nms", "min_conf", "max_height", "min_height",
                        "max_width", "min_width", "min_area", "top_k", "resize_results", "roi"]
 valid_nms_values = ["cv2", "Malisiewicz"]
-valid_detector_keys = ["Detector", "BBoxes2DDetector", "YOLO", "MRCNN", "FASTERRCNN", "BackgroundSubtractor",
-                       "Detectron2"]
-valid_tracker_keys = ["Tracker", "BBoxes2DTracker", "SORT", "DeepSORT", "Centroid", "IOU"]
+
+valid_proc_keys = ["task", "output_type", "model_type", "pref_implem", "params"]
+valid_detector_type = ["YOLO4", "YOLO5", "MaskRCNN", "FasterRCNN", "BackgroundSubtractor", "Detectron2"]
+valid_tracker_type = ["SORT", "DeepSORT", "Centroid", "IOU"]
 
 
 def validate_preprocess_parameters(pre_params: dict) -> bool:
@@ -172,7 +173,7 @@ def _validate_roi_parameters(roi_params: dict, preproc: bool) -> bool:
 
 
 def validate_detector_parameters(det_params: dict) -> bool:
-    """Check validity and compatibility between provided tracker parameters.
+    """Check validity and compatibility between provided detector parameters.
 
     Args:
         det_params (dict): the dictionary containing detector parameters.
@@ -182,119 +183,146 @@ def validate_detector_parameters(det_params: dict) -> bool:
     """
     list_keys = det_params.keys()
     valid = True
-    for key in list_keys:
-        if key not in valid_detector_keys:
-            log.error("{} is not a valid entry for proc configuration.".format(key))
+
+    for key in valid_proc_keys:
+        if key not in list_keys:
+            log.error("{} is missing in proc configuration.".format(key))
             valid = False
 
-    if "Detector" not in list_keys:
-        log.error("\"Detector\" entry is missing in proc Configuration.")
+    if det_params["task"] != "detection":
+        log.error("Detector parameters are being evaluated but \"task\" entry has not the value \"detection\"")
         valid = False
 
-    if "type" not in det_params["Detector"]:
-        log.error("\"type\" sub-entry is required in \"Detector\" entry.")
-        valid = False
-    elif det_params["Detector"]["type"] == "BBoxes2DDetector":
-        valid = valid and _validate_bboxes2ddetector_parameters(det_params)
-    else:
-        log.error("Detector type {} is unknown.".format(det_params["Detector"]["type"]))
+    if det_params["output_type"] != "bboxes2D":
+        log.error("Invalid \"output_type\", \"bboxes2D\" is the only supported output at the moment")
         valid = False
 
-    return valid
-
-
-def _validate_bboxes2ddetector_parameters(det_params: dict) -> bool:
-    b2d_params = det_params["BBoxes2DDetector"]
-    valid = True
-    if "model_type" not in b2d_params:
-        log.error("\"model_type\" sub-entry is required in \"BBoxes2DDetector\" entry.")
-        valid = False
-    elif not isinstance(b2d_params["model_type"], str):
-        log.error("The value of \"model_type\" sub-entry must be of type string.")
-        valid = False
-    elif b2d_params["model_type"] == "YOLO":
-        valid = valid and _validate_yolo_parameters(det_params)
-    elif b2d_params["model_type"] == "BackgroundSubtractor":
-        valid = valid and _validate_backgroundsubtraction_parameters(det_params)
-    elif b2d_params["model_type"] == "Detectron2":
-        valid = valid and _validate_detectron2_parameters(det_params)
-    elif b2d_params["model_type"] == "MRCNN":
-        valid = valid and _validate_mrcnn_parameters(det_params)
-    elif b2d_params["model_type"] == "FASTERRCNN":
-        valid = valid and _validate_fasterrcnn_parameters(det_params)
-    else:
-        log.error("The model type (Detector) {} is unknown.".format(b2d_params["model_type"]))
+    if det_params["model_type"] not in valid_detector_type:
+        log.error("Invalid \"model_type\" in proc configuration.")
         valid = False
 
-    if "pref_implem" not in b2d_params:
-        log.error("\"pref_implem\" sub-entry is required in \"BBoxes2DDetector\" entry.")
+    if "pref_implem" not in det_params:
+        log.error("\"pref_implem\" is missing proc configuration.")
         valid = False
-    elif not isinstance(b2d_params["pref_implem"], str):
+    elif not isinstance(det_params["pref_implem"], str):
         log.error("The value of \"pref_implem\" sub-entry must be of type string.")
         valid = False
 
-    # CV2 and DefaultPredictor of Detectron2 needs config
-    needs_config = b2d_params["pref_implem"] in ["cv2-DetectionModel", "cv2-ReadNet", "Default"]
-
-    # All implementations except BackgroundSubtractor and {MRCNN,FASTERRCNN} needs models
-    # {MRCNN,FASTERRCNN} can download a model dynamically.
-    needs_model = b2d_params["model_type"] not in ["BackgroundSubtractor", "MRCNN", "FASTERRCNN"]
-
-    if "config_path" not in b2d_params and needs_config:
-        log.error("\"config_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
-        valid = False
-    elif needs_config and not isinstance(b2d_params["config_path"], str):
-        log.error("The value of \"config_path\" sub-entry must be of type string")
-        valid = False
-
-    if "model_path" not in b2d_params and needs_model:
-        log.error("\"model_path\" sub-entry is required in \"BBoxes2DDetector\" entry.")
-        valid = False
-    elif needs_model and not isinstance(b2d_params["model_path"], str):
-        log.error("The value of \"model_path\" sub-entry must be of type string.")
+    if det_params["model_type"] == "YOLO4":
+        valid = valid and _validate_yolo4_parameters(det_params)
+    elif det_params["model_type"] == "YOLO5":
+        valid = valid and _validate_yolo5_parameters(det_params)
+    elif det_params["model_type"] == "Detectron2":
+        valid = valid and _validate_detectron2_parameters(det_params)
+    elif det_params["model_type"] == "MaskRCNN":
+        valid = valid and _validate_maskrcnn_parameters(det_params)
+    elif det_params["model_type"] == "FasterRCNN":
+        valid = valid and _validate_fasterrcnn_parameters(det_params)
+    elif det_params["model_type"] == "BackgroundSubtractor":
+        valid = valid and _validate_backgroundsubtractor_parameters(det_params)
+    else:
+        log.error("Unknown detector \"model_type\": {}".format(det_params["model_type"]))
         valid = False
 
-    if "input_width" in b2d_params \
-            and not isinstance(b2d_params["input_width"], int) \
-            and b2d_params["input_width"] > 0:
-        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
-        valid = False
-    if "input_height" in b2d_params \
-            and not isinstance(b2d_params["input_height"], int) \
-            and b2d_params["input_height"] > 0:
-        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
-        valid = False
     return valid
 
 
-def _validate_yolo_parameters(det_params: dict) -> bool:
-    yolo_params = det_params["YOLO"]
-    if not yolo_params:
-        return True  # Empty dict for YOLO is valid
+def _validate_yolo4_parameters(det_params: dict) -> bool:
     valid = True
-    if "conf_thresh" in yolo_params and (yolo_params["conf_thresh"] < 0 or yolo_params["conf_thresh"] > 1):
-        log.error("\"conf_thresh\" (YOLO) value must be included between 0 and 1.")
+    yolo4_params = det_params["params"]
+
+    if det_params["pref_implem"] not in ["cv2-DetectionModel", "cv2-ReadNet"]:
+        log.error("Unknown implementation of YOLO4: {}".format(det_params["pref_implem"]))
         valid = False
-    if "nms_thresh" in yolo_params and (yolo_params["nms_thresh"] < 0 or yolo_params["nms_thresh"] > 1):
-        log.error("\"nms_thresh\" (YOLO) value must be included between 0 and 1.")
+
+    if "config_path" not in yolo4_params:
+        log.error("\"config_path\" sub-entry is required in params for YOLO4 model type.")
         valid = False
-    if "nms_across_classes" in yolo_params and not isinstance(yolo_params.get("nms_across_classes"), bool):
+    elif not isinstance(yolo4_params["config_path"], str):
+        log.error("The value of \"config_path\" sub-entry must be of type string.")
+        valid = False
+
+    if "model_path" not in yolo4_params:
+        log.error("\"model_path\" sub-entry is required in params for YOLO4 model type.")
+        valid = False
+    elif not isinstance(yolo4_params["model_path"], str):
+        log.error("The value of \"model_path\" sub-entry must be of type string.")
+        valid = False
+
+    if "input_width" in yolo4_params \
+            and not (isinstance(yolo4_params["input_width"], int) and yolo4_params["input_width"] > 0):
+        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
+        valid = False
+    if "input_height" in yolo4_params \
+            and not (isinstance(yolo4_params["input_height"], int) and yolo4_params["input_height"] > 0):
+        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
+        valid = False
+
+    if "conf_thresh" in yolo4_params and (yolo4_params["conf_thresh"] < 0 or yolo4_params["conf_thresh"] > 1):
+        log.error("\"conf_thresh\" (YOLO4 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_thresh" in yolo4_params and (yolo4_params["nms_thresh"] < 0 or yolo4_params["nms_thresh"] > 1):
+        log.error("\"nms_thresh\" (YOLO4 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_across_classes" in yolo4_params and not isinstance(yolo4_params.get("nms_across_classes"), bool):
         log.error("\"nms_across_classes\" sub-entry must be of type bool.")
         valid = False
-    if "GPU" in yolo_params and not isinstance(yolo_params.get("GPU"), bool):
+    if "GPU" in yolo4_params and not isinstance(yolo4_params.get("GPU"), bool):
         log.error("\"GPU\" sub-entry must be of type bool.")
         valid = False
-    if "half_precision" in yolo_params and not isinstance(yolo_params.get("half_precision"), bool):
+    if "half_precision" in yolo4_params and not isinstance(yolo4_params.get("half_precision"), bool):
         log.error("\"half_precision\" sub-entry must be of type bool.")
         valid = False
     return valid
 
 
-def _validate_backgroundsubtraction_parameters(det_params: dict) -> bool:
-    bs_params = det_params["BackgroundSubtractor"]
-    if not bs_params:
-        return True  # Empty dict for BS is valid
+def _validate_yolo5_parameters(det_params: dict) -> bool:
     valid = True
+    yolo5_params = det_params["params"]
+
+    if det_params["pref_implem"] != "torch-Ultralytics":
+        log.error("Unknown implementation of YOLO5: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    if "model_path" not in yolo5_params:
+        log.error("\"model_path\" sub-entry is required in params for YOLO5 model type.")
+        valid = False
+    elif not isinstance(yolo5_params["model_path"], str):
+        log.error("The value of \"model_path\" sub-entry must be of type string.")
+        valid = False
+
+    if "input_width" in yolo5_params \
+            and not (isinstance(yolo5_params["input_width"], int) and yolo5_params["input_width"] > 0):
+        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
+        valid = False
+    if "input_height" in yolo5_params \
+            and not (isinstance(yolo5_params["input_height"], int) and yolo5_params["input_height"] > 0):
+        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
+        valid = False
+
+    if "conf_thresh" in yolo5_params and (yolo5_params["conf_thresh"] < 0 or yolo5_params["conf_thresh"] > 1):
+        log.error("\"conf_thresh\" (YOLO5 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_thresh" in yolo5_params and (yolo5_params["nms_thresh"] < 0 or yolo5_params["nms_thresh"] > 1):
+        log.error("\"nms_thresh\" (YOLO5 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_across_classes" in yolo5_params and not isinstance(yolo5_params.get("nms_across_classes"), bool):
+        log.error("\"nms_across_classes\" sub-entry must be of type bool.")
+        valid = False
+    if "GPU" in yolo5_params and not isinstance(yolo5_params.get("GPU"), bool):
+        log.error("\"GPU\" sub-entry must be of type bool.")
+        valid = False
+    return valid
+
+
+def _validate_backgroundsubtractor_parameters(det_params: dict) -> bool:
+    valid = True
+
+    if det_params["pref_implem"] not in ["mean", "median", "frame_diff"]:
+        log.error("Unknown implementation of BackgroundSubtractor: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    bs_params = det_params["params"]
     if "contour_thresh" in bs_params and bs_params["contour_thresh"] < 0:
         log.error("\"contour_thresh\" (BackgroundSubtraction) value must be positive.")
         valid = False
@@ -308,10 +336,27 @@ def _validate_backgroundsubtraction_parameters(det_params: dict) -> bool:
 
 
 def _validate_detectron2_parameters(det_params: dict) -> bool:
-    det2_params = det_params["Detectron2"]
-    if not det2_params:
-        return True  # Empty dict for Detectron2 is valid
     valid = True
+    det2_params = det_params["params"]
+
+    if det_params["pref_implem"] != "Default":
+        log.error("Unknown implementation of Detectron2: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    if "config_path" not in det2_params:
+        log.error("\"config_path\" sub-entry is required in params for Detectron2 model type.")
+        valid = False
+    elif not isinstance(det2_params["config_path"], str):
+        log.error("The value of \"config_path\" sub-entry must be of type string.")
+        valid = False
+
+    if "model_path" not in det2_params:
+        log.error("\"model_path\" sub-entry is required in params for Detectron2 model type.")
+        valid = False
+    elif not isinstance(det2_params["model_path"], str):
+        log.error("The value of \"model_path\" sub-entry must be of type string.")
+        valid = False
+
     if "conf_thresh" in det2_params and (det2_params["conf_thresh"] < 0 or det2_params["conf_thresh"] > 1):
         log.error("\"conf_thresh\" (Detectron2) value must be included between 0 and 1.")
         valid = False
@@ -324,11 +369,23 @@ def _validate_detectron2_parameters(det_params: dict) -> bool:
     return valid
 
 
-def _validate_mrcnn_parameters(det_params: dict) -> bool:
-    mrcnn_params = det_params["MRCNN"]
-    if not mrcnn_params:
-        return True  # Empty dict for MRCNN is valid
+def _validate_maskrcnn_parameters(det_params: dict) -> bool:
     valid = True
+
+    mrcnn_params = det_params["params"]
+    if det_params["pref_implem"] != "torch-resnet50":
+        log.error("Unknown implementation of MaskRCNN: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    if "input_width" in mrcnn_params \
+            and not (isinstance(mrcnn_params["input_width"], int) and mrcnn_params["input_width"] > 0):
+        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
+        valid = False
+    if "input_height" in mrcnn_params \
+            and not (isinstance(mrcnn_params["input_height"], int) and mrcnn_params["input_height"] > 0):
+        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
+        valid = False
+
     if "GPU" in mrcnn_params and not isinstance(mrcnn_params.get("GPU"), bool):
         log.error("\"GPU\" sub-entry must be of type bool.")
         valid = False
@@ -336,17 +393,29 @@ def _validate_mrcnn_parameters(det_params: dict) -> bool:
         log.error("\"use_coco_weights\" sub-entry must be of type bool.")
         valid = False
     if "use_coco_weights" in mrcnn_params and not mrcnn_params["use_coco_weights"] \
-            and "model_path" not in det_params["BBoxes2DDetector"]:
-        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be provided in BBoxes2DDetector.")
+            and "model_path" not in mrcnn_params:
+        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be an entry of params.")
         valid = False
     return valid
 
 
 def _validate_fasterrcnn_parameters(det_params: dict) -> bool:
-    fasterrcnn_params = det_params["FASTERRCNN"]
-    if not fasterrcnn_params:
-        return True  # Empty dict for FASTERRCNN is valid
     valid = True
+
+    fasterrcnn_params = det_params["params"]
+    if det_params["pref_implem"] != "torch-resnet50":
+        log.error("Unknown implementation of FasterRCNN: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    if "input_width" in fasterrcnn_params \
+            and not (isinstance(fasterrcnn_params["input_width"], int) and fasterrcnn_params["input_width"] > 0):
+        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
+        valid = False
+    if "input_height" in fasterrcnn_params \
+            and not (isinstance(fasterrcnn_params["input_height"], int) and fasterrcnn_params["input_height"] > 0):
+        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
+        valid = False
+
     if "GPU" in fasterrcnn_params and not isinstance(fasterrcnn_params.get("GPU"), bool):
         log.error("\"GPU\" sub-entry must be of type bool.")
         valid = False
@@ -354,8 +423,8 @@ def _validate_fasterrcnn_parameters(det_params: dict) -> bool:
         log.error("\"use_coco_weights\" sub-entry must be of type bool.")
         valid = False
     if "use_coco_weights" in fasterrcnn_params and not fasterrcnn_params["use_coco_weights"] \
-            and "model_path" not in det_params["BBoxes2DDetector"]:
-        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be provided in BBoxes2DDetector.")
+            and "model_path" not in fasterrcnn_params:
+        log.error("If \"use_coco_weights\" is set to False, \"model_path\" must be an entry of params.")
         valid = False
     return valid
 
@@ -371,63 +440,54 @@ def validate_tracker_parameters(track_params: dict) -> bool:
     """
     list_keys = track_params.keys()
     valid = True
-    for key in list_keys:
-        if key not in valid_tracker_keys:
-            log.error("{} is not a valid entry for proc configuration.".format(key))
+
+    for key in valid_proc_keys:
+        if key not in list_keys:
+            log.error("{} is missing in proc configuration.".format(key))
             valid = False
 
-    if "Tracker" not in list_keys:
-        log.error("\"Detector\" entry is missing in proc Configuration.")
+    if track_params["task"] != "tracking":
+        log.error("Detector parameters are being evaluated but \"task\" entry has not the value \"tracking\"")
         valid = False
 
-    if "type" not in track_params["Tracker"]:
-        log.error("\"type\" sub-entry is required in \"Detector\" entry.")
-        valid = False
-    elif track_params["Tracker"]["type"] == "BBoxes2DTracker":
-        valid = valid and _validate_bboxes2dtracker_parameters(track_params)
-    else:
-        log.error("Tracker type {} is unknown.".format(track_params["Detector"]["type"]))
+    if track_params["output_type"] != "bboxes2D":
+        log.error("Invalid \"output_type\", \"bboxes2D\" is the only supported output at the moment")
         valid = False
 
-    return valid
-
-
-def _validate_bboxes2dtracker_parameters(track_params: dict) -> bool:
-    b2t_params = track_params["BBoxes2DTracker"]
-    valid = True
-    if "model_type" not in b2t_params:
-        log.error("\"model_type\" sub-entry is required in \"BBoxes2DTracker\" entry.")
+    if track_params["model_type"] not in valid_tracker_type:
+        log.error("Invalid \"model_type\" in proc configuration.")
         valid = False
-    elif not isinstance(b2t_params["model_type"], str):
-        log.error("The value of \"model_type\" sub-entry must be of type string.")
+
+    if "pref_implem" not in track_params:
+        log.error("\"pref_implem\" is missing proc configuration.")
         valid = False
-    elif b2t_params["model_type"] == "SORT":
+    elif not isinstance(track_params["pref_implem"], str):
+        log.error("The value of \"pref_implem\" sub-entry must be of type string.")
+        valid = False
+
+    if track_params["model_type"] == "SORT":
         valid = valid and _validate_sort_parameters(track_params)
-    elif b2t_params["model_type"] == "DeepSORT":
+    elif track_params["model_type"] == "DeepSORT":
         valid = valid and _validate_deepsort_parameters(track_params)
-    elif b2t_params["model_type"] == "Centroid":
+    elif track_params["model_type"] == "Centroid":
         valid = valid and _validate_centroid_parameters(track_params)
-    elif b2t_params["model_type"] == "IOU":
+    elif track_params["model_type"] == "IOU":
         valid = valid and _validate_iou_parameters(track_params)
     else:
-        log.error("The model type (Tracker) {} is unknown.".format(b2t_params["model_type"]))
-        valid = False
-
-    if "pref_implem" not in b2t_params:
-        log.error("\"pref_implem\" sub-entry is required in \"BBoxes2DTracker\" entry.")
-        valid = False
-    elif not isinstance(b2t_params["pref_implem"], str):
-        log.error("The value of \"pref_implem\" sub-entry must be of type string.")
+        log.error("Unknown detector \"model_type\": {}".format(track_params["model_type"]))
         valid = False
 
     return valid
 
 
 def _validate_sort_parameters(track_params: dict) -> bool:
-    sort_params = track_params["SORT"]
-    if not sort_params:
-        return True  # Empty dict for SORT is valid
     valid = True
+    sort_params = track_params["params"]
+
+    if track_params["pref_implem"] != "Abewley":
+        log.error("Unknown implementation of SORT: {}".format(track_params["pref_implem"]))
+        valid = False
+
     if "max_age" in sort_params and sort_params["max_age"] < 0:
         log.error("\"max_age\" value must be positive.")
         valid = False
@@ -446,13 +506,19 @@ def _validate_sort_parameters(track_params: dict) -> bool:
 
 def _validate_deepsort_parameters(track_params: dict) -> bool:
     valid = True
-    deepsort_params = track_params["DeepSORT"]
+    deepsort_params = track_params["params"]
+
+    if track_params["pref_implem"] != "Leonlok":
+        log.error("Unknown implementation of DeepSORT: {}".format(track_params["pref_implem"]))
+        valid = False
+
     if "model_path" not in deepsort_params:
         log.error("\"model_path\" sub-entry is required in \"DeepSORT\" entry.")
         valid = False
     elif not isinstance(deepsort_params["model_path"], str):
         log.error("\"model_path\" (DeepSORT) must be of type string.")
         valid = False
+
     if "max_age" in deepsort_params and deepsort_params["max_age"] < 0:
         log.error("\"max_age\" value must be positive.")
         valid = False
@@ -484,20 +550,27 @@ def _validate_deepsort_parameters(track_params: dict) -> bool:
 
 
 def _validate_centroid_parameters(track_params: dict) -> bool:
-    centroid_params = track_params["Centroid"]
-    if not centroid_params:
-        return True  # Empty dict for Centroid is valid
+    valid = True
+    centroid_params = track_params["params"]
+
+    if track_params["pref_implem"] != "Rosebrock":
+        log.error("Unknown implementation of Centroid: {}".format(track_params["pref_implem"]))
+        valid = False
+
     if "max_age" in centroid_params and centroid_params["max_age"] < 0:
         log.error("\"max_age\" value must be positive.")
-        return False
-    return True
+        valid = False
+    return valid
 
 
 def _validate_iou_parameters(track_params: dict) -> bool:
-    iou_params = track_params["IOU"]
-    if not iou_params:
-        return True
     valid = True
+    iou_params = track_params["params"]
+
+    if track_params["pref_implem"] not in ["SimpleIOU", "KIOU"]:
+        log.error("Unknown implementation of Centroid: {}".format(track_params["pref_implem"]))
+        valid = False
+
     if "min_hits" in iou_params and iou_params["min_hits"] < 0:
         log.error("\"min_hits\" value must be positive.")
         valid = False

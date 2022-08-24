@@ -28,8 +28,8 @@ class DetectorFactory:
         Returns:
             Detection: A concrete implementation of a Detector (e.g YOLO).
         """
-        # assert val.validate_proc_parameters(proc_parameters), \
-        #     "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
+        assert val.validate_detector_parameters(proc_parameters), \
+            "[ERROR] Invalid Proc (detector) parameter(s) detected, check the above for details."
         output_type = proc_parameters["output_type"]
 
         if output_type == "bboxes2D":
