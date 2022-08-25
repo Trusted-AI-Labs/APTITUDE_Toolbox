@@ -17,39 +17,39 @@ log = logging.getLogger("aptitude-toolbox")
 
 class BackgroundSubtractor(BBoxes2DDetector):
 
-    def __init__(self, detector_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the BackgroundSubstractor detector parameters
+            proc_parameters (dict): A dictionary containing the BackgroundSubstractor detector parameters
         """
-        super().__init__(detector_parameters)
+        super().__init__(proc_parameters)
         # From cv2.approxPolyDP: Specifies the approximation accuracy. 
         # This is the maximum distance between the original curve and its approximation.
-        self.contour_thresh = detector_parameters["BackgroundSubtractor"].get("contour_thresh", 3)
+        self.contour_thresh = proc_parameters["params"].get("contour_thresh", 3)
 
         # The minimum intensity of the pixels in the foreground image.
-        self.intensity = detector_parameters["BackgroundSubtractor"].get("intensity", 50)
+        self.intensity = proc_parameters["params"].get("intensity", 50)
 
         log.debug("BackgroundSubtractor {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "mean" or self.pref_implem == "median":
             # If the pref_implem is "mean" or "median", the results will be based on the mean or median
             # values of the previous images. 
-            self.max_last_images = detector_parameters["BackgroundSubtractor"].get("max_last_images", 50)
+            self.max_last_images = proc_parameters["params"].get("max_last_images", 50)
             self.last_images = []
 
         elif self.pref_implem == "frame_diff":
-            # IF the pref_implem is "frame_diff", the results will be solely based on the previous image.
+            # If the pref_implem is "frame_diff", the results will be solely based on the previous image.
             self.prev_image = None
 
         else:
             assert False, "[ERROR] Unknown implementation of BackgroundSubtractor: {}".format(self.pref_implem)
 
-    def detect(self, frame: np.ndarray) -> BBoxes2D:
+    def detect(self, frame: np.array) -> BBoxes2D:
         """Performs an inference using a background subtraction method on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer detections from a background substractor.
+            frame (np.array): The frame to infer detections from a background substractor.
 
         Returns:
             BBoxes2D: A set of 2D bounding boxes identifying the detected objects.

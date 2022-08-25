@@ -16,20 +16,21 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
-class FASTERRCNN(BBoxes2DDetector):
 
-    def __init__(self, detector_parameters: dict):
+class FasterRCNN(BBoxes2DDetector):
+
+    def __init__(self, proc_parameters: dict):
         """Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the FasterRCNN parameters.
+            proc_parameters (dict): A dictionary containing the FasterRCNN parameters.
         """
-        super().__init__(detector_parameters)
+        super().__init__(proc_parameters)
         # Whether to use the default weights available on PyTorch
-        self.use_coco = detector_parameters["FASTERRCNN"].get("use_coco_weights", True)
+        self.use_coco = proc_parameters["params"].get("use_coco_weights", True)
         
         # Whether to use the GPU if available.
-        self.gpu = detector_parameters["FASTERRCNN"].get("GPU", False)
+        self.gpu = proc_parameters["params"].get("GPU", False)
 
         log.debug("GPU set to {}.".format(self.gpu))
 
@@ -53,11 +54,11 @@ class FASTERRCNN(BBoxes2DDetector):
         else:
             assert False, "[ERROR] Unknown implementation of Faster-RCNN: {}".format(self.pref_implem)
 
-    def detect(self, frame: np.ndarray) -> BBoxes2D:
+    def detect(self, frame: np.array) -> BBoxes2D:
         """Performs a Faster-RCNN inference on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer Faster-RCNN detections
+            frame (np.array): The frame to infer Faster-RCNN detections
 
         Returns:
             BBoxes2D: A set of 2D bounding boxes identifying the detected objects.

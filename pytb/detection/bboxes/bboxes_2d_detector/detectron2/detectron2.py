@@ -16,25 +16,26 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
+
 class Detectron2(BBoxes2DDetector):
 
-    def __init__(self, detector_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the Detectron2 detector parameters
+            proc_parameters (dict): A dictionary containing the Detectron2 detector parameters
         """
-        super().__init__(detector_parameters)
+        super().__init__(proc_parameters)
         
         # The minimum confidence threshold of the detected objects if the implementation allows to provide one.
-        self.conf_thresh = detector_parameters["Detectron2"].get("conf_thresh", 0)
+        self.conf_thresh = proc_parameters["params"].get("conf_thresh", 0)
 
         # The minimum non-max suppression threshold of the detected objects if the implementation allows to provide one.
         # The non-max suppression can be implemented in multiple ways, results can vary.
-        self.nms_thresh = detector_parameters["Detectron2"].get("nms_thresh", 0)
+        self.nms_thresh = proc_parameters["params"].get("nms_thresh", 0)
 
         # Whether to use the GPU if available.
-        self.gpu = detector_parameters["Detectron2"].get("GPU", False)
+        self.gpu = proc_parameters["params"].get("GPU", False)
 
         log.debug("Detectron2 {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Default":
@@ -56,11 +57,11 @@ class Detectron2(BBoxes2DDetector):
         else:
             assert False, "[ERROR] Unknown implementation of Detectron2: {}".format(self.pref_implem)
 
-    def detect(self, org_frame: np.ndarray) -> BBoxes2D:
+    def detect(self, org_frame: np.array) -> BBoxes2D:
         """Performs a Detectron2 inference on the given frame.
 
         Args:
-            frame (np.ndarray): The frame to infer Detectron2 detections
+            frame (np.array): The frame to infer Detectron2 detections
 
         Returns:
             BBoxes2D: A set of 2D bounding boxes identifying the detected objects.

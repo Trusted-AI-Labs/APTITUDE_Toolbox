@@ -1,28 +1,26 @@
 {
-    "Proc":{    
-        "Detector":{
-            "type": "BBoxes2DDetector"
-        },
-        "BBoxes2DDetector":{
-            "model_type": "YOLO",
-            "pref_implem": "torch-Ultralytics",
+    "proc":{
+        "task": "detection",
+        "output_type": "bboxes2D",
+        "model_type": "YOLO5",
+        "pref_implem": "torch-Ultralytics",
+        "params": {
             "model_path": "./models/yolov5s-mio.pt",
             "input_width" : 416,
-            "input_height" : 416
-        },
-        "YOLO":{
-            "conf_thresh": 0.25, 
+            "input_height" : 416,
+            "conf_thresh": 0.25,
+            "nms_across_classes": true,
             "nms_thresh": 0,
             "GPU": true
         }
     },
-    "Preproc":{
+    "preproc":{
         "resize":{
             "width" : 416,
             "height": 416
         }
     },
-    "Postproc":{
+    "postproc":{
         "nms": {
             "pref_implem" : "Malisiewicz",
             "nms_thresh" : 0.45

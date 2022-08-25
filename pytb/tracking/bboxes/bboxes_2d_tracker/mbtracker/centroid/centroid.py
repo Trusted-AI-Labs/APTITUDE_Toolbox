@@ -19,16 +19,16 @@ log = logging.getLogger("aptitude-toolbox")
 
 class Centroid(BBoxes2DTracker):
 
-    def __init__(self, tracker_parameters: dict):
+    def __init__(self, proc_parameters: dict):
         """Initializes a Centroid tracker with the given parameters.
 
         Args:
-            tracker_parameters (dict): A dictionary containing the Centroid parameters
+            proc_parameters (dict): A dictionary containing the Centroid parameters
         """
-        super().__init__(tracker_parameters)
+        super().__init__(proc_parameters)
 
         # An object that is not tracked for max_age frame is removed from the memory
-        self.max_age = tracker_parameters["Centroid"].get("max_age", 10)
+        self.max_age = proc_parameters["params"].get("max_age", 10)
 
         log.debug("Centroid {} implementation selected.".format(self.pref_implem))
         if self.pref_implem == "Rosebrock":

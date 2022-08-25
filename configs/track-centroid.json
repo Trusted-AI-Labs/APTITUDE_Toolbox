@@ -1,16 +1,13 @@
 {
-    "Proc":{
-        "Tracker":{
-            "type": "BBoxes2DTracker"
-        },
-        "BBoxes2DTracker":{
-            "model_type": "Centroid",
-            "pref_implem": "Rosebrock"
-        },
-        "Centroid":{
+    "proc":{
+        "task": "tracking",
+        "output_type": "bboxes2D",
+        "model_type": "Centroid",
+        "pref_implem": "Rosebrock",
+        "params": {
             "max_age": 10
         }
     },
-    "Preproc":{},
-    "Postproc":{}
+    "preproc":{},
+    "postproc":{}
 }

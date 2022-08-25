@@ -16,20 +16,21 @@ import logging
 
 log = logging.getLogger("aptitude-toolbox")
 
-class MRCNN(BBoxes2DDetector):
 
-    def __init__(self, detector_parameters: dict):
+class MaskRCNN(BBoxes2DDetector):
+
+    def __init__(self, proc_parameters: dict):
         """Initializes the detector with the given parameters.
 
         Args:
-            detector_parameters (dict): A dictionary containing the MaskRCNN parameters.
+            proc_parameters (dict): A dictionary containing the MaskRCNN parameters.
         """
-        super().__init__(detector_parameters)
+        super().__init__(proc_parameters)
         # Whether to use the default weights available on PyTorch
-        self.use_coco = detector_parameters["MRCNN"].get("use_coco_weights", True)
+        self.use_coco = proc_parameters["params"].get("use_coco_weights", True)
 
         # Whether to use the GPU if available.
-        self.gpu = detector_parameters["MRCNN"].get("GPU", False)
+        self.gpu = proc_parameters["params"].get("GPU", False)
 
         log.debug("GPU set to {}.".format(self.gpu))
 

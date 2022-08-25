@@ -1,24 +1,21 @@
 {
-    "Proc":{
-        "Detector":{
-            "type": "BBoxes2DDetector"
-        },
-        "BBoxes2DDetector":{
-            "model_type": "BackgroundSubtractor",
-            "pref_implem": "mean"
-        },
-        "BackgroundSubtractor":{
+    "proc":{
+        "task": "detection",
+        "output_type": "bboxes2D",
+        "model_type": "BackgroundSubtractor",
+        "pref_implem": "mean",
+        "params": {
             "intensity": 50,
             "max_last_images": 50
         }
     },
-    "Preproc":{
+    "preproc":{
         "resize":{
             "width" : 416,
             "height": 416
         }
     },
-    "Postproc":{
+    "postproc":{
         "nms": {
             "pref_implem" : "Malisiewicz",
             "nms_thresh" : 0.45

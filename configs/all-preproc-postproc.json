@@ -1,6 +1,6 @@
 {
-    "Proc": {},
-    "Preproc": {
+    "proc": {},
+    "preproc": {
         "border": {
             "centered": true
         },
@@ -16,7 +16,7 @@
             "height": 720
         }
     },
-    "Postproc": {
+    "postproc": {
         "nms": {
             "pref_implem": "Malisiewicz",
             "nms_thresh": 0.45
