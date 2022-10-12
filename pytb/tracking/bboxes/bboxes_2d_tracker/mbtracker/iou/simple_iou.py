@@ -1,7 +1,17 @@
 """
-Copyright (c) 2021-2022 UCLouvain, ICTEAM
+Simple IOU based tracker.
+See "High-Speed Tracking-by-Detection Without Using Image Information by E. Bochinski, V. Eiselein, T. Sikora" for
+more information.
+
+Copyright (c) 2017 TU Berlin, Communication Systems Group
+Licensed under The MIT License [see LICENSE for details]
+Written by Erik Bochinski
+
+See https://github.com/bochinski/iou-tracker for more information
+
+Copyright (c) 2021 UCLouvain, ICTEAM
 Licensed under GPL-3.0 [see LICENSE for details]
-Written by Jonathan Samelson (2021-2022)
+Adapted for online tracking by Jonathan Samelson (2021)
 """
 
 

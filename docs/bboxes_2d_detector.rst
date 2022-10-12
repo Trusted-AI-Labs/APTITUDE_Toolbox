@@ -1,15 +1,10 @@
-bboxes_2d_detector
-==========================
+.. raw:: html
+
+    <h1> bboxes_2d_detector </h1>
 
 Welcome to the documentation about the detectors for Bounding Boxes 2D.
-The main packages and modules are available in the 'Quick access' below.
 
 All functions are defined in details further down the page.
-
-bboxes_2d_detector
-"""""""""""""""""""""
-
-.. automodule:: pytb.detection.bboxes.bboxes_2d_detector.bboxes_2d_detector
 
 background_subtractor
 """"""""""""""""""""""""

@@ -14,7 +14,7 @@ The code is available at https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox
 For the installation instructions or to learn how to use the toolbox as a blackbox, please consult the readme on Github.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Contents:
 
    detection

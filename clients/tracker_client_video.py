@@ -120,7 +120,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
 
     while is_reading:
 
-        # Check if a key was pressed but with some delay, as it resource consuming
+        # Check if a key was pressed but with some delay, as it is resource consuming
         time_update = default_timer()
         if not headless and time_update - last_update > (1/10):
             k = cv2.waitKey(1) & 0xFF

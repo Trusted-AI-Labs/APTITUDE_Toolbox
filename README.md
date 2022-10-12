@@ -2,7 +2,7 @@
 
 ![Logo](img/logo.png) 
 
-[![Documentation Status](https://readthedocs.org/projects/aptitude-toolbox/badge/?version=latest)](https://aptitude-toolbox.readthedocs.io/en/latest/?badge=latest)
+![Github Stars](https://badgen.net/github/stars/Trusted-AI-Labs/APTITUDE_Toolbox?icon=github) [![Documentation Status](https://readthedocs.org/projects/aptitude-toolbox/badge/?version=latest)](https://aptitude-toolbox.readthedocs.io/en/latest/?badge=latest)
 
 ## Table of Contents
 1. [Description](#description)
@@ -17,7 +17,7 @@
 
 The APTITUDE Toolbox gathers open-source implementations of state-of-the-art algorithms for the detection and tracking of moving objects. It integrates popular frameworks such as OpenCV, Tensorflow and Pytorch and it is made easy-to-use via an all-in-one interface.
 
-Once installed, the toolbox takes a video and a config file as input and can output an annotated video as well as the result of the detection and tracking in MOT format. Preprocessing methods are available to resize, apply a mask or add borders. Also, postprocessing methods can be used to filter the results with different thresholds. The following figure illustrates the pipeline:
+Once installed, the toolbox takes a video and configuration files as input and can output an annotated video as well as the result of the detection and tracking in MOT format. Preprocessing methods are available to resize, apply a mask or add borders. Also, postprocessing methods can be used to filter the results with different thresholds. The following figure illustrates the pipeline:
 
 ![Pipeline](img/pipeline.png)
 
@@ -30,8 +30,8 @@ A video demo showing the results of the inference can be consulted [here](https:
 
 The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use a high-end GPU in order to obtain real-time performance. 
 
-**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. It was tested with CUDA 11.3 and cuDNN 8.3.2, using previous versions may lead to unexpected results**
-<!-- Refer to [this link]() for their installation. -->
+**Thus, to use the toolbox with GPU, you should have CUDA and cuDNN installed before proceeding to the installation. 
+It was tested with CUDA 11.3 and cuDNN 8.3.2, using previous versions may lead to unexpected results**
 
 
 <a name="installation"></a>
@@ -42,10 +42,12 @@ The APTITUDE toolbox can be run on CPU. However, it is highly recommended to use
 Since version 0.2.3, deployment via Docker is only available to TRAIL affiliates.
 Becoming a TRAIL affiliate allows you to get in touch with a community of researchers, industries and entrepreneurs in the domain of AI. 
 Learn more on [https://trail.ac/](https://trail.ac/)
+If you are affiliated to the TRAIL community, have a look at [this repository](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox_docker).
 
 ### Using Anaconda
 
-Before anything else, please install [ffmpeg](https://ffmpeg.org/download.html) on your machine
+Before anything else, please install [ffmpeg](https://ffmpeg.org/download.html) on your machine.
+Optionally, you can also install [libjpeg-turbo](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) to read sequence of JPEG images faster. 
 
 If you don't want to use Docker or if you want to contribute to the project, you can clone and manually install the dependencies.
 
@@ -69,21 +71,27 @@ For Linux:
 pip install requirements/opencv_contrib_python-4.5.5.64-cp39-cp39-linux_x86_64.whl
 ```
 
+Otherwise, refer to [this link](https://pypi.org/project/opencv-python/) (manual builds section) to build it yourself.
+
 Next, enter the following commands to install PyTorch with targeting the CUDA version:
 ```
 pip install torch==1.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 pip install torchvision==0.11.3+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 ```
-Otherwise, refer to [this link](https://pypi.org/project/opencv-python/) (manual builds section) to build it yourself.
 
 Additionally, if you are on Linux want to use Detectron2, you can install the following dependencies:
 ```
 pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
 ```
 
-However, if you are on Windows, you must build it from source. Refer to their [repository](https://github.com/facebookresearch/detectron2) or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints on how to install on Windows.
+However, if you are on Windows, you must build it from source. 
+Refer to their [repository](https://github.com/facebookresearch/detectron2) 
+or refer to [this issue](https://github.com/Trusted-AI-Labs/APTITUDE_Toolbox/issues/5) to have some hints on how to install on Windows.
 
-To accelerate the reading of image sequences, you can install libjpeg-turbo. This way, the jpeg images will be read via this faster library instead of openCV. Refer to their [releases](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) to install it on your system. It was tested with version 2.0.90. The library is supported thanks to PyTurboJPEG that is installed via `requirements.txt`
+To accelerate the reading of image sequences, you can install libjpeg-turbo. 
+This way, the jpeg images will be read via this faster library instead of openCV. 
+Refer to their [releases](https://github.com/libjpeg-turbo/libjpeg-turbo/releases) 
+to install it on your system. It was tested with version 2.0.90. The library is supported thanks to PyTurboJPEG that is installed via `requirements.txt`
 
 ### Troubleshooting 🔫
 
@@ -98,24 +106,29 @@ ImportError: DLL load failed: The specified module could not be found
 This might be because the path to a DLL is missing. Try to add to your path the following folders:
 ```
 <your-path>\Anaconda3\envs\apt_tb
-<your-path>\envs\apt_tb\Lib\site-packages\h5py
+<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\h5py
 ```
 
-The first one is for the python39.dll, the second one is for hdf5.dll. If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\cv2.cp37-win_amd64.pyd`.
+The first one is for the python39.dll, the second one is for hdf5.dll. 
+If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) 
+to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\python-3\cv2.pyd`.
 
 <a name="usage"></a>
 ## Usage
 
 ### Models
 
-Models trained on [MIO-TCD Localization dataset](https://tcd.miovision.com/challenge/dataset.html) are available on our [drive](https://drive.google.com/drive/folders/1di8gys9LwbLFeFTY7dLA6PqG4nX5TLSD?usp=sharing). 
+Models trained on [MIO-TCD Localization dataset](https://tcd.miovision.com/challenge/dataset.html) 
+are available on our [drive](https://drive.google.com/drive/folders/1di8gys9LwbLFeFTY7dLA6PqG4nX5TLSD?usp=sharing). 
 Feel free to try them with the APTITUDE Toolbox before training your own.
 
 We advise to create a `/models/` and a `/videos/` folder so that you can easily switch from a model/video to another. 
 
 ### Use as a Black Toolbox 🧰
 
-The toolbox comes with two "client" scripts that can be used to produce an annotated video and/or to get the results of the inference in MOT format. `tracker_client_video.py` processes a sequence of images while `tracker_client_video` processes a video file. In both cases, `clients/main.py` is the script to run. In accordance with the input type (folder of file), it calls the right script. In the following table, the parameters of this script are described. The bold lines indicate those that are mandatory.
+The toolbox comes with two "client" scripts that can be used to produce an annotated video and/or to get the results of the inference in MOT format. 
+`tracker_client_video.py` processes a sequence of images while `tracker_client_video` processes a video file. In both cases, `clients/main.py` is the script to run. 
+In accordance with the input type (folder of file), it calls the right script. In the following table, the parameters of this script are described. The bold lines indicate those that are mandatory.
 
 | Parameter | | Description | Default
 | --------| ------ | ----------- | ----------- |
@@ -133,13 +146,17 @@ The toolbox comes with two "client" scripts that can be used to produce an annot
 | -mp |--mot_path | Path to the result of tracking in MOT format.
 | -a | --async | For video files only. Whether the video reading is asynchronous. | False
 
-The detector and tracker configuration JSON files can be created using the *APTITUDE Toolbox Config Creator*. Simply open `config_creator/index.html` in your web browser. The *Video* fields are not needed since it is given using the above parameters.
+#### Parameters of the configuration file for detector and tracker
 
-Example config files are available in /configs/, you can try them directly after changing the paths to your own model paths.
+There was a webtool to create configuration file (available under `/config_creator/`). However, this is not up to date with the latest structure of the config files.
 
-NB: The creation of a MaskRCNN config is not (yet) available in the config creator. Example files can be provided on demand.
+Instead, example of config files are available in `/configs/`, you can try them directly after changing the paths to your own model paths. 
+Additionally, `all-preproc-postproc.json` contains all the parameters for image transformation or result filtering.
+More information about all the parameters are available in the [documentation](https://aptitude-toolbox.readthedocs.io/), under "bboxes_2d_detector", "bboxes_2d_tracker", "Outputs & Postproc", "Utils & Preproc"
 
-The classes JSON config file contains the name of the object classes that can be detected by your detector. It will be displayed along with the detected objects. For example: 
+#### Classes configuration file
+
+The classes JSON config file contains the name of the object classes that can be detected by your detector, in the order. It will be displayed along with the detected objects. For example: 
 ```
 {
     "classes": [
@@ -182,7 +199,9 @@ YOLO & Tiny-YOLO (v2-4) inference: [OpenCV Documentation - DNN module](https://d
 
 YOLOv5 inference: [Ultralytics - YOLOv5](https://github.com/ultralytics/yolov5)
 
-MaskRCNN: [Pytorch models](https://pytorch.org/vision/stable/models.html)
+MaskRCNN/FasterRCNN: [Pytorch models](https://pytorch.org/vision/stable/models.html)
+
+Detectron2: [facebookresearch - Detectron2](https://github.com/facebookresearch/detectron2)
 
 SORT: [abewley - SORT](https://github.com/abewley/sort)
 

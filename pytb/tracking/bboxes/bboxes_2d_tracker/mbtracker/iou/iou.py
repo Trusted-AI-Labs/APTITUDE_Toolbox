@@ -1,15 +1,7 @@
 """
-Simple IOU based tracker with Kalman filter.
-
-Copyright (c) 2017 TU Berlin, Communication Systems Group
-Licensed under The MIT License [see LICENSE for details]
-Written by Erik Bochinski
-
-See https://github.com/bochinski/iou-tracker for more information
-
-Copyright (c) 2021 UCLouvain, ICTEAM
+Copyright (c) 2021-2022 UCLouvain, ICTEAM
 Licensed under GPL-3.0 [see LICENSE for details]
-Adapted for online tracking by Jonathan Samelson (2021)
+Written by Jonathan Samelson (2021-2022)
 """
 
 from pytb.tracking.bboxes.bboxes_2d_tracker.bboxes_2d_tracker import BBoxes2DTracker

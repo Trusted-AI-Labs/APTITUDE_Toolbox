@@ -1,5 +1,6 @@
 """
 Simple IOU based tracker with Kalman filter.
+This tracker is based on the original IOU Tracker.
 
 Copyright (c) 2017 TU Berlin, Communication Systems Group
 Licensed under The MIT License [see LICENSE for details]

@@ -112,7 +112,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
 
     for image_name in tqdm(file_list_sorted):
 
-        # Check if a key was pressed but with some delay, as it resource consuming
+        # Check if a key was pressed but with some delay, as it is resource consuming
         time_update = default_timer()
         if not headless and time_update - last_update > (1/10):
             k = cv2.waitKey(1) & 0xFF
@@ -153,7 +153,7 @@ def main(cfg_detect, cfg_track, cfg_classes, folder_path, frame_interval, record
         else:
             res = tracking_manager.track(det)
             log.debug("After tracking, without frames.")
-        # Don't count the time of the first 5 iteration if we consider there is a 'warmup time'
+        # Don't count the time of the first 5 iterations if we consider there is a 'warmup time'
         if counter <= 5:
             warmup_time += default_timer() - warmup_time_start
 

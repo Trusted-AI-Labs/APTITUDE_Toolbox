@@ -5,6 +5,7 @@
         "model_type": "BackgroundSubtractor",
         "pref_implem": "mean",
         "params": {
+            "contour_thresh": 3,
             "intensity": 50,
             "max_last_images": 50
         }
