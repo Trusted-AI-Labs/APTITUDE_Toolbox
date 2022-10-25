@@ -38,8 +38,6 @@ class KIOU:
 
     def update(self, dets):
         """
-        Simple IOU based tracker with Kalman filter, adapted for online tracking
-        See https://github.com/siyuanc2/kiout/ for more information
         Args:
              dets (list): list of detections, field names: ['bbox': ('x1', 'y1', 'x2', 'y2'), 'score', 'class']
         Returns:

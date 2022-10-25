@@ -31,7 +31,7 @@ Hereby, you find two tables that (1) list the parameters in relation with the JS
    :widths: 50 50
    :header-rows: 1
 
-   * - Model Type
+   * - Detector
      - Parameters
    * - BackgroundSubtractor (mean/median)
      - ``contour_thresh, intensity, max_last_images``

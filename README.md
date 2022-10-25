@@ -60,7 +60,9 @@ pip install -r requirements/requirements.txt
 pip install -e .
 ```
 
-Then, you can use the wheel file to install OpenCV, which is already built with CUDA. 
+Then, you can use the wheel file that comes with the toolbox to install OpenCV, which is already built with CUDA.
+However, it may not work with all GPU architectures, you might need to build it yourself. 
+Please see the section Troubleshooting below if it does not work as expected. 
 
 For Windows:
 ```
@@ -95,6 +97,7 @@ to install it on your system. It was tested with version 2.0.90. The library is 
 
 ### Troubleshooting 🔫
 
+#### OpenCV
 
 On Windows, in case you get the following error when importing cv2:
 
@@ -113,6 +116,24 @@ The first one is for the python39.dll, the second one is for hdf5.dll.
 If this is not sufficient, try to use [Dependencies](https://github.com/lucasg/Dependencies) 
 to look for any other missing DLL  of `<your-path>\Anaconda3\envs\apt_tb\Lib\site-packages\cv2\python-3\cv2.pyd`.
 
+If you cannot make it work, you might need to build OpenCV yourself according to your GPU architecture.
+Still, you can install OpenCV without CUDA, using the following command:
+```
+pip install opencv-python==4.5.5.64
+```
+Note that YOLOv4 will not be able to run on GPU.
+
+#### FFMPEG
+
+If you get an error while reading a video:
+
+```
+FileNotFoundError: [WinError 2] The system cannot find the file specified
+```
+
+It is probably because you installed FFMPEG, but the program is not referenced in your Windows PATH variable.
+To solve the issue, simply add the ```/bin``` of FFMPEG folder (containing 3 .exe files) in your Windows PATH environment variable.
+
 <a name="usage"></a>
 ## Usage
 
@@ -127,7 +148,7 @@ We advise to create a `/models/` and a `/videos/` folder so that you can easily 
 ### Use as a Black Toolbox 🧰
 
 The toolbox comes with two "client" scripts that can be used to produce an annotated video and/or to get the results of the inference in MOT format. 
-`tracker_client_video.py` processes a sequence of images while `tracker_client_video` processes a video file. In both cases, `clients/main.py` is the script to run. 
+`tracker_client_images.py` processes a sequence of images while `tracker_client_video.py` processes a video file. In both cases, `clients/main.py` is the script to run. 
 In accordance with the input type (folder of file), it calls the right script. In the following table, the parameters of this script are described. The bold lines indicate those that are mandatory.
 
 | Parameter | | Description | Default
@@ -145,6 +166,7 @@ In accordance with the input type (folder of file), it calls the right script. I
 | -rs |--record_size | Dimension of the recorded video: width,height. Each image is resized just before being written. |
 | -mp |--mot_path | Path to the result of tracking in MOT format.
 | -a | --async | For video files only. Whether the video reading is asynchronous. | False
+| -l | --log_level | Level of the logger. Choose between: "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL" | INFO
 
 #### Parameters of the configuration file for detector and tracker
 
