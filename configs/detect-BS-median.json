@@ -3,10 +3,11 @@
         "task": "detection",
         "output_type": "bboxes2D",
         "model_type": "BackgroundSubtractor",
-        "pref_implem": "frame_diff",
+        "pref_implem": "median",
         "params": {
             "contour_thresh": 3,
-            "intensity": 50
+            "intensity": 50,
+            "max_last_images": 50
         }
     },
     "preproc":{

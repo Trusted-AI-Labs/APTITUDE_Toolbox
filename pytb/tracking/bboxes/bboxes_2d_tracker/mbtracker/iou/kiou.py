@@ -1,5 +1,6 @@
 """
 Simple IOU based tracker with Kalman filter.
+This tracker is based on the original IOU Tracker.
 
 Copyright (c) 2017 TU Berlin, Communication Systems Group
 Licensed under The MIT License [see LICENSE for details]
@@ -37,8 +38,6 @@ class KIOU:
 
     def update(self, dets):
         """
-        Simple IOU based tracker with Kalman filter, adapted for online tracking
-        See https://github.com/siyuanc2/kiout/ for more information
         Args:
              dets (list): list of detections, field names: ['bbox': ('x1', 'y1', 'x2', 'y2'), 'score', 'class']
         Returns:

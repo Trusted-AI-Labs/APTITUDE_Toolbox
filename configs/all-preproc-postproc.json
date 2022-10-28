@@ -9,11 +9,10 @@
             "height": 416
         },
         "roi": {
-            "coords": "(0, 0), (450, 0), (450, 200), (0, 200)"
-        },
-        "resize_results": {
-            "width": 1280,
-            "height": 720
+            "_comment": "Use coords OR path, never use both!",
+
+            "coords": "(0, 0), (450, 0), (450, 200), (0, 200)",
+            "path": "/path/to/roi.jpg"
         }
     },
     "postproc": {
@@ -32,6 +31,10 @@
         "roi": {
             "path": "/path/to/roi.jpg",
             "max_outside_roi_thresh": 0.25
+        },
+        "resize_results": {
+            "width": 1280,
+            "height": 720
         }
     }
 }
