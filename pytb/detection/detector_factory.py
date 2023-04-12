@@ -1,7 +1,7 @@
 """
 Copyright (c) 2021-2022 UCLouvain, ICTEAM
 Licensed under GPL-3.0 [see LICENSE for details]
-Written by Jonathan Samelson (2021-2022)
+Written by Jonathan Samelson (2021-2022), Arthur Pisvin (2023)
 """
 
 import logging
@@ -53,6 +53,9 @@ class DetectorFactory:
         if model_type == "YOLO5":
             from pytb.detection.bboxes.bboxes_2d_detector.yolo5.yolo5 import YOLO5
             return YOLO5(proc_parameters)
+        if model_type == "YOLO8":
+            from pytb.detection.bboxes.bboxes_2d_detector.yolo8.yolo8 import YOLO8
+            return YOLO8(proc_parameters)
         if model_type == "Detectron2":
             from pytb.detection.bboxes.bboxes_2d_detector.detectron2.detectron2 import Detectron2
             return Detectron2(proc_parameters)

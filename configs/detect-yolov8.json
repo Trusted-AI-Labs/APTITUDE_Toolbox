@@ -1,0 +1,29 @@
+{
+    "proc":{
+        "task": "detection",
+        "output_type": "bboxes2D",
+        "model_type": "YOLO8",
+        "pref_implem": "torch-Ultralytics",
+        "params": {
+            "model_path": "./models/yolov8m.pt",
+            "input_width" : 416,
+            "input_height" : 416,
+            "conf_thresh": 0.35,
+            "nms_across_classes": true,
+            "nms_thresh": 0,
+            "GPU": true
+        }
+    },
+    "preproc":{
+        "resize":{
+            "width" : 416,
+            "height": 416
+        }
+    },
+    "postproc":{
+        "nms": {
+            "pref_implem" : "Malisiewicz",
+            "nms_thresh" : 0.45
+        }
+    }
+}

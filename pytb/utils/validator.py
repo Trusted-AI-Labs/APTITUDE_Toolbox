@@ -1,7 +1,7 @@
 """
 Copyright (c) 2021-2022 UCLouvain, ICTEAM
 Licensed under GPL-3.0 [see LICENSE for details]
-Written by Jonathan Samelson (2021-2022)
+Written by Jonathan Samelson (2021-2022), Arthur Pisvin (2023)
 """
 
 import ast
@@ -15,7 +15,7 @@ valid_postproc_keys = ["coi", "nms", "min_conf", "max_height", "min_height",
 valid_nms_values = ["cv2", "Malisiewicz"]
 
 valid_proc_keys = ["task", "output_type", "model_type", "pref_implem", "params"]
-valid_detector_type = ["YOLO4", "YOLO5", "MaskRCNN", "FasterRCNN", "BackgroundSubtractor", "Detectron2"]
+valid_detector_type = ["YOLO4", "YOLO5", "YOLO8", "MaskRCNN", "FasterRCNN", "BackgroundSubtractor", "Detectron2"]
 valid_tracker_type = ["SORT", "DeepSORT", "Centroid", "IOU"]
 
 
@@ -212,6 +212,8 @@ def validate_detector_parameters(det_params: dict) -> bool:
         valid = valid and _validate_yolo4_parameters(det_params)
     elif det_params["model_type"] == "YOLO5":
         valid = valid and _validate_yolo5_parameters(det_params)
+    elif det_params["model_type"] == "YOLO8":
+        valid = valid and _validate_yolo8_parameters(det_params)
     elif det_params["model_type"] == "Detectron2":
         valid = valid and _validate_detectron2_parameters(det_params)
     elif det_params["model_type"] == "MaskRCNN":
@@ -310,6 +312,43 @@ def _validate_yolo5_parameters(det_params: dict) -> bool:
         log.error("\"nms_across_classes\" sub-entry must be of type bool.")
         valid = False
     if "GPU" in yolo5_params and not isinstance(yolo5_params.get("GPU"), bool):
+        log.error("\"GPU\" sub-entry must be of type bool.")
+        valid = False
+    return valid
+
+def _validate_yolo8_parameters(det_params: dict) -> bool:
+    valid = True
+    yolo8_params = det_params["params"]
+
+    if det_params["pref_implem"] != "torch-Ultralytics":
+        log.error("Unknown implementation of YOLO5: {}".format(det_params["pref_implem"]))
+        valid = False
+
+    if "model_path" not in yolo8_params:
+        log.error("\"model_path\" sub-entry is required in params for YOLO8 model type.")
+        valid = False
+    elif not isinstance(yolo8_params["model_path"], str):
+        log.error("The value of \"model_path\" sub-entry must be of type string.")
+        valid = False
+    if "input_width" in yolo8_params \
+            and not (isinstance(yolo8_params["input_width"], int) and yolo8_params["input_width"] > 0):
+        log.error("\"input_width\" sub-entry must be of type int and must be positive.")
+        valid = False
+    if "input_height" in yolo8_params \
+            and not (isinstance(yolo8_params["input_height"], int) and yolo8_params["input_height"] > 0):
+        log.error("\"input_height\" sub-entry must be of type int and must be positive.")
+        valid = False
+
+    if "conf_thresh" in yolo8_params and (yolo8_params["conf_thresh"] < 0 or yolo8_params["conf_thresh"] > 1):
+        log.error("\"conf_thresh\" (YOLO5 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_thresh" in yolo8_params and (yolo8_params["nms_thresh"] < 0 or yolo8_params["nms_thresh"] > 1):
+        log.error("\"nms_thresh\" (YOLO5 params) value must be included between 0 and 1.")
+        valid = False
+    if "nms_across_classes" in yolo8_params and not isinstance(yolo8_params.get("nms_across_classes"), bool):
+        log.error("\"nms_across_classes\" sub-entry must be of type bool.")
+        valid = False
+    if "GPU" in yolo8_params and not isinstance(yolo8_params.get("GPU"), bool):
         log.error("\"GPU\" sub-entry must be of type bool.")
         valid = False
     return valid
