@@ -1,7 +1,7 @@
 """
 Copyright (c) 2021-2022 UCLouvain, ICTEAM
 Licensed under GPL-3.0 [see LICENSE for details]
-Written by Jonathan Samelson (2021-2022)
+Written by Jonathan Samelson (2021-2022), Arthur Pisvin (2023)
 """
 
 import json
@@ -113,9 +113,7 @@ def main(cfg_detect, cfg_track, cfg_classes, video_path, frame_interval, record_
     output_lines = []
 
     # Get the number of frames of the video
-    probe = ffmpeg.probe(video_path)
-    video_info = next(s for s in probe['streams'] if s['codec_type'] == 'video')
-    nb_frames = int(video_info['nb_frames'])
+    nb_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     pbar = tqdm(total=nb_frames)
 
     while is_reading:
